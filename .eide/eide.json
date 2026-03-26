@@ -1,0 +1,108 @@
+{
+  "name": "H7test",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [
+    "Core",
+    "Drivers",
+    "User_Files"
+  ],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [
+      {
+        "path": "startup_stm32h723xx.s"
+      },
+      {
+        "path": "STM32H723XG_FLASH.ld"
+      }
+    ],
+    "folders": []
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "3aa903d89f6f345f1783c50ce60dea69"
+  },
+  "targets": {
+    "Debug": {
+      "excludeList": [
+        "User_Files/Bsp/Src/bsp_timestamp.c"
+      ],
+      "toolchain": "GCC",
+      "compileConfig": {
+        "cpuType": "Cortex-M7",
+        "archExtensions": "",
+        "floatingPointHardware": "double",
+        "scatterFilePath": "STM32H723XG_FLASH.ld",
+        "useCustomScatterFile": true,
+        "storageLayout": {
+          "RAM": [],
+          "ROM": []
+        },
+        "options": "null"
+      },
+      "uploader": "JLink",
+      "uploadConfig": {
+        "bin": "",
+        "baseAddr": "",
+        "cpuInfo": {
+          "vendor": "ST",
+          "cpuName": "STM32H723VG"
+        },
+        "proType": 1,
+        "speed": 5000,
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {},
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "Core/Inc",
+          "Drivers/STM32H7xx_HAL_Driver/Inc",
+          "Drivers/STM32H7xx_HAL_Driver/Inc/Legacy",
+          "Drivers/CMSIS/Device/ST/STM32H7xx/Include",
+          "Drivers/CMSIS/Include",
+          "User_Files/App/Inc",
+          "User_Files/Bsp/Inc",
+          "User_Files/Drv/Inc"
+        ],
+        "libList": [],
+        "defineList": [
+          "USE_PWR_LDO_SUPPLY",
+          "USE_HAL_DRIVER",
+          "STM32H723xx"
+        ]
+      },
+      "builderOptions": {
+        "GCC": {
+          "version": 5,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "$float-abi-type": "hard",
+            "output-debug-info": "enable",
+            "misc-control": "--specs=nosys.specs --specs=nano.specs"
+          },
+          "c/cpp-compiler": {
+            "language-c": "c99",
+            "language-cpp": "c++11",
+            "optimization": "level-debug",
+            "warnings": "all-warnings",
+            "one-elf-section-per-function": true,
+            "one-elf-section-per-data": true
+          },
+          "asm-compiler": {},
+          "linker": {
+            "output-format": "elf",
+            "remove-unused-input-sections": true,
+            "LIB_FLAGS": "-lm",
+            "$toolName": "auto"
+          }
+        }
+      }
+    }
+  },
+  "version": "3.6"
+}
