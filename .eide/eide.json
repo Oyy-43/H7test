@@ -5,7 +5,8 @@
   "srcDirs": [
     "Core",
     "Drivers",
-    "User_Files"
+    "User_Files",
+    "Middlewares"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -15,6 +16,12 @@
       },
       {
         "path": "STM32H723XG_FLASH.ld"
+      },
+      {
+        "path": "readme.md"
+      },
+      {
+        "path": "Makefile"
       }
     ],
     "folders": []
@@ -27,9 +34,7 @@
   },
   "targets": {
     "Debug": {
-      "excludeList": [
-        "User_Files/Bsp/Src/bsp_timestamp.c"
-      ],
+      "excludeList": [],
       "toolchain": "GCC",
       "compileConfig": {
         "cpuType": "Cortex-M7",
@@ -64,9 +69,15 @@
           "Drivers/STM32H7xx_HAL_Driver/Inc/Legacy",
           "Drivers/CMSIS/Device/ST/STM32H7xx/Include",
           "Drivers/CMSIS/Include",
+          "Middlewares/Third_Party/FreeRTOS/Source/include",
+          "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+          "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+          "Drivers/CMSIS/RTOS2/Include",
           "User_Files/App/Inc",
+          "User_Files/Algorithm/Inc",
           "User_Files/Bsp/Inc",
-          "User_Files/Drv/Inc"
+          "User_Files/Drv/Inc",
+          "Middlewares/ST/ARM/DSP/Inc"
         ],
         "libList": [],
         "defineList": [

@@ -24,7 +24,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-Class_Timestamp SYS_Timestamp;
+Struct_Timestamp SYS_Timestamp = {0};
 
 /* Private function declarations ---------------------------------------------*/
 
@@ -35,18 +35,18 @@ Class_Timestamp SYS_Timestamp;
  *
  * @param __TIM_Manage_Object 绑定的定时器, psc后为1MHz, arr要求是3 600 000 000, arr至少32位的寄存器
  */
-void Class_Timestamp::Init(TIM_HandleTypeDef *htim)
+void Timestamp_Init(TIM_HandleTypeDef *htim)
 {
-    TIM_Handler = htim;
+    SYS_Timestamp.TIM_Handler = htim;
 }
 
 /**
  * @brief TIM定时器回调函数, 每3600s调用一次
  *
  */
-void Class_Timestamp::TIM_3600s_PeriodElapsedCallback()
+void Timestamp_TIM_3600s_PeriodElapsedCallback(void)
 {
-    TIM_Overflow_Count++;
+    SYS_Timestamp.TIM_Overflow_Count++;
 }
 
 /**
@@ -54,16 +54,36 @@ void Class_Timestamp::TIM_3600s_PeriodElapsedCallback()
  *
  * @return uint64_t 当前时间戳
  */
-uint64_t Class_Timestamp::Calculate_Timestamp() const
+static uint64_t Timestamp_Calculate(void)
 {
-    // 当前时间
-    uint64_t timestamp;
-    // arr计数
-    uint32_t arr_counter = TIM_Handler->Instance->CNT;
+    uint32_t arr_counter = 0U;
 
-    timestamp = (uint64_t)(TIM_Overflow_Count) * 3600000000ULL + (uint64_t) arr_counter;
+    if (SYS_Timestamp.TIM_Handler != NULL)
+    {
+        arr_counter = SYS_Timestamp.TIM_Handler->Instance->CNT;
+    }
 
-    return (timestamp);
+    return (uint64_t)(SYS_Timestamp.TIM_Overflow_Count) * 3600000000ULL + (uint64_t)arr_counter;
+}
+
+uint64_t Timestamp_Get_Current_Timestamp(void)
+{
+    return Timestamp_Calculate();
+}
+
+float Timestamp_Get_Now_Second(void)
+{
+    return (float)Timestamp_Calculate() / 1000000.0f;
+}
+
+float Timestamp_Get_Now_Millisecond(void)
+{
+    return (float)Timestamp_Calculate() / 1000.0f;
+}
+
+uint64_t Timestamp_Get_Now_Microsecond(void)
+{
+    return Timestamp_Calculate();
 }
 
 /**
@@ -71,11 +91,11 @@ uint64_t Class_Timestamp::Calculate_Timestamp() const
  *
  * @param Second 延迟秒数
  */
-void Namespace_SYS_Timestamp::Delay_Second(const uint32_t &Second)
+void Timestamp_Delay_Second(uint32_t second)
 {
-    volatile uint64_t start_time = SYS_Timestamp.Get_Current_Timestamp();
+    volatile uint64_t start_time = Timestamp_Get_Current_Timestamp();
 
-    while ((uint64_t)(Second) * 1000000ULL + start_time > SYS_Timestamp.Get_Current_Timestamp())
+    while ((uint64_t)(second) * 1000000ULL + start_time > Timestamp_Get_Current_Timestamp())
     {
     }
 }
@@ -85,11 +105,11 @@ void Namespace_SYS_Timestamp::Delay_Second(const uint32_t &Second)
  *
  * @param Millisecond 延迟毫秒数
  */
-void Namespace_SYS_Timestamp::Delay_Millisecond(const uint32_t &Millisecond)
+void Timestamp_Delay_Millisecond(uint32_t millisecond)
 {
-    volatile uint64_t start_time = SYS_Timestamp.Get_Current_Timestamp();
+    volatile uint64_t start_time = Timestamp_Get_Current_Timestamp();
 
-    while ((uint64_t)(Millisecond) * 1000ULL + start_time > SYS_Timestamp.Get_Current_Timestamp())
+    while ((uint64_t)(millisecond) * 1000ULL + start_time > Timestamp_Get_Current_Timestamp())
     {
     }
 }
@@ -99,11 +119,11 @@ void Namespace_SYS_Timestamp::Delay_Millisecond(const uint32_t &Millisecond)
  *
  * @param Microsecond 延迟微秒数
  */
-void Namespace_SYS_Timestamp::Delay_Microsecond(const uint32_t &Microsecond)
+void Timestamp_Delay_Microsecond(uint32_t microsecond)
 {
-    volatile uint64_t start_time = SYS_Timestamp.Get_Current_Timestamp();
+    volatile uint64_t start_time = Timestamp_Get_Current_Timestamp();
 
-    while ((uint64_t)(Microsecond) + start_time > SYS_Timestamp.Get_Current_Timestamp())
+    while ((uint64_t)(microsecond) + start_time > Timestamp_Get_Current_Timestamp())
     {
     }
 }
