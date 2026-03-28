@@ -154,6 +154,7 @@ const float BUZZER_FREQUENCY_B7 = 3951.066f;
 const float BUZZER_FREQUENCY_C8 = 4186.009f;
 
 Struct_Buzzer SYS_Buzzer = {0};
+const float Init_Music[3]={BUZZER_FREQUENCY_C5,BUZZER_FREQUENCY_D5,BUZZER_FREQUENCY_G5};
 
 #ifdef CPP_ENABLE
 Class_Buzzer BSP_Buzzer;

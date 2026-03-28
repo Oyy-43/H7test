@@ -1,7 +1,7 @@
 #include "task_config_and_callback.h"
 
-#include "bsp_timestamp.h"
-#include "bsp_uart.h"
+#include "sys_timestamp.h"
+#include "drv_uart.h"
 #include "cmsis_os2.h"
 #include "bsp_buzzer.h"
 

@@ -154,6 +154,7 @@ extern const float BUZZER_FREQUENCY_B7_FLAT;
 extern const float BUZZER_FREQUENCY_B7;
 extern const float BUZZER_FREQUENCY_C8;
 
+extern const float Init_Music[3];
 /* Exported types ------------------------------------------------------------*/
 
 typedef struct Struct_Buzzer

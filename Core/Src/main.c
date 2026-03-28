@@ -30,8 +30,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "bsp_uart.h"
-#include "bsp_timestamp.h"
+#include "drv_uart.h"
+#include "sys_timestamp.h"
 #include "task_config_and_callback.h"
 
 /* USER CODE END Includes */
@@ -110,6 +110,8 @@ int main(void)
   MX_UART7_Init();
   MX_TIM5_Init();
   MX_TIM12_Init();
+  MX_SPI6_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
   Task_Init();
 

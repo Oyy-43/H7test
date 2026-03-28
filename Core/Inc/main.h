@@ -57,6 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BMI088_RX__SPI_MOSI_Pin GPIO_PIN_1
+#define BMI088_RX__SPI_MOSI_GPIO_Port GPIOC
+#define BMI088_TX__SPI_MISO_Pin GPIO_PIN_2
+#define BMI088_TX__SPI_MISO_GPIO_Port GPIOC
+#define WS2812_RX__SPI_MOSI_Pin GPIO_PIN_7
+#define WS2812_RX__SPI_MOSI_GPIO_Port GPIOA
+#define BMI088_CLK__SPI_CLK_Pin GPIO_PIN_13
+#define BMI088_CLK__SPI_CLK_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
