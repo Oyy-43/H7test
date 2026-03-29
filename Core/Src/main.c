@@ -33,6 +33,7 @@
 #include "drv_uart.h"
 #include "sys_timestamp.h"
 #include "task_config_and_callback.h"
+#include "bsp_ws2812.h"
 
 /* USER CODE END Includes */
 
@@ -112,6 +113,8 @@ int main(void)
   MX_TIM12_Init();
   MX_SPI6_Init();
   MX_TIM7_Init();
+  MX_FDCAN2_Init();
+  MX_FDCAN3_Init();
   /* USER CODE BEGIN 2 */
   Task_Init();
 
@@ -217,14 +220,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-  if (!init_finished)
+  if(!init_finished)
   {
     return;
   }
   // 选择回调函数
-  if (htim->Instance == TIM5)
+  // 一小时回调函数
+  if(htim->Instance == TIM5)
   {
     Task3600s_Callback();
+  }
+  // 1ms回调函数
+  if(htim->Instance == TIM7)
+  {
+    Task1ms_Callback();
   }
   /* USER CODE END Callback 1 */
 }

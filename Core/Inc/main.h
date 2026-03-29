@@ -65,6 +65,8 @@ void Error_Handler(void);
 #define WS2812_RX__SPI_MOSI_GPIO_Port GPIOA
 #define BMI088_CLK__SPI_CLK_Pin GPIO_PIN_13
 #define BMI088_CLK__SPI_CLK_GPIO_Port GPIOB
+#define KEY__INPUT_Pin GPIO_PIN_15
+#define KEY__INPUT_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

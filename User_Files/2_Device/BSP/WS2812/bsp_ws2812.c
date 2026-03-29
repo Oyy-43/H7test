@@ -35,6 +35,41 @@ void WS2812_Init(const uint8_t __Red, const uint8_t __Green, const uint8_t __Blu
     BSP_WS2812.Color.Blue = __Blue;
 }
 
+void WS2812_Set_Red(const uint8_t __Red)
+{
+    BSP_WS2812.Color.Red = __Red;
+    BSP_WS2812.Color.Green = 0;
+    BSP_WS2812.Color.Blue = 0;
+}
+
+void WS2812_Set_Green(const uint8_t __Green)
+{
+    BSP_WS2812.Color.Red = 0;
+    BSP_WS2812.Color.Green = __Green;
+    BSP_WS2812.Color.Blue = 0;
+}
+
+void WS2812_Set_Blue(const uint8_t __Blue)
+{
+    BSP_WS2812.Color.Red = 0;
+    BSP_WS2812.Color.Green = 0;
+    BSP_WS2812.Color.Blue = __Blue;
+}
+
+void WS2812_Set_RGB(const uint8_t __Red, const uint8_t __Green, const uint8_t __Blue)
+{
+    BSP_WS2812.Color.Red = __Red;
+    BSP_WS2812.Color.Green = __Green;
+    BSP_WS2812.Color.Blue = __Blue;
+}
+
+void WS2812_Set_Color(const Struct_WS2812_Color __Color,const float __Brightness)
+{
+    BSP_WS2812.Color.Red = __Color.Red*__Brightness;
+    BSP_WS2812.Color.Green = __Color.Green*__Brightness;
+    BSP_WS2812.Color.Blue = __Color.Blue*__Brightness;
+}
+
 void TIM_10ms_Write_PeriodElapsedCallback()
 {
     uint8_t *tmp_buffer = BSP_WS2812.SPI_Manage_Object->Tx_Buffer;

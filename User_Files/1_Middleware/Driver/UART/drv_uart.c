@@ -15,14 +15,13 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "drv_uart.h"
+#include "sys_timestamp.h"
 
 /* Private macros ------------------------------------------------------------*/
 
 /* Private types -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-
-bool init_finished = false;
 
 Struct_UART_Manage_Object UART1_Manage_Object = {NULL};
 Struct_UART_Manage_Object UART2_Manage_Object = {NULL};
@@ -270,7 +269,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART1_Manage_Object.Rx_Buffer_Active = UART1_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART1_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART1_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART1_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -291,7 +290,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART2_Manage_Object.Rx_Buffer_Active = UART2_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART2_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART2_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART2_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -312,7 +311,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART3_Manage_Object.Rx_Buffer_Active = UART3_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART3_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART3_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART3_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -333,7 +332,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART4_Manage_Object.Rx_Buffer_Active = UART4_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART4_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART4_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART4_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -354,7 +353,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART5_Manage_Object.Rx_Buffer_Active = UART5_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART5_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART5_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART5_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -375,7 +374,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART6_Manage_Object.Rx_Buffer_Active = UART6_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART6_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART6_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART6_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -396,7 +395,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART7_Manage_Object.Rx_Buffer_Active = UART7_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART7_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART7_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART7_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -417,7 +416,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART8_Manage_Object.Rx_Buffer_Active = UART8_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART8_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART8_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART8_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -438,7 +437,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART9_Manage_Object.Rx_Buffer_Active = UART9_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART9_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART9_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART9_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 
@@ -459,7 +458,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             UART10_Manage_Object.Rx_Buffer_Active = UART10_Manage_Object.Rx_Buffer_0;
         }
 
-        // UART10_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
+        UART10_Manage_Object.Rx_Time_Stamp = Timestamp_Get_Current_Timestamp();
 
         HAL_UARTEx_ReceiveToIdle_DMA(huart, UART10_Manage_Object.Rx_Buffer_Active, UART_BUFFER_SIZE);
 

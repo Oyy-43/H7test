@@ -6,8 +6,8 @@
 #include "drv_spi.h"
 
 // 灯珠的逻辑码
-const uint8_t LEVEL_0 = 0x60;
-const uint8_t LEVEL_1 = 0x78;
+static const uint8_t LEVEL_0 = 0x60U;
+static const uint8_t LEVEL_1 = 0x78U;
 
 typedef struct
 {
@@ -38,6 +38,11 @@ extern Struct_WS2812_Config BSP_WS2812;
 /* Exported function declarations --------------------------------------------*/
 
 void WS2812_Init(uint8_t red, uint8_t green, uint8_t blue);
+void WS2812_Set_Red(uint8_t red);
+void WS2812_Set_Green(uint8_t green);
+void WS2812_Set_Blue(uint8_t blue);
+void WS2812_Set_RGB(uint8_t red, uint8_t green, uint8_t blue);
+void WS2812_Set_Color(Struct_WS2812_Color color, const float brightness);
 void TIM_10ms_Write_PeriodElapsedCallback(void);
 
 

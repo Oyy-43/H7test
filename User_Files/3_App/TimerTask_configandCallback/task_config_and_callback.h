@@ -4,6 +4,7 @@
 #include "main.h"
 
 void Task_Init();
+void Task1ms_Callback();
 void Task3600s_Callback();
 
 #endif // TASK_CONFIG_AND_CALLBACK_H
