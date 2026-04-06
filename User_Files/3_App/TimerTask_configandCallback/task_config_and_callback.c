@@ -142,6 +142,9 @@ void Task_Init()
     CAN_Init(&hfdcan2, NULL);
     CAN_Init(&hfdcan3, NULL);
 
+   //电源ADC的初始化
+    HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
+
    //定时器中断初始化
     HAL_TIM_Base_Start_IT(&htim5);
     HAL_TIM_Base_Start_IT(&htim7);
@@ -164,7 +167,7 @@ void Task_Init()
    //
 
    //标记初始化完成 
-    init_finished = true;  
+    init_finished = true;   
 }
 
 void Timestamp_fuc(void *argument)

@@ -37,7 +37,7 @@
  float kf=0.05f;
 
 /* DMA1不能访问DTCM，串口DMA发送缓冲放在RAM_D2并按Cache line对齐 */
-static uint8_t uart1_tx_buf[96] __attribute__((section(".ram_d2"), aligned(32)));
+static uint8_t uart1_tx_buf[96] RAM_D2_BUFFER;
 
  /* Private function declarations ---------------------------------------------*/
 /** 
@@ -188,7 +188,7 @@ void DMsetOutput(void *argument)
 {
 	for(;;)
 	{  
-		Send_Data(&DM_Motor_1to4_Instances[0]);
+		// Send_Data(&DM_Motor_1to4_Instances[0]);
 		Motor_DM_1_To_4_SinOutput(&DM_Motor_1to4_Instances[0]);
 		Motor_DM_CalPID();
 		Motor_DM_1_To_4_Output();

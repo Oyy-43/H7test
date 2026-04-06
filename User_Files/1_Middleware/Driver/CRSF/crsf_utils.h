@@ -28,10 +28,10 @@ typedef struct __attribute__((packed)) __crsf_channels_t
 
 typedef struct __attribute__((packed)) __crsf_battery_sensor_t
 {
-    signed voltage : 16;      // 25.2V sent as 0x00FC / 252
-    signed current : 16;      // 18.9A sent as 0x00BD / 189
+    signed int voltage : 16;      // 25.2V sent as 0x00FC / 252
+    signed int current : 16;      // 18.9A sent as 0x00BD / 189
     unsigned int used_capacity : 24;     // 2199mAh used sent as 0x0897 / 2199
-    uint8_t estimated_remaining_capacity; // 20% battery remaining sent as 0x14 / 20
+    unsigned int estimated_remaining_capacity : 8; // 20% battery remaining sent as 0x14 / 20
 } crsf_battery_sensor_t;
 
 typedef struct __attribute__((packed)) __crsf_gps_t
@@ -75,7 +75,7 @@ typedef enum __CRSF_FRAMETYPE_t{
     CRSF_FRAMETYPE_LINK_RX_ID                = 0x1C,   // 回传
     CRSF_FRAMETYPE_LINK_TX_ID                = 0x1D,   // 回传
     CRSF_FRAMETYPE_ATTITUDE                  = 0x1E,   // 回传
-    CRSF_FRAMETYPE_FLIGHT_MODE               = 0x21,   // 回传
+    CRSF_FRAMETYPE_FLIGHT_MODE               = 0x21,   // 回传90000000000000000000
 } CRSF_FRAMETYPE_t;
 // 后面还有拓展类型待补充
 /* Exported constants --------------------------------------------------------*/

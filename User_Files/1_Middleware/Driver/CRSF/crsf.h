@@ -10,9 +10,9 @@
 #include "crsf_utils.h"
 
 /* Exported macros -----------------------------------------------------------*/
-#define CRSF_UART huart7
-#define CRSF_RX_DMA hdma_uart7_rx
-#define CRSF_TX_DMA hdma_uart7_tx
+#define CRSF_UART huart1
+#define CRSF_RX_DMA hdma_uart1_rx
+#define CRSF_TX_DMA hdma_uart1_tx
 
 /* Exported types ------------------------------------------------------------*/
 
