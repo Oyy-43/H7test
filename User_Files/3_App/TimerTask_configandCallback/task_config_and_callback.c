@@ -7,6 +7,10 @@
 #include "bsp_ws2812.h"
 #include "drv_spi.h"
 #include "bsp_key.h"
+#include "drv_can.h"
+#include "drv_motor_dm.h"
+#include "ctrl_motor_dm.h"
+#include "bsp_power.h"
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -23,6 +27,13 @@ int32_t blue = 12;
 bool red_minus_flag = false;
 bool green_minus_flag = false;
 bool blue_minus_flag = true;
+
+void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+{
+    Motor_DM_CAN_RxCpltCallback(Header, Buffer);
+}
+
+
 
 /**
  * @brief 3600秒任务回调函数
@@ -126,6 +137,11 @@ void Task_Init()
    //WS2812 spi初始化
     SPI_Init(&hspi6, NULL);
 
+   //CAN初始化
+    CAN_Init(&hfdcan1, CAN1_Callback);
+    CAN_Init(&hfdcan2, NULL);
+    CAN_Init(&hfdcan3, NULL);
+
    //定时器中断初始化
     HAL_TIM_Base_Start_IT(&htim5);
     HAL_TIM_Base_Start_IT(&htim7);
@@ -133,8 +149,19 @@ void Task_Init()
    //蜂鸣器初始化
     Buzzer_Init(4000,0.0f);
 
+   //5V,24V电源输出初始化
+    BSP_Power_Init(false, false,true);
+
    //初始化WS2812灯珠
     WS2812_Init(0, 0, 0);
+
+   //DM电机PID初始化
+    Motor_DM_InitPID();
+
+   //初始化全部电机
+    Motor_DM_Init_All();
+
+   //
 
    //标记初始化完成 
     init_finished = true;  

@@ -23,16 +23,16 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-Struct_UART_Manage_Object UART1_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART2_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART3_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART4_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART5_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART6_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART7_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART8_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART9_Manage_Object = {NULL};
-Struct_UART_Manage_Object UART10_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART1_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART2_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART3_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART4_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART5_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART6_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART7_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART8_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART9_Manage_Object = {NULL};
+__attribute__((section(".ram_d2"), aligned(32))) Struct_UART_Manage_Object UART10_Manage_Object = {NULL};
 
 /* Private function declarations ---------------------------------------------*/
 

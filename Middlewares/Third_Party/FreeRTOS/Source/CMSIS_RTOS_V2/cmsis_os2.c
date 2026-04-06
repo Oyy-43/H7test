@@ -2919,6 +2919,10 @@ __WEAK void vApplicationDaemonTaskStartupHook (void){}
 __WEAK void vApplicationStackOverflowHook (TaskHandle_t xTask, char *pcTaskName) {
   (void)xTask;
   (void)pcTaskName;
+while (1)
+{
+  /* code */
+}
 
   /* Assert when stack overflow is enabled but no application defined function exists */
   configASSERT(0);

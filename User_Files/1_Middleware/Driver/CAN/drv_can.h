@@ -42,6 +42,30 @@ extern struct Struct_CAN_Manage_Object CAN1_Manage_Object;
 extern struct Struct_CAN_Manage_Object CAN2_Manage_Object;
 extern struct Struct_CAN_Manage_Object CAN3_Manage_Object;
 
+extern uint8_t CAN1_0x1fe_Tx_Data[];
+extern uint8_t CAN1_0x1ff_Tx_Data[];
+extern uint8_t CAN1_0x200_Tx_Data[];
+extern uint8_t CAN1_0x2fe_Tx_Data[];
+extern uint8_t CAN1_0x2ff_Tx_Data[];
+extern uint8_t CAN1_0x3fe_Tx_Data[];
+extern uint8_t CAN1_0x4fe_Tx_Data[];
+
+extern uint8_t CAN2_0x1fe_Tx_Data[];
+extern uint8_t CAN2_0x1ff_Tx_Data[];
+extern uint8_t CAN2_0x200_Tx_Data[];
+extern uint8_t CAN2_0x2fe_Tx_Data[];
+extern uint8_t CAN2_0x2ff_Tx_Data[];
+extern uint8_t CAN2_0x3fe_Tx_Data[];
+extern uint8_t CAN2_0x4fe_Tx_Data[];
+
+extern uint8_t CAN3_0x1fe_Tx_Data[];
+extern uint8_t CAN3_0x1ff_Tx_Data[];
+extern uint8_t CAN3_0x200_Tx_Data[];
+extern uint8_t CAN3_0x2fe_Tx_Data[];
+extern uint8_t CAN3_0x2ff_Tx_Data[];
+extern uint8_t CAN3_0x3fe_Tx_Data[];
+extern uint8_t CAN3_0x4fe_Tx_Data[];
+
 /* Exported function declarations --------------------------------------------*/
 void CAN_Init(FDCAN_HandleTypeDef *hfdcan, CAN_Callback Callback_Function);
 

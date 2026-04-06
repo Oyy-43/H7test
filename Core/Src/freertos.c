@@ -69,6 +69,20 @@ const osThreadAttr_t Music_Task_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for DMControlTask */
+osThreadId_t DMControlTaskHandle;
+const osThreadAttr_t DMControlTask_attributes = {
+  .name = "DMControlTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Remote_Task */
+osThreadId_t Remote_TaskHandle;
+const osThreadAttr_t Remote_Task_attributes = {
+  .name = "Remote_Task",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -78,6 +92,8 @@ const osThreadAttr_t Music_Task_attributes = {
 void StartDefaultTask(void *argument);
 void Timestamp_fuc(void *argument);
 void MusicTask_func(void *argument);
+void DMsetOutput(void *argument);
+void tele_task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -116,6 +132,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Music_Task */
   Music_TaskHandle = osThreadNew(MusicTask_func, NULL, &Music_Task_attributes);
+
+  /* creation of DMControlTask */
+  DMControlTaskHandle = osThreadNew(DMsetOutput, NULL, &DMControlTask_attributes);
+
+  /* creation of Remote_Task */
+  Remote_TaskHandle = osThreadNew(tele_task, NULL, &Remote_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -179,6 +201,42 @@ __weak void MusicTask_func(void *argument)
     osDelay(1);
   }
   /* USER CODE END MusicTask_func */
+}
+
+/* USER CODE BEGIN Header_DMsetOutput */
+/**
+* @brief Function implementing the DMControlTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_DMsetOutput */
+__weak void DMsetOutput(void *argument)
+{
+  /* USER CODE BEGIN DMsetOutput */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END DMsetOutput */
+}
+
+/* USER CODE BEGIN Header_tele_task */
+/**
+* @brief Function implementing the Remote_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_tele_task */
+__weak void tele_task(void *argument)
+{
+  /* USER CODE BEGIN tele_task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END tele_task */
 }
 
 /* Private application code --------------------------------------------------*/
