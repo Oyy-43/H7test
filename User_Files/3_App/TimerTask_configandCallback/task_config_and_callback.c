@@ -11,6 +11,7 @@
 #include "drv_motor_dm.h"
 #include "ctrl_motor_dm.h"
 #include "bsp_power.h"
+#include "drv_usb.h"
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -30,9 +31,18 @@ bool blue_minus_flag = true;
 
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-    Motor_DM_CAN_RxCpltCallback(Header, Buffer);
+    Motor_DM_CAN1_RxCpltCallback(Header, Buffer);
 }
 
+void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+{
+    Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
+}
+
+void serial_Callback(uint8_t *Buffer, uint16_t Length)
+{
+   return;
+}
 
 
 /**
@@ -139,7 +149,7 @@ void Task_Init()
 
    //CAN初始化
     CAN_Init(&hfdcan1, CAN1_Callback);
-    CAN_Init(&hfdcan2, NULL);
+    CAN_Init(&hfdcan2, CAN2_Callback);
     CAN_Init(&hfdcan3, NULL);
 
    //电源ADC的初始化
@@ -174,9 +184,9 @@ void Timestamp_fuc(void *argument)
 {
     for(;;)
     {
-       us_time = Timestamp_Get_Now_Microsecond();
-       ms_time = Timestamp_Get_Now_Millisecond();
-       s_time = Timestamp_Get_Now_Second();
+    //    us_time = Timestamp_Get_Now_Microsecond();
+    //    ms_time = Timestamp_Get_Now_Millisecond();
+    //    s_time = Timestamp_Get_Now_Second();
        osDelay(1);
     }
 }

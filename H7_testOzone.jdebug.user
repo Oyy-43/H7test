@@ -1,47 +1,41 @@
 
 
-GraphedExpression="speed_ref", Color=#e56a6f
-GraphedExpression="((DM_Motor_1to4_Instances[0]).Rx_Data).Now_Omega", Color=#35792b
-OpenDocument="crsf_utils.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/CRSF/crsf_utils.h", Line=128
-OpenDocument="cmsis_os2.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c", Line=2909
-OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=74
-OpenDocument="tele_task.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Tele_task/tele_task.c", Line=36
-OpenDocument="startup_stm32h723xx.s", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/startup_stm32h723xx.s", Line=55
-OpenDocument="cmsis_gcc.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/CMSIS/Include/cmsis_gcc.h", Line=248
-OpenDocument="cachel1_armv7.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/CMSIS/Include/cachel1_armv7.h", Line=54
-OpenDocument="buzzer_music.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Buzzer_Music/buzzer_music.c", Line=3
-OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=152
-OpenDocument="sys_timestamp.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/System/Timestamp/sys_timestamp.c", Line=34
-OpenDocument="crsf.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/CRSF/crsf.c", Line=9
-OpenDocument="ctrl_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/ctrl_motor_dm.c", Line=113
-OpenDocument="stm32h7xx_it.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/stm32h7xx_it.c", Line=99
-OpenDocument="drv_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/drv_motor_dm.c", Line=207
-OpenDocument="bsp_key.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/BSP/Key/bsp_key.h", Line=1
-OpenDocument="drv_can.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/CAN/drv_can.c", Line=100
-OpenDocument="drv_spi.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/SPI/drv_spi.c", Line=59
-OpenDocument="tasks.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3538
-OpenDocument="bsp_key.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/BSP/Key/bsp_key.c", Line=12
+GraphedExpression="speed_ref", Color=#e56a6f, Show=0
+GraphedExpression="((DM_Motor_1to4_Instances[0]).Rx_Data).Now_Omega", Color=#35792b, Show=0
+GraphedExpression="(Motor_DM_1_To_4_PID[0]).Fout", Color=#769dda, Show=0
+GraphedExpression="((DM_Motor_1to4_Instances[1]).Rx_Data).Now_Omega", Color=#b14f0d, Show=0
+GraphedExpression="((DM_Motor_1to4_Instances[2]).Rx_Data).Now_Omega", Color=#b3c38e, Show=0
+GraphedExpression="((DM_Motor_1to4_Instances[3]).Rx_Data).Now_Omega", Color=#ab7b05, Show=0
+GraphedExpression="((DM_Motor_1to4_Instances[4]).Rx_Data).Now_Omega", Color=#7fd3b7
+GraphedExpression="((DM_Motor_1to4_Instances[5]).Rx_Data).Now_Omega", Color=#50328f, Show=0
+GraphedExpression="(DM_Motor_1to4_Instances[4]).Target_Omega", Color=#c587a5
+OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=75
+OpenDocument="chassis.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Chassis/chassis.c", Line=44
+OpenDocument="startup_stm32h723xx.s", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/startup_stm32h723xx.s", Line=56
+OpenDocument="usart.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Inc/usart.h", Line=34
+OpenDocument="drv_uart.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/UART/drv_uart.c", Line=460
+OpenDocument="tasks.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=5180
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=512, h=112, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=512, h=139, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Source Files", DockArea=BOTTOM, x=2, y=0, w=328, h=567, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=2, w=512, h=144, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=662, h=703, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=583, h=567, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=1647, h=567, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="100 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="1085;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1414;-77", CodeGraphLegendShown=0, CodeGraphLegendPosition="1444;0"
-OpenWindow="Find Results", DockArea=RIGHT, x=0, y=3, w=512, h=137, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=0, w=512, h=167, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=578, h=109, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=578, h=120, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Source Files", DockArea=BOTTOM, x=1, y=0, w=527, h=567, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=2, w=578, h=109, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=772, h=596, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=1605, h=567, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
+OpenWindow="Timeline", DockArea=FLOATING, x=600, y=162, w=1267, h=990, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="100 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="704;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1644;-77", CodeGraphLegendShown=0, CodeGraphLegendPosition="1674;0"
+OpenWindow="Find Results", DockArea=RIGHT, x=0, y=3, w=578, h=94, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=0, w=578, h=160, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
+TableHeader="Task List", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Name";"Run Count";"Priority";"Status";"Timeout";"Stack Info";"ID";"Mutex Count";"Notified Value";"Notify State"], ColWidths=[110;110;110;110;110;110;110;110;110;110]
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[317;190;261;100;121;101]
 TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[223;100;100;100;1040]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" speed_ref";" ((DM_Motor_1to4_Instances[0]).Rx_Data).Now_Omega"], ColWidths=[100;100;100;283]
-TableHeader="Data Sampling Setup", SortCol="Average", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes"], ColWidths=[295;100;100;154;164;100;113]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" speed_ref";" ((DM_Motor_1to4_Instances[0]).Rx_Data).Now_Omega";" (Motor_DM_1_To_4_PID[0]).Fout";" ((DM_Motor_1to4_Instances[1]).Rx_Data).Now_Omega";" ((DM_Motor_1to4_Instances[2]).Rx_Data).Now_Omega";" ((DM_Motor_1to4_Instances[3]).Rx_Data).Now_Omega";" ((DM_Motor_1to4_Instances[4]).Rx_Data).Now_Omega";" ((DM_Motor_1to4_Instances[5]).Rx_Data).Now_Omega";" (DM_Motor_1to4_Instances[4]).Target_Omega"], ColWidths=[100;100;100;100;100;100;100;100;100;100;100]
+TableHeader="Data Sampling Setup", SortCol="Average", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes"], ColWidths=[295;100;154;124;114;144;674]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Task List", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Name";"Run Count";"Priority";"Status";"Timeout";"Stack Info";"ID";"Mutex Count";"Notified Value";"Notify State"], ColWidths=[110;110;110;110;110;110;110;110;110;110]
 TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[207;144;329]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[245;306;111;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;372]
-TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[245;205;111;101]
 WatchedExpression="SYS_Timestamp", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="us_time", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="ms_time", RefreshRate=5, Window=Watched Data 1
@@ -54,3 +48,7 @@ WatchedExpression="BoardStatus", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="init_finished", RefreshRate=1, Window=Watched Data 1
 WatchedExpression="rc_channels", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="uart1_tx_buf", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="hdma_uart7_tx", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="huart7", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="UART7_Manage_Object", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="g_uart7_last_error_code", RefreshRate=5, Window=Watched Data 1

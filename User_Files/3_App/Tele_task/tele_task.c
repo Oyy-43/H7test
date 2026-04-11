@@ -30,11 +30,21 @@ float get_vbat_voltage(void)
     const float multiplier = ((3.3f/65535) * 11.0f);
     float voltage;
 
+    if (HAL_ADC_Start(&hadc1) != HAL_OK)
+    {
+        return 0.0f;
+    }
+
+    if (HAL_ADC_PollForConversion(&hadc1, 5) != HAL_OK)
+    {
+        HAL_ADC_Stop(&hadc1);
+        return 0.0f;
+    }
+
     adcx = (uint16_t)HAL_ADC_GetValue(&hadc1);
+    HAL_ADC_Stop(&hadc1);
     
     voltage =  (float)adcx * multiplier;
-
-    HAL_ADC_Start(&hadc1);
 
     return voltage;
 }

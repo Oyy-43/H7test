@@ -20,6 +20,16 @@
  /* Private variables ---------------------------------------------------------*/
  
  /* Private function declarations ---------------------------------------------*/
+static void f_Trapezoid_Intergral(PID_TypeDef *pid);
+static void f_Integral_Limit(PID_TypeDef *pid);
+static void f_Derivative_On_Measurement(PID_TypeDef *pid);
+static void f_Changing_Integral_Rate(PID_TypeDef *pid);
+static void f_Output_Filter(PID_TypeDef *pid);
+static void f_Derivative_Filter(PID_TypeDef *pid);
+static void f_Output_Limit(PID_TypeDef *pid);
+static void f_Proportion_Limit(PID_TypeDef *pid);
+static void f_PID_ErrorHandle(PID_TypeDef *pid);
+
  /***************************PID param initialize******************************/
 static void f_PID_param_init(
     PID_TypeDef *pid,
@@ -82,7 +92,7 @@ static void f_PID_reset(PID_TypeDef *pid, float Kp, float Ki, float Kd,float Kf)
 }
 
 /***************************PID calculate**********************************/
-float PID_Calculate(PID_TypeDef *pid, float measure, float target)
+float PID_Calculate(PID_TypeDef *pid, float measure, float target, float Delta_T)
 {
     if (pid->Improve & ErrorHandle) 
     {
@@ -121,7 +131,7 @@ float PID_Calculate(PID_TypeDef *pid, float measure, float target)
             f_Derivative_Filter(pid);
 
         pid->Iout += pid->ITerm;
-        pid->Fout = pid->Kf * (pid->Target - pid->LastNoneZeroTarget);
+        pid->Fout = (Delta_T > 0.0f) ? (pid->Kf * ((pid->Target - pid->LastNoneZeroTarget) / Delta_T)) : 0.0f;
 
         pid->Output = pid->Pout + pid->Iout + pid->Dout + pid->Fout;
 

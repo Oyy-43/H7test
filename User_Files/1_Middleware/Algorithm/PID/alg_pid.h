@@ -114,15 +114,6 @@ typedef struct _PID_TypeDef
 /* Exported variables --------------------------------------------------------*/
 
 /* Exported function declarations --------------------------------------------*/
-static void f_Trapezoid_Intergral(PID_TypeDef *pid);
-static void f_Integral_Limit(PID_TypeDef *pid);
-static void f_Derivative_On_Measurement(PID_TypeDef *pid);
-static void f_Changing_Integral_Rate(PID_TypeDef *pid);
-static void f_Output_Filter(PID_TypeDef *pid);
-static void f_Derivative_Filter(PID_TypeDef *pid);
-static void f_Output_Limit(PID_TypeDef *pid);
-static void f_Proportion_Limit(PID_TypeDef *pid);
-static void f_PID_ErrorHandle(PID_TypeDef *pid);
 
 void PID_Init(
     PID_TypeDef *pid,
@@ -142,7 +133,7 @@ void PID_Init(
     float derivative_filtering_coefficient,
 
     uint8_t improve);
-float PID_Calculate(PID_TypeDef *pid, float measure, float target);
+float PID_Calculate(PID_TypeDef *pid, float measure, float target, float Delta_T);
 		
 
 

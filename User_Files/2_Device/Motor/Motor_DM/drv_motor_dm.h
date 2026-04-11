@@ -14,9 +14,9 @@
     #define DM_3519_VMAX 0.0f
     #define DM_3519_TMAX 0.0f
     #define DM_3519_Current_MAX 0.0f
-    #define DM_8009P_PMAX 0.0f
-    #define DM_8009P_VMAX 0.0f
-    #define DM_8009P_TMAX 0.0f
+    #define DM_8009P_PMAX 6.28f
+    #define DM_8009P_VMAX 10.0f
+    #define DM_8009P_TMAX 40.0f
     #define DM_8009P_Current_MAX 0.0f
 
     //一些一拖四模式的常数定义
@@ -133,7 +133,7 @@ typedef struct __attribute__((packed)) Struct_Motor_DM_CAN_Rx_Data_1_To_4
     // 电流值, mA
     int16_t Current_Reverse;
     uint8_t Rotor_Temperature;
-    uint8_t MOS_Temperature;
+    uint8_t Error_code;
 } Struct_Motor_DM_CAN_Rx_Data_1_To_4;
 
 
@@ -146,7 +146,7 @@ typedef struct Struct_Motor_DM_Rx_Data_1_To_4
     float Now_Angle;
     float Now_Omega;
     float Now_Torque;
-    float Now_MOS_Temperature;
+    uint8_t Error_code;
     float Now_Rotor_Temperature;
     uint32_t Pre_Encoder;
     int32_t Total_Encoder;
@@ -314,6 +314,7 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance);
 
 void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance);
 
-void Motor_DM_CAN_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
+void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
+void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 
 #endif /* __DRV_MOTOR_DM_H */

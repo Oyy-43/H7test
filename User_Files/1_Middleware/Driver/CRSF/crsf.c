@@ -16,7 +16,7 @@
  /* Private macros ------------------------------------------------------------*/
  
  /* Private types -------------------------------------------------------------*/
-__attribute__((section(".ram_d2"), aligned(32))) uint8_t crsf_send_buffer[64] = {CRSF_ADDRESS_FLIGHT_CONTROLLER};
+RAM_D2_BUFFER uint8_t crsf_send_buffer[64] = {};
 
 crsf_boardcast_frame_t crsf_frame = {0};
 
@@ -79,6 +79,8 @@ void crsf_rx_idle_callback(uint8_t *buf, uint16_t length)
 
 void __send_crsf_packet(const CRSF_FRAMETYPE_t frame_type, const uint8_t * payload, const uint8_t size_of_payload)
 {
+    // CRSF帧首字节是目的地址，遥测数据发给接收机由其转发到遥控器
+    crsf_send_buffer[0] = CRSF_ADDRESS_CRSF_RECEIVER;
     crsf_send_buffer[1] = size_of_payload + 2;
     crsf_send_buffer[2] = frame_type;
     memcpy(&crsf_send_buffer[3], payload, size_of_payload);

@@ -73,14 +73,21 @@ const osThreadAttr_t Music_Task_attributes = {
 osThreadId_t DMControlTaskHandle;
 const osThreadAttr_t DMControlTask_attributes = {
   .name = "DMControlTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 1024 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for Remote_Task */
 osThreadId_t Remote_TaskHandle;
 const osThreadAttr_t Remote_Task_attributes = {
   .name = "Remote_Task",
   .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Chassis_Control */
+osThreadId_t Chassis_ControlHandle;
+const osThreadAttr_t Chassis_Control_attributes = {
+  .name = "Chassis_Control",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
@@ -94,7 +101,9 @@ void Timestamp_fuc(void *argument);
 void MusicTask_func(void *argument);
 void DMsetOutput(void *argument);
 void tele_task(void *argument);
+void Chassis_Task(void *argument);
 
+extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
@@ -139,6 +148,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of Remote_Task */
   Remote_TaskHandle = osThreadNew(tele_task, NULL, &Remote_Task_attributes);
 
+  /* creation of Chassis_Control */
+  Chassis_ControlHandle = osThreadNew(Chassis_Task, NULL, &Chassis_Control_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -158,6 +170,8 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
+  /* init code for USB_DEVICE */
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   for(;;)
@@ -237,6 +251,24 @@ __weak void tele_task(void *argument)
     osDelay(1);
   }
   /* USER CODE END tele_task */
+}
+
+/* USER CODE BEGIN Header_Chassis_Task */
+/**
+* @brief Function implementing the Chassis_Control thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Chassis_Task */
+__weak void Chassis_Task(void *argument)
+{
+  /* USER CODE BEGIN Chassis_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Chassis_Task */
 }
 
 /* Private application code --------------------------------------------------*/

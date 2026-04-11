@@ -46,7 +46,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define DMA_RAM_SECTION ".RAM_D2_Section"
+#define DMA_RAM_SECTION ".ram_d2"
 #if defined(DMA_RAM_SECTION)
 #define RAM_D2_BUFFER __attribute__((section(DMA_RAM_SECTION), aligned(32)))
 #else

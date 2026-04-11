@@ -112,49 +112,49 @@ uint8_t *allocate_tx_data(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_I
         {
         case (Motor_DM_ID_0x201):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[0]);
+            tmp_tx_data_ptr = &(CAN2_0x200_Tx_Data[0]);
 
             break;
         }
         case (Motor_DM_ID_0x202):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[2]);
+            tmp_tx_data_ptr = &(CAN2_0x200_Tx_Data[2]);
 
             break;
         }
         case (Motor_DM_ID_0x203):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[4]);
+            tmp_tx_data_ptr = &(CAN2_0x200_Tx_Data[4]);
 
             break;
         }
         case (Motor_DM_ID_0x204):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[6]);
+            tmp_tx_data_ptr = &(CAN2_0x200_Tx_Data[6]);
 
             break;
         }
         case (Motor_DM_ID_0x205):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[0]);
+            tmp_tx_data_ptr = &(CAN2_0x1ff_Tx_Data[0]);
 
             break;
         }
         case (Motor_DM_ID_0x206):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[2]);
+            tmp_tx_data_ptr = &(CAN2_0x1ff_Tx_Data[2]);
 
             break;
         }
         case (Motor_DM_ID_0x207):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[4]);
+            tmp_tx_data_ptr = &(CAN2_0x1ff_Tx_Data[4]);
 
             break;
         }
         case (Motor_DM_ID_0x208):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[6]);
+            tmp_tx_data_ptr = &(CAN2_0x1ff_Tx_Data[6]);
 
             break;
         }
@@ -166,49 +166,49 @@ uint8_t *allocate_tx_data(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_I
         {
         case (Motor_DM_ID_0x201):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[0]);
+            tmp_tx_data_ptr = &(CAN3_0x200_Tx_Data[0]);
 
             break;
         }
         case (Motor_DM_ID_0x202):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[2]);
+            tmp_tx_data_ptr = &(CAN3_0x200_Tx_Data[2]);
 
             break;
         }
         case (Motor_DM_ID_0x203):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[4]);
+            tmp_tx_data_ptr = &(CAN3_0x200_Tx_Data[4]);
 
             break;
         }
         case (Motor_DM_ID_0x204):
         {
-            tmp_tx_data_ptr = &(CAN1_0x200_Tx_Data[6]);
+            tmp_tx_data_ptr = &(CAN3_0x200_Tx_Data[6]);
 
             break;
         }
         case (Motor_DM_ID_0x205):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[0]);
+            tmp_tx_data_ptr = &(CAN3_0x1ff_Tx_Data[0]);
 
             break;
         }
         case (Motor_DM_ID_0x206):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[2]);
+            tmp_tx_data_ptr = &(CAN3_0x1ff_Tx_Data[2]);
 
             break;
         }
         case (Motor_DM_ID_0x207):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[4]);
+            tmp_tx_data_ptr = &(CAN3_0x1ff_Tx_Data[4]);
 
             break;
         }
         case (Motor_DM_ID_0x208):
         {
-            tmp_tx_data_ptr = &(CAN1_0x1ff_Tx_Data[6]);
+            tmp_tx_data_ptr = &(CAN3_0x1ff_Tx_Data[6]);
 
             break;
         }
@@ -301,8 +301,8 @@ void Motor_DM_Init_All(void)
     Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan1, 0, Motor_DM_ID_0x202, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
     Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[2], &hfdcan1, 0, Motor_DM_ID_0x203, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
     Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[3], &hfdcan1, 0, Motor_DM_ID_0x204, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[4], &hfdcan1, 0, Motor_DM_ID_0x205, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[5], &hfdcan1, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[4], &hfdcan2, 0, Motor_DM_ID_0x205, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[5], &hfdcan2, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
 }
 
 /**
@@ -405,7 +405,7 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
     motor_instance->Rx_Data.Now_Angle = (float) motor_instance->Rx_Data.Total_Encoder / (float) ENCODER_NUM_PER_ROUND * 2.0f * PI;
     motor_instance->Rx_Data.Now_Omega = tmp_omega / 100.0f * BASIC_MATH_RPM_TO_RADPS;
     motor_instance->Rx_Data.Now_Torque = tmp_current / 1000.0f * CURRENT_TO_TORQUE * motor_instance->Gearbox_Rate;
-    motor_instance->Rx_Data.Now_MOS_Temperature = tmp_buffer->MOS_Temperature ;
+    motor_instance->Rx_Data.Error_code = tmp_buffer->Error_code;
     motor_instance->Rx_Data.Now_Rotor_Temperature = tmp_buffer->Rotor_Temperature ;
 
     // 存储预备信息0
@@ -494,7 +494,7 @@ void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance)
  * @brief CAN通信接收回调函数
  *
  */
-void Motor_DM_CAN_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
 
     if ((Header == NULL) || (Buffer == NULL))
@@ -544,13 +544,31 @@ void Motor_DM_CAN_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
             DM_Motor_1to4_Instances[3].Flag +=1;
             Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[3]);
         }
+        break;       
+        default:
         break;
+    }
+}
+
+/**
+ * @brief DMcan2回调函数编写
+ * 
+ */
+void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+{
+    if ((Header == NULL) || (Buffer == NULL))
+    {
+        return;
+    }
+    switch (Header->Identifier)
+    {
         case (0x205):
         if(DM_Motor_1to4_Instances[4].CAN_Manage_Object != NULL)
         {
             DM_Motor_1to4_Instances[4].Flag +=1;
             Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[4]);
         }
+        break;
         case (0x206):
         if(DM_Motor_1to4_Instances[5].CAN_Manage_Object != NULL)
         {
