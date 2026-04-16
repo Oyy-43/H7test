@@ -12,6 +12,8 @@
 #include "ctrl_motor_dm.h"
 #include "bsp_power.h"
 #include "drv_usb.h"
+#include "drv_motor_lk.h"
+#include "ctrl_motor_lk.h"
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -39,9 +41,14 @@ void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
     Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
 }
 
+void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+{
+    Motor_LK_CAN3_RxCpltCallback(Header, Buffer);
+}
+
 void serial_Callback(uint8_t *Buffer, uint16_t Length)
 {
-   return;
+   USB_Transmit_Data(Buffer, Length);
 }
 
 
@@ -144,13 +151,16 @@ void Task_Init()
    //定时器时间戳初始化
     Timestamp_Init(&htim5);
 
+   //USB通讯初始化
+    USB_Init(serial_Callback);
+
    //WS2812 spi初始化
     SPI_Init(&hspi6, NULL);
 
    //CAN初始化
     CAN_Init(&hfdcan1, CAN1_Callback);
     CAN_Init(&hfdcan2, CAN2_Callback);
-    CAN_Init(&hfdcan3, NULL);
+    CAN_Init(&hfdcan3, CAN3_Callback);
 
    //电源ADC的初始化
     HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
@@ -170,10 +180,11 @@ void Task_Init()
 
    //DM电机PID初始化
     Motor_DM_InitPID();
+    Motor_LK_InitPID();
 
    //初始化全部电机
     Motor_DM_Init_All();
-
+    Motor_LK_Init_All();
    //
 
    //标记初始化完成 

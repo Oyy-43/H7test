@@ -1,8 +1,11 @@
-#ifndef __CTRL_MOTOR_DM_H
-#define __CTRL_MOTOR_DM_H
+#ifndef __ARM_H
+#define __ARM_H
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "crsf.h"
+#include "drv_motor_dm.h"
+#include "drv_motor_lk.h"
+#include "bsp_power.h"
 
 
 /* Exported macros -----------------------------------------------------------*/
@@ -14,8 +17,6 @@
 /* Exported variables --------------------------------------------------------*/
 
 /* Exported function declarations --------------------------------------------*/
+void Power_Set(void);
 
-void Motor_DM_Normal_Output();
-void Motor_DM_InitPID();
-
-#endif /* __CTRL_MOTOR_DM_H */
+#endif /* __ARM_H */

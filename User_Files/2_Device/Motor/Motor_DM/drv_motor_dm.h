@@ -245,7 +245,11 @@ typedef struct DM_Motor_Instance
     float K_P;
     // K_D, 0~5, MIT模式有效
     float K_D;
-}DM_Motor_Instance;
+    // MITPID模式下的目标速度
+    float Target_Omega;
+    // MITPID模式下的目标位置
+    float Target_Angle;
+} DM_Motor_Instance;
 
 /**
  * @brief 达妙电机一拖四模式下的电机实例结构体
@@ -316,5 +320,9 @@ void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance);
 
 void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
+void Motor_DM_Normal_Send_Enter(DM_Motor_Instance *motor_instance);
+void Motor_DM_Normal_Send_Exit(DM_Motor_Instance *motor_instance);
+void Motor_DM_Normal_Send_Clear_Error(DM_Motor_Instance *motor_instance);
+void Motor_DM_Normal_Send_Save_Zero(DM_Motor_Instance *motor_instance);
 
 #endif /* __DRV_MOTOR_DM_H */

@@ -52,6 +52,8 @@ typedef struct _PID_TypeDef
     float Ki;
     float Kd;
     float Kf;
+    float KffStaticPos;
+    float KffStaticNeg;
 
     float Measure;
     float Last_Measure;
@@ -95,6 +97,8 @@ typedef struct _PID_TypeDef
         float ki,
         float kd,
         float kf,
+        float kff_static_pos,
+        float kff_static_neg,
         float A,
         float B,
         float output_filtering_coefficient,
@@ -125,6 +129,8 @@ void PID_Init(
     float ki,
     float kd,
     float kf,
+    float kff_static_pos,
+    float kff_static_neg,
 
     float A,
     float B,

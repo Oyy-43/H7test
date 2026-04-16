@@ -1,9 +1,9 @@
-#ifndef __CTRL_MOTOR_DM_H
-#define __CTRL_MOTOR_DM_H
+#ifndef __CTRL_MOTOR_LK_H
+#define __CTRL_MOTOR_LK_H
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-#include "crsf.h"
-
+#include "drv_motor_lk.h"
+#include "alg_pid.h"
+#include "alg_basic.h"
 
 /* Exported macros -----------------------------------------------------------*/
 
@@ -14,8 +14,6 @@
 /* Exported variables --------------------------------------------------------*/
 
 /* Exported function declarations --------------------------------------------*/
+void Motor_LK_InitPID();
 
-void Motor_DM_Normal_Output();
-void Motor_DM_InitPID();
-
-#endif /* __CTRL_MOTOR_DM_H */
+#endif /* __CTRL_MOTOR_LK_H */

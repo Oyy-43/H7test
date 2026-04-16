@@ -41,6 +41,8 @@ static void f_PID_param_init(
     float Ki,
     float Kd,
     float kf,
+    float kff_static_pos,
+    float kff_static_neg,
 
     float Changing_Integral_A,
     float Changing_Integral_B,
@@ -61,6 +63,8 @@ static void f_PID_param_init(
     pid->Ki = Ki;
     pid->Kd = Kd;
     pid->Kf = kf;
+    pid->KffStaticPos = kff_static_pos;
+    pid->KffStaticNeg = kff_static_neg;
     pid->ITerm = 0;
 
     pid->ScalarA = Changing_Integral_A;
@@ -134,6 +138,21 @@ float PID_Calculate(PID_TypeDef *pid, float measure, float target, float Delta_T
         pid->Fout = (Delta_T > 0.0f) ? (pid->Kf * ((pid->Target - pid->LastNoneZeroTarget) / Delta_T)) : 0.0f;
 
         pid->Output = pid->Pout + pid->Iout + pid->Dout + pid->Fout;
+
+        if (pid->Err > pid->DeadBand)
+        {
+            if (pid->KffStaticPos > 0.0f)
+            {
+                pid->Output += pid->KffStaticPos;
+            }
+        }
+        else if (pid->Err < -pid->DeadBand)
+        {
+            if (pid->KffStaticNeg > 0.0f)
+            {
+                pid->Output -= pid->KffStaticNeg;
+            }
+        }
 
         //输出滤波使能判断
         if (pid->Improve & OutputFilter)
@@ -283,6 +302,8 @@ void PID_Init(
     float Ki,
     float Kd,
     float Kf,
+    float kff_static_pos,
+    float kff_static_neg,
 
     float A,
     float B,
@@ -294,7 +315,7 @@ void PID_Init(
     pid->PID_param_init = f_PID_param_init;
     pid->PID_reset = f_PID_reset;//连接kp，ki，kd参数重设函数
     pid->PID_param_init(pid, max_out, intergral_limit, deadband,
-                        kp, Ki, Kd,Kf,A, B, output_filtering_coefficient, derivative_filtering_coefficient, improve);//连接并调用参数初始化函数
+                        kp, Ki, Kd, Kf, kff_static_pos, kff_static_neg, A, B, output_filtering_coefficient, derivative_filtering_coefficient, improve);//连接并调用参数初始化函数
 }
  
  /* Function prototypes -------------------------------------------------------*/

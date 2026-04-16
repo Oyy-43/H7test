@@ -44,7 +44,7 @@ static inline float BSP_Power_Get_Power_Voltage()
 }
 
 /**
- * @brief 设置DC24V_0输出(PC13)
+ * @brief 设置DC24V_0输出(PC13)can2那边的
  *
  * @param __DC24_0 true: 输出, false: 不输出
  */
@@ -54,7 +54,7 @@ static inline void BSP_Power_Set_DC24_0(bool __Status_PC13)
 }
 
 /**
- * @brief 设置DC24V_1输出(PC14)
+ * @brief 设置DC24V_1输出(PC14)can1那边的
  *
  * @param __DC24_1 true: 输出, false: 不输出
  */

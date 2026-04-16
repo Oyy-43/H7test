@@ -23,16 +23,28 @@
 
  /* Private types -------------------------------------------------------------*/
  PID_TypeDef Motor_DM_1_To_4_PID[DM_Motor_1_To_4_Num];
+ PID_TypeDef Motor_DM_SPEED_PID[DM_Motor_Normal_Num];
+ PID_TypeDef Motor_DM_POSITION_PID[DM_Motor_Normal_Num];
 
  /* Private variables ---------------------------------------------------------*/
  float DM_PIDKP[DM_Motor_1_To_4_Num] = {10.68f, 13.35f, 13.35f, 10.68f, 10.68f, 10.68f};  //7.121
  float DM_PIDKI[DM_Motor_1_To_4_Num] = {0.01586f, 0.02000f, 0.02000f, 0.01586f, 0.01586f, 0.01586f}; //0.01186
  float DM_PIDKD[DM_Motor_1_To_4_Num] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};  //0.0
  float DM_PIDKf[DM_Motor_1_To_4_Num] = {0.46875f, 0.46875f, 0.46875f, 0.46875f, 0.46875f, 0.46875f}; //0.3125
+ float DM_SPEEDPIDKP[DM_Motor_Normal_Num] = {0.6f, 0.0f};
+ float DM_SPEEDPIDKI[DM_Motor_Normal_Num] = {0.001f, 0.0f};
+ float DM_SPEEDPIDKD[DM_Motor_Normal_Num] = {0.0f, 0.0f};
+ float DM_SPEEDPIDKf[DM_Motor_Normal_Num] = {0.001f, 0.0f};
+float DM_SPEEDPIDKffStaticPos[DM_Motor_Normal_Num] = {0.50f, 0.0f};
+float DM_SPEEDPIDKffStaticNeg[DM_Motor_Normal_Num] = {0.42f, 0.0f};
+ float DM_POSITIONPIDKP[DM_Motor_Normal_Num] = {5.625f, 0.0f};
+ float DM_POSITIONPIDKI[DM_Motor_Normal_Num] = {0.0f, 0.0f};
+ float DM_POSITIONPIDKD[DM_Motor_Normal_Num] = {1.0f, 0.0f};
+ float DM_POSITIONPIDKf[DM_Motor_Normal_Num] = {0.0f, 0.0f};
  float Ts = 0.001f;
  float t = 0.0f;           // 时间累积变量
- float f = 1.0f;           // 当前频率（可随时间变化）
- float A = 6.204645f;      // 幅值，单位RPM或%额定速度  //2.068215f
+ float f = 0.5f;           // 当前频率（可随时间变化）
+ float A = 4.13643f;      // 幅值，单位RPM或%额定速度  //2.068215f
  float speed_ref = 0.0f;   // 目标速度
 
 /* DMA1不能访问DTCM，串口DMA发送缓冲放在RAM_D2并按Cache line对齐 */
@@ -168,12 +180,15 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
  */
 void Motor_DM_InitPID()
 {
-	PID_Init(&Motor_DM_1_To_4_PID[0],16384.0f,1000.0f,0.0f,DM_PIDKP[0],DM_PIDKI[0],DM_PIDKD[0],DM_PIDKf[0],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
-	PID_Init(&Motor_DM_1_To_4_PID[1],16384.0f,1000.0f,0.0f,DM_PIDKP[1],DM_PIDKI[1],DM_PIDKD[1],DM_PIDKf[1],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
-	PID_Init(&Motor_DM_1_To_4_PID[2],16384.0f,1000.0f,0.0f,DM_PIDKP[2],DM_PIDKI[2],DM_PIDKD[2],DM_PIDKf[2],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
-	PID_Init(&Motor_DM_1_To_4_PID[3],16384.0f,1000.0f,0.0f,DM_PIDKP[3],DM_PIDKI[3],DM_PIDKD[3],DM_PIDKf[3],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
-	PID_Init(&Motor_DM_1_To_4_PID[4],16384.0f,1000.0f,0.0f,DM_PIDKP[4],DM_PIDKI[4],DM_PIDKD[4],DM_PIDKf[4],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
-	PID_Init(&Motor_DM_1_To_4_PID[5],16384.0f,1000.0f,0.0f,DM_PIDKP[5],DM_PIDKI[5],DM_PIDKD[5],DM_PIDKf[5],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_1_To_4_PID[0],16384.0f,1000.0f,0.0f,DM_PIDKP[0],DM_PIDKI[0],DM_PIDKD[0],DM_PIDKf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_1_To_4_PID[1],16384.0f,1000.0f,0.0f,DM_PIDKP[1],DM_PIDKI[1],DM_PIDKD[1],DM_PIDKf[1],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_1_To_4_PID[2],16384.0f,1000.0f,0.0f,DM_PIDKP[2],DM_PIDKI[2],DM_PIDKD[2],DM_PIDKf[2],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_1_To_4_PID[3],16384.0f,1000.0f,0.0f,DM_PIDKP[3],DM_PIDKI[3],DM_PIDKD[3],DM_PIDKf[3],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_1_To_4_PID[4],16384.0f,1000.0f,0.0f,DM_PIDKP[4],DM_PIDKI[4],DM_PIDKD[4],DM_PIDKf[4],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_1_To_4_PID[5],16384.0f,1000.0f,0.0f,DM_PIDKP[5],DM_PIDKI[5],DM_PIDKD[5],DM_PIDKf[5],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_SPEED_PID[0],40.0f,2.0f,0.05f,DM_SPEEDPIDKP[0],DM_SPEEDPIDKI[0],DM_SPEEDPIDKD[0],DM_SPEEDPIDKf[0],DM_SPEEDPIDKffStaticPos[0],DM_SPEEDPIDKffStaticNeg[0],0.0f,0.0f,0.0f,0.0f,Integral_Limit);
+	// PID_Init(&Motor_DM_SPEED_PID[1],40.0f,1.0f,0.0f,DM_SPEEDPIDKP[1],DM_SPEEDPIDKI[1],DM_SPEEDPIDKD[1],DM_SPEEDPIDKf[1],DM_SPEEDPIDKffStaticPos[1],DM_SPEEDPIDKffStaticNeg[1],0.0f,0.0f,0.0f,0.0f,Integral_Limit|ErrorHandle);
+	PID_Init(&Motor_DM_POSITION_PID[0],10.0f,1.0f,0.01f,DM_POSITIONPIDKP[0],DM_POSITIONPIDKI[0],DM_POSITIONPIDKD[0],DM_POSITIONPIDKf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
 }
 /** 
  * @brief 计算PID控制器
@@ -188,6 +203,9 @@ void Motor_DM_CalPID()
 	DM_Motor_1to4_Instances[3].Out=PID_Calculate(&Motor_DM_1_To_4_PID[3], DM_Motor_1to4_Instances[3].Rx_Data.Now_Omega, DM_Motor_1to4_Instances[3].Target_Omega,0.001f);
 	DM_Motor_1to4_Instances[4].Out=PID_Calculate(&Motor_DM_1_To_4_PID[4], DM_Motor_1to4_Instances[4].Rx_Data.Now_Omega, DM_Motor_1to4_Instances[4].Target_Omega,0.001f);
 	DM_Motor_1to4_Instances[5].Out=PID_Calculate(&Motor_DM_1_To_4_PID[5], DM_Motor_1to4_Instances[5].Rx_Data.Now_Omega, DM_Motor_1to4_Instances[5].Target_Omega,0.001f);
+	DM_Motor_Instances[0].Control_Torque=PID_Calculate(&Motor_DM_SPEED_PID[0], DM_Motor_Instances[0].Rx_Data.Now_Omega, DM_Motor_Instances[0].Target_Omega,0.001f);
+	DM_Motor_Instances[0].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[0], DM_Motor_Instances[0].Rx_Data.Now_Angle, DM_Motor_Instances[0].Target_Angle,0.001f);
+	// DM_Motor_Instances[1].Control_Torque=PID_Calculate(&Motor_DM_SPEED_PID[1], DM_Motor_Instances[1].Rx_Data.Now_Omega, DM_Motor_Instances[1].Target_Omega,0.001f);
 }
 
 /**
@@ -207,6 +225,18 @@ void Motor_DM_1_To_4_Output()
 }
 
 /**
+ * @brief 将输出值填入发送缓存区，并发送
+ * 
+ */
+void Motor_DM_Output()
+{
+	DM_Motor_Instances[0].Control_Torque=Motor_DM_SPEED_PID[0].Output;
+	Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
+	// Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
+}
+
+
+/**
  * @brief 正弦信号填入
  * 
  */
@@ -215,8 +245,8 @@ void Motor_DM_1_To_4_SinOutput(DM_Motor_1to4_Instance *motor_instance)
 	float w = 2.0f * 3.1415926f * f;
     speed_ref = A * sin(w * t);
     // 3. 限幅保护（防止设定值超出安全范围）
-    if (speed_ref > 6.204645f) speed_ref = 6.204645f;
-    if (speed_ref < -6.204645f) speed_ref = -6.204645f;
+    if (speed_ref > 4.13643f) speed_ref = 4.13643f;
+    if (speed_ref < -4.13643f) speed_ref = -4.13643f;
 
     // 4. 送入速度环控制器
 	motor_instance->Target_Omega = speed_ref;
@@ -226,7 +256,27 @@ void Motor_DM_1_To_4_SinOutput(DM_Motor_1to4_Instance *motor_instance)
     if (t > 30.0f) t = 0; // 循环或停止++
 }	
 
-void Send_Data(DM_Motor_1to4_Instance *motor_instance)
+/**
+ * @brief 正弦信号填入
+ * 
+ */
+void Motor_DM_SinOutput(DM_Motor_Instance *motor_instance)
+{
+	float w = 2.0f * 3.1415926f * f;
+    speed_ref = A * sin(w * t);
+    // 3. 限幅保护（防止设定值超出安全范围）
+    if (speed_ref > 2.068215f) speed_ref = 2.068215f;
+    if (speed_ref < -2.068215f) speed_ref = -2.068215f;
+
+    // 4. 送入速度环控制器
+	motor_instance->Target_Omega = speed_ref;
+
+    // 5. 更新时间
+    t += Ts;
+    if (t > 30.0f) t = 0; // 循环或停止++
+}
+
+static void DM_UART1_SendSpeedPair(float now_omega, float target_omega)
 {
 	int len = 0;
 	uint8_t frame_buf[DM_UART1_TX_FRAME_MAX_LEN];
@@ -253,10 +303,8 @@ void Send_Data(DM_Motor_1to4_Instance *motor_instance)
 		}
 	}
 
-	// 每次调用都尝试发送（任务周期约1ms）
-
-	output_milli = (int32_t)(motor_instance->Rx_Data.Now_Omega * 1000.0f);
-	input_milli = (int32_t)(motor_instance->Target_Omega * 1000.0f);
+	output_milli = (int32_t)(now_omega * 1000.0f);
+	input_milli = (int32_t)(target_omega * 1000.0f);
 
 	if (output_milli < 0)
 	{
@@ -304,9 +352,24 @@ void Send_Data(DM_Motor_1to4_Instance *motor_instance)
 		DM_UART1_TryStartTx();
 	}
 }
+
+void Send_Data(DM_Motor_1to4_Instance *motor_instance)
+{
+	DM_UART1_SendSpeedPair(motor_instance->Rx_Data.Now_Omega, motor_instance->Target_Omega);
+}
+
+void Send_Data_Normal(DM_Motor_Instance *motor_instance)
+{
+	DM_UART1_SendSpeedPair(motor_instance->Rx_Data.Now_Omega, motor_instance->Target_Omega);
+}
  /* Function prototypes -------------------------------------------------------*/
 void DMsetOutput(void *argument)
 {
+	uint32_t next_wake_tick = 0U;
+
+	osDelay(1500);
+	Motor_DM_Normal_Send_Enter(&DM_Motor_Instances[0]);
+	next_wake_tick = osKernelGetTickCount();
 	for(;;)
 	{  
 		// Send_Data(&DM_Motor_1to4_Instances[0]);
@@ -325,9 +388,13 @@ void DMsetOutput(void *argument)
 		// 	// DM_Motor_1to4_Instances[0].Target_Omega = 5.0f;
 		// 	// DM_Motor_1to4_Instances[1].Target_Omega = 5.0f;
 		// }
+		// Send_Data_Normal(&DM_Motor_Instances[0]);
+		// Motor_DM_SinOutput(&DM_Motor_Instances[0]);	
 		Motor_DM_CalPID();
 		Motor_DM_1_To_4_Output();
-		osDelay(1);
+		Motor_DM_Output();
+		next_wake_tick += 1U;
+		osDelayUntil(next_wake_tick);
 	}
 }
  

@@ -90,6 +90,20 @@ const osThreadAttr_t Chassis_Control_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for Arm_Task */
+osThreadId_t Arm_TaskHandle;
+const osThreadAttr_t Arm_Task_attributes = {
+  .name = "Arm_Task",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for LKControlTask */
+osThreadId_t LKControlTaskHandle;
+const osThreadAttr_t LKControlTask_attributes = {
+  .name = "LKControlTask",
+  .stack_size = 1024 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -102,6 +116,8 @@ void MusicTask_func(void *argument);
 void DMsetOutput(void *argument);
 void tele_task(void *argument);
 void Chassis_Task(void *argument);
+void Arm_Control(void *argument);
+void LKsetOutput(void *argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -150,6 +166,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Chassis_Control */
   Chassis_ControlHandle = osThreadNew(Chassis_Task, NULL, &Chassis_Control_attributes);
+
+  /* creation of Arm_Task */
+  Arm_TaskHandle = osThreadNew(Arm_Control, NULL, &Arm_Task_attributes);
+
+  /* creation of LKControlTask */
+  LKControlTaskHandle = osThreadNew(LKsetOutput, NULL, &LKControlTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -269,6 +291,42 @@ __weak void Chassis_Task(void *argument)
     osDelay(1);
   }
   /* USER CODE END Chassis_Task */
+}
+
+/* USER CODE BEGIN Header_Arm_Control */
+/**
+* @brief Function implementing the Arm_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Arm_Control */
+__weak void Arm_Control(void *argument)
+{
+  /* USER CODE BEGIN Arm_Control */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Arm_Control */
+}
+
+/* USER CODE BEGIN Header_LKsetOutput */
+/**
+* @brief Function implementing the LKControlTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_LKsetOutput */
+__weak void LKsetOutput(void *argument)
+{
+  /* USER CODE BEGIN LKsetOutput */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END LKsetOutput */
 }
 
 /* Private application code --------------------------------------------------*/

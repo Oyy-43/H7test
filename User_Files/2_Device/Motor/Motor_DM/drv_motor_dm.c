@@ -286,6 +286,11 @@ void Motor_DM_Init(DM_Motor_Instance *motor_instance, const FDCAN_HandleTypeDef 
     motor_instance->VMAX = __VMax;
     motor_instance->TMAX = __TMax;
     motor_instance->Current_MAX = __Current_Max;
+    motor_instance->K_P = 0.0f;
+    motor_instance->K_D = 0.0f;
+    motor_instance->Control_Angle = 0.0f;
+    motor_instance->Control_Omega = 0.0f;
+    motor_instance->Control_Torque = 0.0f;
 
 }
 
@@ -430,7 +435,7 @@ void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance)
 
         tmp_angle = Basic_Math_Float_To_Int(motor_instance->Control_Angle, 0, motor_instance->PMAX, 0x7fff, (1 << 16) - 1);
         tmp_omega = Basic_Math_Float_To_Int(motor_instance->Control_Omega, 0, motor_instance->VMAX, 0x7ff, (1 << 12) - 1);
-        tmp_torque = Basic_Math_Float_To_Int(motor_instance->Control_Torque, 0, motor_instance->TMAX, 0x7ff, (1 << 12) - 1);
+        tmp_torque = Basic_Math_Float_To_Int(motor_instance->Control_Torque, -motor_instance->TMAX, motor_instance->TMAX, 0, (1 << 12) - 1);
         tmp_k_p = Basic_Math_Float_To_Int(motor_instance->K_P, 0, 500.0f, 0, (1 << 12) - 1);
         tmp_k_d = Basic_Math_Float_To_Int(motor_instance->K_D, 0, 5.0f, 0, (1 << 12) - 1);
 
@@ -503,20 +508,6 @@ void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer
     }
     switch (Header->Identifier)
     {
-        case (0x11):
-        if(DM_Motor_Instances[0].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_Instances[0].Flag +=1;
-            Motor_DM_Normal_Data_Process(&DM_Motor_Instances[0]);
-        }
-        break;
-        case (0x12):
-        if(DM_Motor_Instances[1].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_Instances[1].Flag +=1;
-            Motor_DM_Normal_Data_Process(&DM_Motor_Instances[1]);
-        }
-        break;
         case (0x201):
         if(DM_Motor_1to4_Instances[0].CAN_Manage_Object != NULL)
         {
@@ -562,6 +553,20 @@ void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer
     }
     switch (Header->Identifier)
     {
+        case (0x11):
+        if(DM_Motor_Instances[0].CAN_Manage_Object != NULL)
+        {
+            DM_Motor_Instances[0].Flag +=1;
+            Motor_DM_Normal_Data_Process(&DM_Motor_Instances[0]);
+        }
+        break;
+        case (0x12):
+        if(DM_Motor_Instances[1].CAN_Manage_Object != NULL)
+        {
+            DM_Motor_Instances[1].Flag +=1;
+            Motor_DM_Normal_Data_Process(&DM_Motor_Instances[1]);
+        }
+        break;
         case (0x205):
         if(DM_Motor_1to4_Instances[4].CAN_Manage_Object != NULL)
         {
