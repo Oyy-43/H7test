@@ -49,7 +49,7 @@ DM_Motor_1to4_Instance DM_Motor_1to4_Instances[DM_Motor_1_To_4_Num] = {0};
  * @param __DJI_Motor_Driver_Version 达妙驱动版本, 电机ID 1~4 的标识符为0x200，电机ID 5~8 的标识符为0x1ff
  * @return uint8_t* 缓冲区指针
  */
-uint8_t *allocate_tx_data(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4)
+uint8_t *allocate_tx_data_DM(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4)
 {
     uint8_t *tmp_tx_data_ptr = NULL;
     if (hcan == &hfdcan1)
@@ -340,7 +340,7 @@ void Motor_DM_1_To_4_Init(DM_Motor_1to4_Instance *motor_instance, const FDCAN_Ha
     motor_instance->Encoder_Offset = __Encoder_Offset;
     motor_instance->Nearest_Angle = __Nearest_Angle;
     motor_instance->Gearbox_Rate = __Gearbox_Rate;
-    motor_instance->Tx_Data = allocate_tx_data(hcan, __CAN_Rx_ID);
+    motor_instance->Tx_Data = allocate_tx_data_DM(hcan, __CAN_Rx_ID);
 }
 
 /**
@@ -402,7 +402,7 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
     else if (delta_encoder > ENCODER_NUM_PER_ROUND / 2)
     {
         // 反方向转过了一圈
-        motor_instance->Rx_Data.Total_Round--;
+    motor_instance->Rx_Data.Total_Round--;
     }
     motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * ENCODER_NUM_PER_ROUND + tmp_encoder + motor_instance->Encoder_Offset;
 
@@ -413,7 +413,7 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
     motor_instance->Rx_Data.Error_code = tmp_buffer->Error_code;
     motor_instance->Rx_Data.Now_Rotor_Temperature = tmp_buffer->Rotor_Temperature ;
 
-    // 存储预备信息0
+    // 存储预备信息0 
     motor_instance->Rx_Data.Pre_Encoder = tmp_encoder;
 }
 

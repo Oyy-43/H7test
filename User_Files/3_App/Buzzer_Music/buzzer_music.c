@@ -1,14 +1,29 @@
+/**
+ * @file buzzer_music.c
+ * @author Oyyp
+ * @brief 通过蜂鸣器发声
+ * @version 0.1
+ * @date 2026-04-19 0.1 init
+ *
+ * @copyright Copyright
+ *
+ */
+/* Includes ------------------------------------------------------------------*/
 #include "buzzer_music.h"
+/* Private macros ------------------------------------------------------------*/
 
-#include "bsp_buzzer.h"
-#include "cmsis_os2.h"
-#include "drv_uart.h"
-#include <stdbool.h>
-#include <ctype.h>
-#include <math.h>
-#include <stdint.h>
-#include <string.h>
+/* Private types -------------------------------------------------------------*/
 
+/* Private variables ---------------------------------------------------------*/
+BoardStatus_e BoardStatus;
+bool Last_InitFlag=false;
+static bool g_buzzer_once_active = false;
+static uint32_t g_buzzer_once_end_tick = 0U;
+
+/* Private function declarations ---------------------------------------------*/
+static void Buzzer_Once_Service(void);
+
+/* Function prototypes -------------------------------------------------------*/
 static uint32_t parse_u32(const char **p)
 {
     uint32_t value = 0;
@@ -279,8 +294,57 @@ bool Buzzer_Play_RTTTL(const char *rtttl, float loudness, BuzzerDelayMode_e dela
     return true;
 }
 
-BoardStatus_e BoardStatus;
-bool Last_InitFlag=false;
+void Buzzer_Play_Once_NonBlocking(float frequency, float loudness, uint32_t duration_ms)
+{
+    float clamped_frequency = frequency;
+    float clamped_loudness = loudness;
+
+    if (duration_ms == 0U)
+    {
+        Buzzer_Set_Sound(0.0f, 0.0f);
+        g_buzzer_once_active = false;
+        return;
+    }
+
+    if (clamped_frequency < 0.0f)
+    {
+        clamped_frequency = 0.0f;
+    }
+    if (clamped_frequency > 20000.0f)
+    {
+        clamped_frequency = 20000.0f;
+    }
+
+    if (clamped_loudness < 0.0f)
+    {
+        clamped_loudness = 0.0f;
+    }
+    if (clamped_loudness > 1.0f)
+    {
+        clamped_loudness = 1.0f;
+    }
+
+    Buzzer_Set_Sound(clamped_frequency, clamped_loudness);
+    g_buzzer_once_end_tick = osKernelGetTickCount() + duration_ms;
+    g_buzzer_once_active = true;
+}
+
+static void Buzzer_Once_Service(void)
+{
+    uint32_t now_tick;
+
+    if (!g_buzzer_once_active)
+    {
+        return;
+    }
+
+    now_tick = osKernelGetTickCount();
+    if ((int32_t)(now_tick - g_buzzer_once_end_tick) >= 0)
+    {
+        Buzzer_Set_Sound(0.0f, 0.0f);
+        g_buzzer_once_active = false;
+    }
+}
 
 void Init_Check(void)
 {
@@ -309,10 +373,10 @@ void Music_Scan(void)
     osDelay(250);
     Buzzer_Set_Sound(Init_Music[2], 1.0f); // G5音符
     osDelay(500);
+    Buzzer_Set_Sound(0.0f, 0.0f); // 不响
     BoardStatus = working;
         break;
     case working:
-    Buzzer_Set_Sound(0.0f, 0.0f); // 暂时不响
         break;
     default:
         break;
@@ -324,6 +388,7 @@ void MusicTask_func(void *argument)
 {
     for(;;)
     {
+       Buzzer_Once_Service();
        Music_Scan();
        osDelay(1);
     }

@@ -301,7 +301,7 @@ extern DM_Motor_Instance DM_Motor_Instances[DM_Motor_Normal_Num];
 extern DM_Motor_1to4_Instance DM_Motor_1to4_Instances[DM_Motor_1_To_4_Num];
 
 /* Exported function declarations --------------------------------------------*/
-uint8_t *allocate_tx_data(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4);
+uint8_t *allocate_tx_data_DM(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4);
 
 void Motor_DM_Init(DM_Motor_Instance *motor_instance, const FDCAN_HandleTypeDef *hcan, uint8_t __CAN_Rx_ID, uint8_t __CAN_Tx_ID,
     Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __PMax, float __VMax, float __TMax, float __Current_Max);

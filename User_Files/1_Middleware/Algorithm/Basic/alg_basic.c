@@ -15,6 +15,7 @@
 
 #include "alg_basic.h"
 #include <stddef.h>
+#include <math.h>
 
 /* Private macros ------------------------------------------------------------*/
 
@@ -169,7 +170,7 @@ float Basic_Math_Sinc(float x)
         return (1.0f);
     }
 
-    return (arm_sin_f32(x) / x);
+    return (sinf(x) / x);
 }
 
 /**
@@ -190,6 +191,25 @@ int32_t Basic_Math_Float_To_Int(float x, float Float_1, float Float_2, int32_t I
 }
 
 /**
+************************************************************************
+* @brief:      	float_to_uint: 浮点数转换为无符号整数函数
+* @param[in]:   x_float:	待转换的浮点数
+* @param[in]:   x_min:		范围最小值
+* @param[in]:   x_max:		范围最大值
+* @param[in]:   bits: 		目标无符号整数的位数
+* @retval:     	无符号整数结果
+* @details:    	将给定的浮点数 x 在指定范围 [x_min, x_max] 内进行线性映射，映射结果为一个指定位数的无符号整数
+************************************************************************
+**/
+int float_to_uint(float x_float, float x_min, float x_max, int bits)
+{
+	/* Converts a float to an unsigned int, given range and number of bits */
+	float span = x_max - x_min;
+	float offset = x_min;
+	return (int) ((x_float-offset)*((float)((1<<bits)-1))/span);
+}
+
+/**
  * @brief 将整型映射到浮点数
  *
  * @param x 整型
@@ -204,6 +224,25 @@ float Basic_Math_Int_To_Float(int32_t x, int32_t Int_1, int32_t Int_2, float Flo
     float tmp = (float) (x - Int_1) / (float) (Int_2 - Int_1);
     float out = tmp * (Float_2 - Float_1) + Float_1;
     return (out);
+}
+
+/**
+************************************************************************
+* @brief:      	uint_to_float: 无符号整数转换为浮点数函数
+* @param[in]:   x_int: 待转换的无符号整数
+* @param[in]:   x_min: 范围最小值
+* @param[in]:   x_max: 范围最大值
+* @param[in]:   bits:  无符号整数的位数
+* @retval:     	浮点数结果
+* @details:    	将给定的无符号整数 x_int 在指定范围 [x_min, x_max] 内进行线性映射，映射结果为一个浮点数
+************************************************************************
+**/
+float uint_to_float(int x_int, float x_min, float x_max, int bits)
+{
+	/* converts unsigned int to float, given range and number of bits */
+	float span = x_max - x_min;
+	float offset = x_min;
+	return ((float)x_int)*span/((float)((1<<bits)-1)) + offset;
 }
 
 /**

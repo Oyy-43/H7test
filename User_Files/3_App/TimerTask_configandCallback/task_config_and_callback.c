@@ -14,6 +14,7 @@
 #include "drv_usb.h"
 #include "drv_motor_lk.h"
 #include "ctrl_motor_lk.h"
+#include "withPC.h"
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -48,7 +49,7 @@ void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 
 void serial_Callback(uint8_t *Buffer, uint16_t Length)
 {
-   USB_Transmit_Data(Buffer, Length);
+   PC_rx_idle_callback(Buffer, Length);
 }
 
 
@@ -67,6 +68,8 @@ void Task3600s_Callback()
  */
 void Task1ms_Callback()
 {
+    PC_rx_timeout_1ms_process();
+
     static int mod10 = 0;
     mod10++;
     if (mod10 == 10)

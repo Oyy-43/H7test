@@ -10,9 +10,7 @@
  */
 /* Includes ------------------------------------------------------------------*/
 #include "chassis.h"
-#include "ctrl_motor_dm.h"
-#include "drv_motor_dm.h"
-#include "alg_basic.h"
+
 
 /* Private macros ------------------------------------------------------------*/
 
@@ -25,10 +23,13 @@
 /* Private function declarations ---------------------------------------------*/
 void Chassis_Omega_update(float vx, float vy, float vz)
 {
+  const float gear_ratio = 19.0f;   // 与初始化一致
+  const float wheel_radius = chassis_d / 2.0f;
+  const float motor_omega_per_vx = gear_ratio / wheel_radius;   // ≈ 250
   const float inv_mecanum_r = 2.0f / chassis_d;
   const float wz_term = vz * (chassis_a + chassis_b);
   const float inv_omni_r = 2.0f / chassis_omni_d;
-  const float wheel4_x_omega = (-vx - vz * chassis_omni_b) * inv_omni_r;
+  const float wheel4_x_omega = (-vx + vz * chassis_omni_b) * inv_omni_r;
   const float wheel5_x_omega = (vx + vz * chassis_omni_b) * inv_omni_r;
 
   DM_Motor_1to4_Instances[0].Target_Omega =  ((-vx + vy + wz_term) * inv_mecanum_r);
@@ -42,15 +43,23 @@ void Chassis_Omega_update(float vx, float vy, float vz)
 
 void Chassis_Control()
 {
-  if(rc_channels.ch[4]<=0)
+  if(rc_channels.ch[4]<0)
   {
     Chassis_Omega_update(0,0,0);
   }
-  else
+  else if (rc_channels.ch[4] == 0)
   {
     const float vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
     const float vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
     const float wz_cmd = -rc_channels.ch[3] * 0.01f / 15.0f;
+
+    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
+  }
+  else if (rc_channels.ch[4] > 0)
+  {
+    const float vx_cmd = PC_frame.cmd_vx*0.25;
+    const float vy_cmd = PC_frame.cmd_vy*0.25;
+    const float wz_cmd = PC_frame.cmd_vz*0.185;
 
     Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
   }

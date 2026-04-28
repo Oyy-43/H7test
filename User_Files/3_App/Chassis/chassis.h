@@ -4,6 +4,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "crsf.h"
+#include "robot_def.h"
+#include "ctrl_motor_dm.h"
+#include "drv_motor_dm.h"
+#include "alg_basic.h"
+#include "withPC.h"
 
 /* Exported macros -----------------------------------------------------------*/
 //0号电机的坐标（a,b)
@@ -14,6 +19,11 @@
 // 第4、5号全向轮参数（位于0-1中点与2-3中点）
 #define chassis_omni_b (chassis_b) //全向轮到中心的y向距离
 #define chassis_omni_d (0.152f)    //全向轮直径
+
+// 上位机速度指令标定系数
+#define CHASSIS_PC_VX_SCALE (0.25f)
+#define CHASSIS_PC_VY_SCALE (0.25f)
+#define CHASSIS_PC_WZ_SCALE (1.0f)
 
 
 /* Exported types ------------------------------------------------------------*/
