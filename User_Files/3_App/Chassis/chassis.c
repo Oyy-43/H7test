@@ -71,7 +71,7 @@ void Chassis_Task(void *argument)
 {
     while (1)
     {
-      Chassis_Control();
+      // Chassis_Control();
       osDelay(1); // 每1ms更新一次
     }
 }

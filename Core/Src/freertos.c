@@ -73,7 +73,7 @@ const osThreadAttr_t Music_Task_attributes = {
 osThreadId_t DMControlTaskHandle;
 const osThreadAttr_t DMControlTask_attributes = {
   .name = "DMControlTask",
-  .stack_size = 1024 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for Remote_Task */
@@ -101,6 +101,13 @@ const osThreadAttr_t Arm_Task_attributes = {
 osThreadId_t LKControlTaskHandle;
 const osThreadAttr_t LKControlTask_attributes = {
   .name = "LKControlTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
+};
+/* Definitions for DJIControl_Task */
+osThreadId_t DJIControl_TaskHandle;
+const osThreadAttr_t DJIControl_Task_attributes = {
+  .name = "DJIControl_Task",
   .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
@@ -118,6 +125,7 @@ void tele_task(void *argument);
 void Chassis_Task(void *argument);
 void Arm_Control(void *argument);
 void LKsetOutput(void *argument);
+void DJISetOut(void *argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -172,6 +180,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of LKControlTask */
   LKControlTaskHandle = osThreadNew(LKsetOutput, NULL, &LKControlTask_attributes);
+
+  /* creation of DJIControl_Task */
+  DJIControl_TaskHandle = osThreadNew(DJISetOut, NULL, &DJIControl_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -327,6 +338,24 @@ __weak void LKsetOutput(void *argument)
     osDelay(1);
   }
   /* USER CODE END LKsetOutput */
+}
+
+/* USER CODE BEGIN Header_DJISetOut */
+/**
+* @brief Function implementing the DJIControl_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_DJISetOut */
+__weak void DJISetOut(void *argument)
+{
+  /* USER CODE BEGIN DJISetOut */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END DJISetOut */
 }
 
 /* Private application code --------------------------------------------------*/

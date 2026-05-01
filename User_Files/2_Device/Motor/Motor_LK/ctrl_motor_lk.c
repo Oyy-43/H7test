@@ -88,21 +88,21 @@ void LKsetOutput(void *argument)
 {
     for(;;)
     {   
-        Motor_LK_GetFeedback(&LK_Motor_Instances[0]);
-        Motor_LK_GetFeedback(&LK_Motor_Instances[1]);
-        LK_Motor_Instances[0].Target_Angle = (rc_channels.ch[11]+820)*0.2f; // 直接使用原始目标值，不进行滤波，确保控制环的单一数据来源
-        LK_Motor_Instances[1].Target_Angle = (rc_channels.ch[2]+820)*0.2f; // 直接使用原始目标值，不进行滤波，确保控制环的单一数据来源
-        Motor_LK_CalPID();
-        if(rc_channels.ch[6]<=0)
-        {
-            Motor_LK_Stop(&LK_Motor_Instances[0]);
-            Motor_LK_Stop(&LK_Motor_Instances[1]);
-        }
-        else
-        {
-            Motor_LK_TorqueControl(&LK_Motor_Instances[0], LK_Motor_Instances[0].Target_Current);
-            Motor_LK_TorqueControl(&LK_Motor_Instances[1], LK_Motor_Instances[1].Target_Current);
-        }
+        // Motor_LK_GetFeedback(&LK_Motor_Instances[0]);
+        // Motor_LK_GetFeedback(&LK_Motor_Instances[1]);
+        // LK_Motor_Instances[0].Target_Angle = (rc_channels.ch[11]+820)*0.2f; // 直接使用原始目标值，不进行滤波，确保控制环的单一数据来源
+        // LK_Motor_Instances[1].Target_Angle = (rc_channels.ch[2]+820)*0.2f; // 直接使用原始目标值，不进行滤波，确保控制环的单一数据来源
+        // Motor_LK_CalPID();
+        // if(rc_channels.ch[6]<=0)
+        // {
+        //     Motor_LK_Stop(&LK_Motor_Instances[0]);
+        //     Motor_LK_Stop(&LK_Motor_Instances[1]);
+        // }
+        // else
+        // {
+        //     Motor_LK_TorqueControl(&LK_Motor_Instances[0], LK_Motor_Instances[0].Target_Current);
+        //     Motor_LK_TorqueControl(&LK_Motor_Instances[1], LK_Motor_Instances[1].Target_Current);
+        // }
         osDelay(1);
     }
 }

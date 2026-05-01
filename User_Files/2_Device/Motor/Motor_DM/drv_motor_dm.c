@@ -46,7 +46,7 @@ DM_Motor_1to4_Instance DM_Motor_1to4_Instances[DM_Motor_1_To_4_Num] = {0};
  *
  * @param hcan CAN编号
  * @param __CAN_ID CAN ID
- * @param __DJI_Motor_Driver_Version 达妙驱动版本, 电机ID 1~4 的标识符为0x200，电机ID 5~8 的标识符为0x1ff
+ * @param __DM_Motor_Driver_Version 达妙驱动版本, 电机ID 1~4 的标识符为0x200，电机ID 5~8 的标识符为0x1ff
  * @return uint8_t* 缓冲区指针
  */
 uint8_t *allocate_tx_data_DM(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4)
@@ -394,22 +394,22 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
 
     // 计算圈数与总编码器值
     delta_encoder = tmp_encoder - motor_instance->Rx_Data.Pre_Encoder;
-    if (delta_encoder < -ENCODER_NUM_PER_ROUND / 2)
+    if (delta_encoder < -DM_3519_ENCODER_NUM_PER_ROUND / 2)
     {
         // 正方向转过了一圈
         motor_instance->Rx_Data.Total_Round++;
     }
-    else if (delta_encoder > ENCODER_NUM_PER_ROUND / 2)
+    else if (delta_encoder > DM_3519_ENCODER_NUM_PER_ROUND / 2)
     {
         // 反方向转过了一圈
     motor_instance->Rx_Data.Total_Round--;
     }
-    motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * ENCODER_NUM_PER_ROUND + tmp_encoder + motor_instance->Encoder_Offset;
+    motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * DM_3519_ENCODER_NUM_PER_ROUND + tmp_encoder + motor_instance->Encoder_Offset;
 
     // 计算电机本身信息
-    motor_instance->Rx_Data.Now_Angle = (float) motor_instance->Rx_Data.Total_Encoder / (float) ENCODER_NUM_PER_ROUND * 2.0f * PI;
-    motor_instance->Rx_Data.Now_Omega = tmp_omega / 100.0f * BASIC_MATH_RPM_TO_RADPS;
-    motor_instance->Rx_Data.Now_Torque = tmp_current / 1000.0f * CURRENT_TO_TORQUE * motor_instance->Gearbox_Rate;
+    motor_instance->Rx_Data.Now_Angle = (float) motor_instance->Rx_Data.Total_Encoder / (float) DM_3519_ENCODER_NUM_PER_ROUND * 2.0f * PI;
+    motor_instance->Rx_Data.Now_Omega = (tmp_omega / 100.0f) * BASIC_MATH_RPM_TO_RADPS * motor_instance->Gearbox_Rate;
+    motor_instance->Rx_Data.Now_Torque = tmp_current / 1000.0f * DM_3519_CURRENT_TO_TORQUE * motor_instance->Gearbox_Rate;
     motor_instance->Rx_Data.Error_code = tmp_buffer->Error_code;
     motor_instance->Rx_Data.Now_Rotor_Temperature = tmp_buffer->Rotor_Temperature ;
 
@@ -553,34 +553,20 @@ void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer
     }
     switch (Header->Identifier)
     {
-        case (0x11):
-        if(DM_Motor_Instances[0].CAN_Manage_Object != NULL)
+        case (0x203):
+        if(DM_Motor_1to4_Instances[0].CAN_Manage_Object != NULL)
         {
-            DM_Motor_Instances[0].Flag +=1;
-            Motor_DM_Normal_Data_Process(&DM_Motor_Instances[0]);
+            DM_Motor_1to4_Instances[0].Flag +=1;
+            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[0]);
         }
         break;
-        case (0x12):
-        if(DM_Motor_Instances[1].CAN_Manage_Object != NULL)
+        case (0x204):
+        if(DM_Motor_1to4_Instances[1].CAN_Manage_Object != NULL)
         {
-            DM_Motor_Instances[1].Flag +=1;
-            Motor_DM_Normal_Data_Process(&DM_Motor_Instances[1]);
+            DM_Motor_1to4_Instances[1].Flag +=1;
+            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[1]);
         }
-        break;
-        case (0x205):
-        if(DM_Motor_1to4_Instances[4].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_1to4_Instances[4].Flag +=1;
-            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[4]);
-        }
-        break;
-        case (0x206):
-        if(DM_Motor_1to4_Instances[5].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_1to4_Instances[5].Flag +=1;
-            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[5]);
-        }
-        break;        
+        break;      
         default:
         break;
     }

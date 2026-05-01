@@ -15,6 +15,8 @@
 #include "drv_motor_lk.h"
 #include "ctrl_motor_lk.h"
 #include "withPC.h"
+#include "drv_motor_dji.h"
+#include "ctrl_motor_dji.h"
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -34,7 +36,7 @@ bool blue_minus_flag = true;
 
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-    Motor_DM_CAN1_RxCpltCallback(Header, Buffer);
+    Motor_DJI_CAN1_RxCpltCallback(Header, Buffer);
 }
 
 void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -142,6 +144,15 @@ void Task1ms_Callback()
         // 处理按键状态
         BSP_Key_TIM_50ms_Read_PeriodElapsedCallback();
     }
+    static int mod100 = 0;
+    mod100++;
+    if (mod100 == 100)
+    {
+        mod100 = 0;
+
+        // 处理电机状态
+        Motor_DJI_TIM_100ms_Alive_PeriodElapsedCallback();
+    }
 
 }
 
@@ -182,10 +193,12 @@ void Task_Init()
     WS2812_Init(0, 0, 0);
 
    //DM电机PID初始化
+    Motor_DJI_InitPID();
     Motor_DM_InitPID();
     Motor_LK_InitPID();
 
    //初始化全部电机
+    Motor_DJI_Init_All();
     Motor_DM_Init_All();
     Motor_LK_Init_All();
    //

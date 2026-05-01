@@ -9,14 +9,36 @@
 
 /* Exported macros -----------------------------------------------------------*/
 // 电机实例表长度
-#define DJI_Motor_C610_Num 4
+#define DJI_Motor_C610_Num 2
 
 #define C610_ENCODER_NUM_PER_ROUND 8192
 #define C610_CURRENT_TO_TORQUE     0.005      //0.18f / 36.0f
 #define C610_CURRENT_TO_OUT        1000.0f    //10000.0f / 10.0f
 #define C610_OUT_MAX               10000.0f
 #define C610_Gearbox_Rate          36.0f
+
+#define DJI_Motor_C620_Num 4
+
+#define C620_ENCODER_NUM_PER_ROUND 8192
+#define C620_CURRENT_TO_TORQUE     0.5208      //0.3f / 19.2f
+#define C620_CURRENT_TO_OUT        819.2f    //16384.0f / 20.0f
+#define C620_OUT_MAX               16384.0f
+#define C620_Gearbox_Rate          19.2f
+
+
+
 /* Exported types ------------------------------------------------------------*/
+/**
+ * @brief 大疆电机类型枚举
+ * 
+ */
+typedef enum Enum_Motor_DJI_Type
+{
+    Motor_DJI_Type_C610 = 0,
+    Motor_DJI_Type_C620,
+}Enum_Motor_DJI_Type;
+
+
 
 /**
  * @brief 大疆电机状态
@@ -87,8 +109,10 @@ typedef struct Struct_Motor_DJI_Rx_Data
     int32_t Total_Round;
 } Struct_Motor_DJI_Rx_Data;
 
-typedef struct DJI_Motor_Instance_C610
+typedef struct DJI_Motor_Instance
 {
+    // 电机类型
+    Enum_Motor_DJI_Type Motor_Type;
     //绑定的CAN
     Struct_CAN_Manage_Object *CAN_Manage_Object;
     // 收数据绑定的CAN ID, 与上位机驱动参数Master_ID保持一致
@@ -97,6 +121,8 @@ typedef struct DJI_Motor_Instance_C610
     Enum_Motor_DJI_Status Motor_DJI_Status;
     // 电机对外接口信息
     Struct_Motor_DJI_Rx_Data Rx_Data;
+    // 滤波后速度
+    float Filtered_Omega;
     // 发送缓存区
     uint8_t *Tx_Data;
     // 编码器偏移
@@ -121,15 +147,17 @@ typedef struct DJI_Motor_Instance_C610
     float Feedforward_Omega;
     // 前馈的扭矩, Nm
     float Feedforward_Torque;
-} DJI_Motor_Instance_C610;
+} DJI_Motor_Instance;
+
 /* Exported constants --------------------------------------------------------*/
 
 /* Exported variables --------------------------------------------------------*/
-extern DJI_Motor_Instance_C610 DM_Motor_C610_Instances[DJI_Motor_C610_Num];
+extern DJI_Motor_Instance DJI_Motor_Instances[DJI_Motor_C610_Num+DJI_Motor_C620_Num];
 /* Exported function declarations --------------------------------------------*/
-void Motor_DJI_C610_TIM_100ms_Alive_PeriodElapsedCallback();
-void Motor_DJI_C610_Init_All();
+void Motor_DJI_TIM_100ms_Alive_PeriodElapsedCallback();
+void Motor_DJI_Init_All();
 void Motor_DJI_Output();
 void Motor_DJI_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
+void Motor_DJI_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 
 #endif /* __DRV_MOTOR_DJI_H */

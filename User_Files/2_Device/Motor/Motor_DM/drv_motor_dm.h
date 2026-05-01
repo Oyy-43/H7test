@@ -21,14 +21,14 @@
 
     //一些一拖四模式的常数定义
     // 一圈编码器刻度
-    #define ENCODER_NUM_PER_ROUND 8192
+    #define DM_3519_ENCODER_NUM_PER_ROUND 8192
 
     // 扭矩电流常数, 由于电机手册没给, 则以额定扭矩除以额定电流计算
-    #define CURRENT_TO_TORQUE (1.2f / 10.0f)
+    #define DM_3519_CURRENT_TO_TORQUE (3.5f / 10.0f)
     // 扭矩电流到输出刻度的转化系数
-    #define CURRENT_TO_OUT (16384.0f / 10.261194f)
+    #define DM_3519_CURRENT_TO_OUT (16384.0f / 20.5f)
     // 最大输出刻度
-    #define OUT_MAX (16384.0f)
+    #define DM_3519_OUT_MAX (16384.0f)
 
 /* Exported types ------------------------------------------------------------*/
 /**
