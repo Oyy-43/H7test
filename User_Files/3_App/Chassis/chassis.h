@@ -9,11 +9,13 @@
 #include "drv_motor_dm.h"
 #include "alg_basic.h"
 #include "withPC.h"
+#include "ctrl_motor_dji.h"
+#include "drv_motor_dji.h"
 
 /* Exported macros -----------------------------------------------------------*/
 //0号电机的坐标（a,b)
-#define chassis_a (0.2842f) //电机0到中心的y向距离  竖向
-#define chassis_b (0.3418f) //电机0到中心的x向距离  横向
+#define chassis_a (0.2645f) //电机0到中心的y向距离  竖向
+#define chassis_b (0.2627f) //电机0到中心的x向距离  横向
 #define chassis_d (0.152f)   //轮子直径
 
 // 第4、5号全向轮参数（位于0-1中点与2-3中点）

@@ -10,6 +10,8 @@
 #include "drv_uart.h"
 #include "alg_transData.h"
 #include "crsf.h"
+#include "drv_motor_dm.h"
+#include "ctrl_motor_dm.h"
 
 
 /* Exported macros -----------------------------------------------------------*/
@@ -23,6 +25,7 @@ extern float Sin_Target;
 
 /* Exported function declarations --------------------------------------------*/
 void Motor_DJI_InitPID();
+void DJI_Motor_Output();
 
 
 

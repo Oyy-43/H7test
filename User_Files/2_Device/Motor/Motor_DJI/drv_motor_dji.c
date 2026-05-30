@@ -490,7 +490,7 @@ void Motor_DJI_C620_Data_Process(DJI_Motor_Instance *motor_instance)
     else if (delta_encoder > C620_ENCODER_NUM_PER_ROUND / 2)
     {
         // 反方向转过了一圈
-        motor_instance->Rx_Data.Total_Round--;
+        motor_instance->Rx_Data.Total_Round--; 
     }
     motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * C620_ENCODER_NUM_PER_ROUND + tmp_encoder;
 
@@ -513,8 +513,8 @@ void Motor_DJI_Init_All()
     Motor_DJI_Init(&DJI_Motor_Instances[1], &hfdcan1, Motor_DJI_ID_0x202, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C620);
     Motor_DJI_Init(&DJI_Motor_Instances[2], &hfdcan1, Motor_DJI_ID_0x203, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C620);
     Motor_DJI_Init(&DJI_Motor_Instances[3], &hfdcan1, Motor_DJI_ID_0x204, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C620);
-    Motor_DJI_Init(&DJI_Motor_Instances[4], &hfdcan1, Motor_DJI_ID_0x205, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C610);
-    Motor_DJI_Init(&DJI_Motor_Instances[5], &hfdcan1, Motor_DJI_ID_0x206, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C610);
+    Motor_DJI_Init(&DJI_Motor_Instances[4], &hfdcan2, Motor_DJI_ID_0x201, 0, 0.0f, C610_Gearbox_Rate,Motor_DJI_Type_C610);
+    Motor_DJI_Init(&DJI_Motor_Instances[5], &hfdcan2, Motor_DJI_ID_0x202, 0, 0.0f, C610_Gearbox_Rate,Motor_DJI_Type_C610);
 }
 
 
@@ -657,7 +657,7 @@ void Motor_DJI_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffe
     }
 }
 
-void Motor_DJI_Output()
+void Motor_DJI_SetOutput()
 {
     int16_t out;
 
@@ -684,6 +684,5 @@ void Motor_DJI_Output()
     out = (int16_t)(DJI_Motor_Instances[5].Out);
     DJI_Motor_Instances[5].Tx_Data[0] = (uint8_t)(((uint16_t)out) >> 8);
     DJI_Motor_Instances[5].Tx_Data[1] = (uint8_t)((uint16_t)out);
-	CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-	CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x200_Tx_Data,8);
+
 }

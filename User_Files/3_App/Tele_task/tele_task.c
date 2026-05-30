@@ -12,14 +12,15 @@
  /* Includes ------------------------------------------------------------------*/
 #include "tele_task.h"
 #include "crsf_utils.h"
+/* global channels defined in crsf.c */
+extern crsf_channels_t rc_channels;
  
  
  /* Private macros ------------------------------------------------------------*/
- 
  /* Private types -------------------------------------------------------------*/
- 
+ CH_tatus_S ch9_status;
  /* Private variables ---------------------------------------------------------*/
- 
+ float test;
  /* Private function declarations ---------------------------------------------*/
 float get_vbat_voltage(void)
 {
@@ -48,6 +49,45 @@ float get_vbat_voltage(void)
 
     return voltage;
 }
+
+void Remote_Status_Update(CH_tatus_S *ch_status, uint8_t ch_index)
+{
+    int16_t val = rc_channels.ch[ch_index];
+
+    if (val < 0)
+    {
+        ch_status->Now_GPIO_State = BSP_Channel_Minus;
+    }
+    else /* val > 0 */
+    {
+        ch_status->Now_GPIO_State = BSP_Channel_Plus;
+    }
+    if (ch_status->Pre_GPIO_State == BSP_Channel_Minus)
+    {
+        if (ch_status->Now_GPIO_State == BSP_Channel_Minus)
+        {
+            ch_status->Key_Status = CH_Status_FREE;
+        }
+        else
+        {
+            ch_status->Key_Status = CH_Status_TRIG_FREE_PRESSED;
+        }
+    }
+    else
+    {
+        if (ch_status->Now_GPIO_State == BSP_Channel_Minus)
+        {
+            ch_status->Key_Status = CH_Status_TRIG_PRESSED_FREE;
+        }
+        else
+        {
+            ch_status->Key_Status = CH_Status_PRESSED;
+        }
+    }
+
+    ch_status->Pre_GPIO_State = ch_status->Now_GPIO_State;
+}
+
 
 void tele_task(void *argument)
 {

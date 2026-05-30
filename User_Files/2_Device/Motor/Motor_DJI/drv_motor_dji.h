@@ -156,7 +156,7 @@ extern DJI_Motor_Instance DJI_Motor_Instances[DJI_Motor_C610_Num+DJI_Motor_C620_
 /* Exported function declarations --------------------------------------------*/
 void Motor_DJI_TIM_100ms_Alive_PeriodElapsedCallback();
 void Motor_DJI_Init_All();
-void Motor_DJI_Output();
+void Motor_DJI_SetOutput();
 void Motor_DJI_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 void Motor_DJI_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 

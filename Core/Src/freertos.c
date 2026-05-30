@@ -111,6 +111,13 @@ const osThreadAttr_t DJIControl_Task_attributes = {
   .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
+/* Definitions for LiftControl_Tas */
+osThreadId_t LiftControl_TasHandle;
+const osThreadAttr_t LiftControl_Tas_attributes = {
+  .name = "LiftControl_Tas",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -126,6 +133,7 @@ void Chassis_Task(void *argument);
 void Arm_Control(void *argument);
 void LKsetOutput(void *argument);
 void DJISetOut(void *argument);
+void Lift_Task(void *argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -183,6 +191,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of DJIControl_Task */
   DJIControl_TaskHandle = osThreadNew(DJISetOut, NULL, &DJIControl_Task_attributes);
+
+  /* creation of LiftControl_Tas */
+  LiftControl_TasHandle = osThreadNew(Lift_Task, NULL, &LiftControl_Tas_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -356,6 +367,24 @@ __weak void DJISetOut(void *argument)
     osDelay(1);
   }
   /* USER CODE END DJISetOut */
+}
+
+/* USER CODE BEGIN Header_Lift_Task */
+/**
+* @brief Function implementing the LiftControl_Tas thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Lift_Task */
+__weak void Lift_Task(void *argument)
+{
+  /* USER CODE BEGIN Lift_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Lift_Task */
 }
 
 /* Private application code --------------------------------------------------*/

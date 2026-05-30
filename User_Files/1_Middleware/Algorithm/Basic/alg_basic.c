@@ -295,4 +295,59 @@ float Basic_Math_Modulus_Normalization(float x, float modulus)
     return (tmp - modulus / 2.0f);
 }
 
+void Basic_Math_Modulus_Init(Normali_S *config,int32_t x,int32_t y)
+{
+    if (config == NULL)
+        return;
+
+    if (x >= y)
+    {
+        config->Max = x;
+        config->Min = y;
+    }
+    else
+    {
+        config->Max = y;
+        config->Min = x;
+    }
+}
+
+float Basic_Math_Modulus_Return(Normali_S *config,int32_t now)
+{
+    if (config == NULL)
+        return (0.0f);
+
+    /* 避免除以0 */
+    if (config->Max == config->Min)
+        return (0.0f);
+
+    float span = (float)(config->Max - config->Min);
+    float pos = ((float)(now - config->Min)) / span;
+
+    /* 将结果限制在 [0,1] 范围内 */
+    if (pos < 0.0f)
+        pos = 0.0f;
+    else if (pos > 1.0f)
+        pos = 1.0f;
+
+    return (pos);
+}
+
+int32_t Basic_Math_Number_Return(Normali_S *config,float part)
+{
+    if (config == NULL)
+        return (0);
+
+    /* 将 part 限制在 [0,1] 范围内 */
+    if (part < 0.0f)
+        part = 0.0f;
+    else if (part > 1.0f)
+        part = 1.0f;
+
+    float span = (float)(config->Max - config->Min);
+    int32_t result = config->Min + (int32_t)(part * span);
+
+    return (result);
+}
+
 /************************ COPYRIGHT(C) USTC-ROBOWALKER **************************/

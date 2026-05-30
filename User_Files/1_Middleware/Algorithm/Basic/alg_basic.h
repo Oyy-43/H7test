@@ -32,6 +32,11 @@ extern const float BASIC_MATH_DEG_TO_RAD;
 extern const float BASIC_MATH_CELSIUS_TO_KELVIN;
 
 /* Exported types ------------------------------------------------------------*/
+typedef struct
+{
+    int32_t Max;
+    int32_t Min;
+}Normali_S;
 
 /* Exported variables --------------------------------------------------------*/
 
@@ -62,6 +67,12 @@ float Basic_Math_Modulus_Normalization(float x, float modulus);
 int float_to_uint(float x_float, float x_min, float x_max, int bits);
 
 float uint_to_float(int x_int, float x_min, float x_max, int bits);
+
+void Basic_Math_Modulus_Init(Normali_S *config,int32_t x,int32_t y);
+
+float Basic_Math_Modulus_Return(Normali_S *config,int32_t now);
+
+int32_t Basic_Math_Number_Return(Normali_S *config,float part);
 
 #ifdef CPP_ENABLE
 }

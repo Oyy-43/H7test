@@ -17,6 +17,7 @@
 #include "withPC.h"
 #include "drv_motor_dji.h"
 #include "ctrl_motor_dji.h"
+#include "tele_task.h"
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -41,7 +42,16 @@ void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 
 void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-    Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
+    switch(Header->Identifier)
+    {
+        case (0x203):
+        case (0x204):
+        Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
+        break;
+        case (0x201):
+        case (0x202):
+        Motor_DJI_CAN2_RxCpltCallback(Header, Buffer);
+    }
 }
 
 void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -71,7 +81,8 @@ void Task3600s_Callback()
 void Task1ms_Callback()
 {
     PC_rx_timeout_1ms_process();
-
+    Remote_Status_Update(&ch9_status, 9);
+    MeasureFSM_Run();
     static int mod10 = 0;
     mod10++;
     if (mod10 == 10)
@@ -214,6 +225,10 @@ void Timestamp_fuc(void *argument)
     //    us_time = Timestamp_Get_Now_Microsecond();
     //    ms_time = Timestamp_Get_Now_Millisecond();
     //    s_time = Timestamp_Get_Now_Second();
+       DJI_Motor_Output();
+       DM_Motor_Output();
+       CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
+	   CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x200_Tx_Data,8);
        osDelay(1);
     }
 }

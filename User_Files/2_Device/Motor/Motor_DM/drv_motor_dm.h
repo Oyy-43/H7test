@@ -3,11 +3,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "drv_can.h"
+#include "alg_basic.h"
 
 /* Exported macros -----------------------------------------------------------*/
     // 电机实例表长度
     #define DM_Motor_Normal_Num 2
-    #define DM_Motor_1_To_4_Num 6
+    #define DM_Motor_1_To_4_Num 2
 
     //每个电机的控制范围, 传统模式有效
     #define DM_3519_PMAX 0.0f
@@ -24,11 +25,13 @@
     #define DM_3519_ENCODER_NUM_PER_ROUND 8192
 
     // 扭矩电流常数, 由于电机手册没给, 则以额定扭矩除以额定电流计算
-    #define DM_3519_CURRENT_TO_TORQUE (3.5f / 10.0f)
+    #define DM_3519_CURRENT_TO_TORQUE (7.8f / 20.5f)
     // 扭矩电流到输出刻度的转化系数
     #define DM_3519_CURRENT_TO_OUT (16384.0f / 20.5f)
     // 最大输出刻度
     #define DM_3519_OUT_MAX (16384.0f)
+    #define DM_3519_Gearbox_Rate (19.2f)
+    #define DM_3519_Gearbox_RatePlus (33.88f)
 
 /* Exported types ------------------------------------------------------------*/
 /**
@@ -291,6 +294,14 @@ typedef struct DM_Motor_1to4_Instance
     float Feedforward_Omega;
     // 前馈的扭矩, Nm
     float Feedforward_Torque;
+    // 滤波后速度, rad/s
+    float Filtered_Omega;
+    // 记录编码器最大最小值
+    Normali_S Encoder_Limit;
+    // 当前编码器值在总行程内的占比
+    float Encoder_Part;
+    // 目标总编码器值
+    float Target_Total_Encoder;
 }DM_Motor_1to4_Instance;
 
 
@@ -299,6 +310,8 @@ typedef struct DM_Motor_1to4_Instance
 /* Exported variables --------------------------------------------------------*/
 extern DM_Motor_Instance DM_Motor_Instances[DM_Motor_Normal_Num];
 extern DM_Motor_1to4_Instance DM_Motor_1to4_Instances[DM_Motor_1_To_4_Num];
+extern Normali_S DM_3519_0_Config;
+extern Normali_S DM_3519_1_Config;
 
 /* Exported function declarations --------------------------------------------*/
 uint8_t *allocate_tx_data_DM(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4);
@@ -309,7 +322,7 @@ void Motor_DM_Init(DM_Motor_Instance *motor_instance, const FDCAN_HandleTypeDef 
 void Motor_DM_Init_All(void);
 
 void Motor_DM_1_To_4_Init(DM_Motor_1to4_Instance *motor_instance, const FDCAN_HandleTypeDef *hcan, int32_t __Encoder_Offset,
-    Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID, Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __Nearest_Angle, float __Gearbox_Rate);
+    Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID, Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __Nearest_Angle, float __Gearbox_Rate,Normali_S *Encoder_Limit_Config);
 
 
 void Motor_DM_Normal_Data_Process(DM_Motor_Instance *motor_instance);

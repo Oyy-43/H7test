@@ -37,6 +37,8 @@ uint8_t DM_Motor_1_To_4_CAN_Message_Save_Zero[8] = {0xff, 0xff, 0x55, 0x50, 0xff
 // 传统模式电机实例表
 DM_Motor_Instance DM_Motor_Instances[DM_Motor_Normal_Num] = {0};
 DM_Motor_1to4_Instance DM_Motor_1to4_Instances[DM_Motor_1_To_4_Num] = {0};
+Normali_S DM_3519_0_Config;
+Normali_S DM_3519_1_Config;
 
 /* Private function declarations ---------------------------------------------*/
 
@@ -291,7 +293,6 @@ void Motor_DM_Init(DM_Motor_Instance *motor_instance, const FDCAN_HandleTypeDef 
     motor_instance->Control_Angle = 0.0f;
     motor_instance->Control_Omega = 0.0f;
     motor_instance->Control_Torque = 0.0f;
-
 }
 
 /**
@@ -300,14 +301,10 @@ void Motor_DM_Init(DM_Motor_Instance *motor_instance, const FDCAN_HandleTypeDef 
  */
 void Motor_DM_Init_All(void)
 {
-    Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
-    Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[0], &hfdcan1, 0, Motor_DM_ID_0x201, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan1, 0, Motor_DM_ID_0x202, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[2], &hfdcan1, 0, Motor_DM_ID_0x203, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[3], &hfdcan1, 0, Motor_DM_ID_0x204, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[4], &hfdcan2, 0, Motor_DM_ID_0x205, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[5], &hfdcan2, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, 19.0f);
+    // Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
+    // Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[0], &hfdcan2, 0, Motor_DM_ID_0x203, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_0_Config);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan2, 0, Motor_DM_ID_0x204, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_1_Config);
 }
 
 /**
@@ -321,7 +318,7 @@ void Motor_DM_Init_All(void)
  * @param __Gearbox_Rate 减速比, 默认19.0f
  */
 void Motor_DM_1_To_4_Init(DM_Motor_1to4_Instance *motor_instance, const FDCAN_HandleTypeDef *hcan, int32_t __Encoder_Offset,
-    Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID, Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __Nearest_Angle, float __Gearbox_Rate)
+    Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID, Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __Nearest_Angle, float __Gearbox_Rate,Normali_S *Encoder_Limit_Config)
 {
     if (hcan->Instance == FDCAN1)
     {
@@ -341,6 +338,7 @@ void Motor_DM_1_To_4_Init(DM_Motor_1to4_Instance *motor_instance, const FDCAN_Ha
     motor_instance->Nearest_Angle = __Nearest_Angle;
     motor_instance->Gearbox_Rate = __Gearbox_Rate;
     motor_instance->Tx_Data = allocate_tx_data_DM(hcan, __CAN_Rx_ID);
+    motor_instance->Encoder_Limit = *Encoder_Limit_Config;
 }
 
 /**
@@ -382,38 +380,38 @@ void Motor_DM_Normal_Data_Process(DM_Motor_Instance *motor_instance)
 void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
 {
     // 数据处理过程
-    int16_t delta_encoder;
     uint16_t tmp_encoder;
     int16_t tmp_omega, tmp_current;
     Struct_Motor_DM_CAN_Rx_Data_1_To_4 *tmp_buffer = (Struct_Motor_DM_CAN_Rx_Data_1_To_4 *)motor_instance->CAN_Manage_Object->Rx_Buffer;
 
-    // 处理大小端
-    Basic_Math_Endian_Reverse_16((void *) &tmp_buffer->Encoder_Reverse, (void *) &tmp_encoder);
-    Basic_Math_Endian_Reverse_16((void *) &tmp_buffer->Omega_Reverse, (void *) &tmp_omega);
-    Basic_Math_Endian_Reverse_16((void *) &tmp_buffer->Current_Reverse, (void *) &tmp_current);
+    // 显式按字节解析，避免别名/大小端函数导致的问题
+    uint8_t *buf = motor_instance->CAN_Manage_Object->Rx_Buffer;
+    tmp_encoder = ((uint16_t)buf[0] << 8) | (uint16_t)buf[1];
+    tmp_omega = (int16_t)(((uint16_t)buf[2] << 8) | (uint16_t)buf[3]);
+    tmp_current = (int16_t)(((uint16_t)buf[4] << 8) | (uint16_t)buf[5]);
 
-    // 计算圈数与总编码器值
-    delta_encoder = tmp_encoder - motor_instance->Rx_Data.Pre_Encoder;
-    if (delta_encoder < -DM_3519_ENCODER_NUM_PER_ROUND / 2)
+    // 计算圈数与总编码器值（修正类型，避免无符号扩展导致的大跳变）
+    int32_t delta_encoder_32 = (int32_t)tmp_encoder - (int32_t)(motor_instance->Rx_Data.Pre_Encoder & 0xFFFFU);
+    if (delta_encoder_32 < -(DM_3519_ENCODER_NUM_PER_ROUND / 2))
     {
         // 正方向转过了一圈
         motor_instance->Rx_Data.Total_Round++;
     }
-    else if (delta_encoder > DM_3519_ENCODER_NUM_PER_ROUND / 2)
+    else if (delta_encoder_32 > (DM_3519_ENCODER_NUM_PER_ROUND / 2))
     {
         // 反方向转过了一圈
-    motor_instance->Rx_Data.Total_Round--;
+        motor_instance->Rx_Data.Total_Round--;
     }
-    motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * DM_3519_ENCODER_NUM_PER_ROUND + tmp_encoder + motor_instance->Encoder_Offset;
+    motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * DM_3519_ENCODER_NUM_PER_ROUND + (int32_t)tmp_encoder + motor_instance->Encoder_Offset;
 
     // 计算电机本身信息
     motor_instance->Rx_Data.Now_Angle = (float) motor_instance->Rx_Data.Total_Encoder / (float) DM_3519_ENCODER_NUM_PER_ROUND * 2.0f * PI;
-    motor_instance->Rx_Data.Now_Omega = (tmp_omega / 100.0f) * BASIC_MATH_RPM_TO_RADPS * motor_instance->Gearbox_Rate;
-    motor_instance->Rx_Data.Now_Torque = tmp_current / 1000.0f * DM_3519_CURRENT_TO_TORQUE * motor_instance->Gearbox_Rate;
+    motor_instance->Rx_Data.Now_Omega =  (tmp_omega * BASIC_MATH_RPM_TO_RADPS) / motor_instance->Gearbox_Rate;
+    motor_instance->Rx_Data.Now_Torque = (tmp_current / DM_3519_OUT_MAX) * DM_3519_CURRENT_TO_TORQUE;
     motor_instance->Rx_Data.Error_code = tmp_buffer->Error_code;
     motor_instance->Rx_Data.Now_Rotor_Temperature = tmp_buffer->Rotor_Temperature ;
-
-    // 存储预备信息0 
+    motor_instance->Encoder_Part = Basic_Math_Modulus_Return(&motor_instance->Encoder_Limit, motor_instance->Rx_Data.Total_Encoder);
+    // 存储预备信息
     motor_instance->Rx_Data.Pre_Encoder = tmp_encoder;
 }
 
@@ -491,53 +489,6 @@ void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance)
     {
         break;
     }
-    }
-}
-
-
-/**
- * @brief CAN通信接收回调函数
- *
- */
-void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
-{
-
-    if ((Header == NULL) || (Buffer == NULL))
-    {
-        return;
-    }
-    switch (Header->Identifier)
-    {
-        case (0x201):
-        if(DM_Motor_1to4_Instances[0].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_1to4_Instances[0].Flag +=1;
-            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[0]);
-        }
-        break;
-        case (0x202):
-        if(DM_Motor_1to4_Instances[1].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_1to4_Instances[1].Flag +=1;
-            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[1]);
-        }
-        break;
-        case (0x203):
-        if(DM_Motor_1to4_Instances[2].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_1to4_Instances[2].Flag +=1;
-            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[2]);
-        }
-        break;
-        case (0x204):
-        if(DM_Motor_1to4_Instances[3].CAN_Manage_Object != NULL)
-        {
-            DM_Motor_1to4_Instances[3].Flag +=1;
-            Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[3]);
-        }
-        break;       
-        default:
-        break;
     }
 }
 
@@ -621,7 +572,7 @@ void Motor_DM_Normal_TIM_100ms_Alive_PeriodElapsedCallback(DM_Motor_Instance *mo
         motor_instance->Motor_DM_Status = Motor_DM_Status_DISABLE;
     }
     else
-    {
+    { 
         // 电机保持连接
         motor_instance->Motor_DM_Status = Motor_DM_Status_ENABLE;
     }

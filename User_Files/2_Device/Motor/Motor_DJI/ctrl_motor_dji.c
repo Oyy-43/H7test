@@ -23,11 +23,11 @@ PID_TypeDef Motor_3508_SPEED_PID[DJI_Motor_C620_Num];
 float PID_3508_SPEEDKP[DJI_Motor_C620_Num] = {812.3f, 812.3f, 812.3f, 812.3f};  //0.2732 0.6664
 float PID_3508_SPEEDKI[DJI_Motor_C620_Num] = {0.9f, 0.9f, 0.9f, 0.9f};
 float PID_3508_SPEEDKD[DJI_Motor_C620_Num] = {0.0f, 0.0f, 0.0f, 0.0f};
-float PID_3508_SPEEDKf[DJI_Motor_C620_Num] = {25.0f, 25.0f, 40.0f, 25.0f};
-float PID_2006_SPEEDKP[DJI_Motor_C610_Num] = {3.732f, 3.732f};  //0.2732 0.6664
-float PID_2006_SPEEDKI[DJI_Motor_C610_Num] = {0.01f, 0.01f};
+float PID_3508_SPEEDKf[DJI_Motor_C620_Num] = {25.0f, 25.0f, 25.0f, 25.0f};
+float PID_2006_SPEEDKP[DJI_Motor_C610_Num] = {565.5f, 565.5f};  //0.2732 0.6664
+float PID_2006_SPEEDKI[DJI_Motor_C610_Num] = {0.9f, 0.9f};
 float PID_2006_SPEEDKD[DJI_Motor_C610_Num] = {0.0f, 0.0f};
-float PID_2006_SPEEDKf[DJI_Motor_C610_Num] = {0.03f, 0.03f};
+float PID_2006_SPEEDKf[DJI_Motor_C610_Num] = {22.5f, 22.5f};
 float Sin_Target;
 float test_Target;
 Struct_Filter_Frequency Motor_2006_Speed_Filter[DJI_Motor_C610_Num];
@@ -72,8 +72,6 @@ void Motor_DJI_InitPID()
 
 void Motor_DJI_CalPID()
 {
-    float filtered_omega;
-
     Filter_Frequency_Set_Now(&Motor_2006_Speed_Filter[0], DJI_Motor_Instances[4].Rx_Data.Now_Omega);
     Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Motor_2006_Speed_Filter[0]);
     DJI_Motor_Instances[4].Filtered_Omega = Filter_Frequency_Get_Out(&Motor_2006_Speed_Filter[0]);
@@ -106,6 +104,11 @@ void Motor_DJI_CalPID()
     DJI_Motor_Instances[3].Out = PID_Calculate(&Motor_3508_SPEED_PID[3], DJI_Motor_Instances[3].Filtered_Omega, DJI_Motor_Instances[3].Target_Omega, 0.001f);
 }
 
+void DJI_Motor_Output()
+{
+    Motor_DJI_CalPID();
+    Motor_DJI_SetOutput();
+}
 /* Function prototypes -------------------------------------------------------*/
 void DJISetOut(void *argument)
 {
@@ -119,31 +122,17 @@ void DJISetOut(void *argument)
 
     for(;;)
     {
-        if(rc_channels.ch[4]<=0)
-        {
-            // DJI_Motor_Instances[0].Target_Omega =0.0f;
-            // DJI_Motor_Instances[1].Target_Omega =0.0f;
-            // DJI_Motor_Instances[2].Target_Omega =0.0f;
-            // DJI_Motor_Instances[3].Target_Omega =0.0f;
-            // Motor_DJI_CalPID();
-            DJI_Motor_Instances[0].Out =0.0f;
-            DJI_Motor_Instances[1].Out =0.0f;
-            DJI_Motor_Instances[2].Out =0.0f;
-            DJI_Motor_Instances[3].Out =0.0f;
-            Motor_DJI_Output();
-        }
-        else
-        {
-            Sin_Target = ALG_Sin_Generate(&Sin_Target, 3.0f, 25.0f, 1000.0f);
-            // ALG_Value_Toggle_Periodic(&Sin_Target, 10.0f, -10.0f, 2.0f, 1000.0f);
-            // DJI_Motor_Instances[0].Target_Omega = Sin_Target;
-            // DJI_Motor_Instances[1].Target_Omega = 10.0f;
-            // DJI_Motor_Instances[2].Target_Omega = 10.0f;
-            // DJI_Motor_Instances[3].Target_Omega = Sin_Target;
-            Motor_DJI_CalPID();
-            Motor_DJI_Output();
-            TransData_Send_Two_Float_Frame(&huart1, DJI_Motor_Instances[3].Out, DJI_Motor_Instances[3].Filtered_Omega, 2);
-        }
+        Sin_Target = ALG_Sin_Generate(&Sin_Target, 3.0f, 10.0f, 1000.0f);
+        // ALG_Value_Toggle_Periodic(&Sin_Target, 10.0f, -10.0f, 2.0f, 1000.0f);
+        // DJI_Motor_Instances[0].Target_Omega = 10.0f;
+        // DJI_Motor_Instances[1].Target_Omega = 10.0f;
+        // DJI_Motor_Instances[2].Target_Omega = 10.0f;
+        // DJI_Motor_Instances[3].Target_Omega = 12.0f;
+        // DJI_Motor_Instances[4].Target_Omega = Sin_Target;
+        // DJI_Motor_Instances[5].Target_Omega = -10.0f;
+        // Motor_DJI_CalPID();
+        // Motor_DJI_Output();
+        // TransData_Send_Two_Float_Frame(&huart1, DJI_Motor_Instances[3].Out, DJI_Motor_Instances[3].Filtered_Omega, 2);
         xTaskDelayUntil(&last_wake_time, period_ticks);
     }
 }
