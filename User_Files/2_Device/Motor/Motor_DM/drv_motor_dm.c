@@ -303,8 +303,12 @@ void Motor_DM_Init_All(void)
 {
     // Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
     // Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[0], &hfdcan2, 0, Motor_DM_ID_0x203, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_0_Config);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan2, 0, Motor_DM_ID_0x204, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_1_Config);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[0], &hfdcan1, 0, Motor_DM_ID_0x205, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_0_Config);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan1, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_1_Config);
+    Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //抬升用4310
+    Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //平面前后移动用4310
+    Motor_DM_Init(&DM_Motor_Instances[2], &hfdcan2, 0x13, 0x03, Motor_DM_Control_Method_NORMAL_MIT, DM_3519_PMAX, DM_3519_VMAX, DM_3519_TMAX, DM_3519_Current_MAX); //大旋转轴4310
+    Motor_DM_Init(&DM_Motor_Instances[3], &hfdcan2, 0x14, 0x04, Motor_DM_Control_Method_NORMAL_MIT, DM_3519_PMAX, DM_3519_VMAX, DM_3519_TMAX, DM_3519_Current_MAX); //小旋转轴4310
 }
 
 /**

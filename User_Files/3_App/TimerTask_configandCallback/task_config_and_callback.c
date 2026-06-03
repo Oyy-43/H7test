@@ -35,20 +35,37 @@ bool red_minus_flag = false;
 bool green_minus_flag = false;
 bool blue_minus_flag = true;
 
+void Motor_CanMessage_Transmit()
+{
+    CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
+	CAN_Transmit_Data(&hfdcan1,0x1FF,CAN1_0x1ff_Tx_Data,8);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
+}
+
+
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-    Motor_DJI_CAN1_RxCpltCallback(Header, Buffer);
+    switch(Header->Identifier)
+    {
+        case (0x201):
+        case (0x202):
+        case (0x203):
+        case (0x204):
+        Motor_DJI_CAN1_RxCpltCallback(Header, Buffer);
+        break;
+        case (0x205):
+        case (0x206):
+        Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
+        break;
+    }
 }
 
 void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-    switch(Header->Identifier)
-    {
-        case (0x203):
-        case (0x204):
-        Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
-        break;
-    }
+
 }
 
 void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -181,7 +198,7 @@ void Task_Init()
 
    //CAN初始化
     CAN_Init(&hfdcan1, CAN1_Callback);
-    CAN_Init(&hfdcan2, CAN2_Callback);
+    CAN_Init(&hfdcan2,  NULL);
     CAN_Init(&hfdcan3, CAN3_Callback);
 
    //电源ADC的初始化
@@ -224,8 +241,7 @@ void Timestamp_fuc(void *argument)
     //    s_time = Timestamp_Get_Now_Second();
        DJI_Motor_Output();
        DM_Motor_Output();
-       CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-	   CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x200_Tx_Data,8);
+       Motor_CanMessage_Transmit();
        osDelay(1);
     }
 }

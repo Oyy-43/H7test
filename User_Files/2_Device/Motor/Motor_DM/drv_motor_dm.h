@@ -7,10 +7,10 @@
 
 /* Exported macros -----------------------------------------------------------*/
     // 电机实例表长度
-    #define DM_Motor_Normal_Num 2
+    #define DM_Motor_Normal_Num 4
     #define DM_Motor_1_To_4_Num 2
 
-    //每个电机的控制范围, 传统模式有效
+    //每个电机的控制范围, 传统模式有效,使用前记得比对上位机读数是否一致，不然使用MIT模式时可能反馈不正确
     #define DM_3519_PMAX 0.0f
     #define DM_3519_VMAX 0.0f
     #define DM_3519_TMAX 0.0f
@@ -19,6 +19,10 @@
     #define DM_8009P_VMAX 10.0f
     #define DM_8009P_TMAX 40.0f
     #define DM_8009P_Current_MAX 0.0f
+    #define DM_4310_PMAX 0.0f
+    #define DM_4310_VMAX 0.0f
+    #define DM_4310_TMAX 0.0f
+    #define DM_4310_Current_MAX 0.0f
 
     //一些一拖四模式的常数定义
     // 一圈编码器刻度
@@ -252,6 +256,8 @@ typedef struct DM_Motor_Instance
     float Target_Omega;
     // MITPID模式下的目标位置
     float Target_Angle;
+    // 低通滤波后的速度
+    float Filtered_Omega;
 } DM_Motor_Instance;
 
 /**
