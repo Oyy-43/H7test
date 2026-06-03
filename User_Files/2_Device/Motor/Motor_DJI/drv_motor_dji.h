@@ -9,7 +9,7 @@
 
 /* Exported macros -----------------------------------------------------------*/
 // 电机实例表长度
-#define DJI_Motor_C610_Num 2
+#define DJI_Motor_C610_Num 0
 
 #define C610_ENCODER_NUM_PER_ROUND 8192
 #define C610_CURRENT_TO_TORQUE     0.005      //0.18f / 36.0f

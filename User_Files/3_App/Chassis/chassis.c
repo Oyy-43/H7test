@@ -49,8 +49,6 @@ void Chassis_Control()
     const float vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
     const float vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
     const float wz_cmd = -rc_channels.ch[3] * 0.01f / 15.0f;
-    DJI_Motor_Instances[4].Target_Omega = rc_channels.ch[11] * 0.05f / 10.0f;
-    DJI_Motor_Instances[5].Target_Omega = -rc_channels.ch[11] * 0.05f / 10.0f;
 
     Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
   }

@@ -513,8 +513,6 @@ void Motor_DJI_Init_All()
     Motor_DJI_Init(&DJI_Motor_Instances[1], &hfdcan1, Motor_DJI_ID_0x202, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C620);
     Motor_DJI_Init(&DJI_Motor_Instances[2], &hfdcan1, Motor_DJI_ID_0x203, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C620);
     Motor_DJI_Init(&DJI_Motor_Instances[3], &hfdcan1, Motor_DJI_ID_0x204, 0, 0.0f, C620_Gearbox_Rate,Motor_DJI_Type_C620);
-    Motor_DJI_Init(&DJI_Motor_Instances[4], &hfdcan2, Motor_DJI_ID_0x201, 0, 0.0f, C610_Gearbox_Rate,Motor_DJI_Type_C610);
-    Motor_DJI_Init(&DJI_Motor_Instances[5], &hfdcan2, Motor_DJI_ID_0x202, 0, 0.0f, C610_Gearbox_Rate,Motor_DJI_Type_C610);
 }
 
 
@@ -676,13 +674,5 @@ void Motor_DJI_SetOutput()
     out = (int16_t)(DJI_Motor_Instances[3].Out);
     DJI_Motor_Instances[3].Tx_Data[0] = (uint8_t)(((uint16_t)out) >> 8);
     DJI_Motor_Instances[3].Tx_Data[1] = (uint8_t)((uint16_t)out);
-
-    out = (int16_t)(DJI_Motor_Instances[4].Out);
-    DJI_Motor_Instances[4].Tx_Data[0] = (uint8_t)(((uint16_t)out) >> 8);    //4~5抬升运动主动轮电机
-    DJI_Motor_Instances[4].Tx_Data[1] = (uint8_t)((uint16_t)out);
-
-    out = (int16_t)(DJI_Motor_Instances[5].Out);
-    DJI_Motor_Instances[5].Tx_Data[0] = (uint8_t)(((uint16_t)out) >> 8);
-    DJI_Motor_Instances[5].Tx_Data[1] = (uint8_t)((uint16_t)out);
 
 }

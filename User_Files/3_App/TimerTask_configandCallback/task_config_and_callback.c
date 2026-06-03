@@ -48,9 +48,6 @@ void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
         case (0x204):
         Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
         break;
-        case (0x201):
-        case (0x202):
-        Motor_DJI_CAN2_RxCpltCallback(Header, Buffer);
     }
 }
 
