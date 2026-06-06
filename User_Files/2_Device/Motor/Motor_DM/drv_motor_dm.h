@@ -19,9 +19,9 @@
     #define DM_8009P_VMAX 10.0f
     #define DM_8009P_TMAX 40.0f
     #define DM_8009P_Current_MAX 0.0f
-    #define DM_4310_PMAX 0.0f
-    #define DM_4310_VMAX 0.0f
-    #define DM_4310_TMAX 0.0f
+    #define DM_4310_PMAX 12.5f
+    #define DM_4310_VMAX 30.0f
+    #define DM_4310_TMAX 10.0f
     #define DM_4310_Current_MAX 0.0f
 
     //一些一拖四模式的常数定义

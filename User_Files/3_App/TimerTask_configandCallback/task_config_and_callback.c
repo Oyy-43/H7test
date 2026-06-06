@@ -1,24 +1,5 @@
 #include "task_config_and_callback.h"
 
-#include "sys_timestamp.h"
-#include "drv_uart.h"
-#include "cmsis_os2.h"
-#include "bsp_buzzer.h"
-#include "bsp_ws2812.h"
-#include "drv_spi.h"
-#include "bsp_key.h"
-#include "drv_can.h"
-#include "drv_motor_dm.h"
-#include "ctrl_motor_dm.h"
-#include "bsp_power.h"
-#include "drv_usb.h"
-#include "drv_motor_lk.h"
-#include "ctrl_motor_lk.h"
-#include "withPC.h"
-#include "drv_motor_dji.h"
-#include "ctrl_motor_dji.h"
-#include "tele_task.h"
-
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
 uint32_t ms_time=0;
@@ -26,6 +7,9 @@ uint16_t s_time=0;
 
 // 全局初始化完成标志位
 bool init_finished = false;
+
+// 机器人模式全局状态
+Enum_Robot_Mode Robot_Mode = Robot_Mode_Stop;
 
 // LED灯
 int32_t red = 0;
@@ -45,7 +29,6 @@ void Motor_CanMessage_Transmit()
     Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
 }
 
-
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
     switch(Header->Identifier)
@@ -58,14 +41,14 @@ void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
         break;
         case (0x205):
         case (0x206):
-        Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
+        Motor_DM_CAN1_RxCpltCallback(Header, Buffer);
         break;
     }
 }
 
 void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-
+    Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
 }
 
 void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -76,6 +59,22 @@ void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 void serial_Callback(uint8_t *Buffer, uint16_t Length)
 {
    PC_rx_idle_callback(Buffer, Length);
+}
+
+void Robot_Mode_Change_Check()
+{
+    if(rc_channels.ch[4]<0)
+    {
+        Robot_Mode = Robot_Mode_Stop;
+    }
+    else if(rc_channels.ch[4]==0)
+    {
+        Robot_Mode = Robot_Mode_Manual;
+    }
+    else if(rc_channels.ch[4]>0)
+    {
+        Robot_Mode = Robot_Mode_Auto;
+    }
 }
 
 
@@ -97,6 +96,7 @@ void Task1ms_Callback()
     PC_rx_timeout_1ms_process();
     Remote_Status_Update(&ch9_status, 9);
     MeasureFSM_Run();
+    LiftFSM_Run();
     static int mod10 = 0;
     mod10++;
     if (mod10 == 10)
@@ -198,7 +198,7 @@ void Task_Init()
 
    //CAN初始化
     CAN_Init(&hfdcan1, CAN1_Callback);
-    CAN_Init(&hfdcan2,  NULL);
+    CAN_Init(&hfdcan2, CAN2_Callback);
     CAN_Init(&hfdcan3, CAN3_Callback);
 
    //电源ADC的初始化
@@ -211,8 +211,9 @@ void Task_Init()
    //蜂鸣器初始化
     Buzzer_Init(4000,0.0f);
 
-   //5V,24V电源输出初始化
-    BSP_Power_Init(false, false,true);
+   //5V,24V电源输出初始化  第一位参数控制CAN1的2+2，第二位控制CAN2的2+2,第三位控制5v开关
+    BSP_Power_Init(false,true,true);
+
 
    //初始化WS2812灯珠
     WS2812_Init(0, 0, 0);
@@ -239,6 +240,7 @@ void Timestamp_fuc(void *argument)
     //    us_time = Timestamp_Get_Now_Microsecond();
     //    ms_time = Timestamp_Get_Now_Millisecond();
     //    s_time = Timestamp_Get_Now_Second();
+       Robot_Mode_Change_Check(); 
        DJI_Motor_Output();
        DM_Motor_Output();
        Motor_CanMessage_Transmit();

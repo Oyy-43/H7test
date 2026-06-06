@@ -40,11 +40,11 @@ void Chassis_Omega_update(float vx, float vy, float vz)
 
 void Chassis_Control()
 {
-  if(rc_channels.ch[4]<0)
+  if(Robot_Mode == Robot_Mode_Stop)
   {
     Chassis_Omega_update(0,0,0);
   }
-  else if (rc_channels.ch[4] == 0)
+  else if (Robot_Mode == Robot_Mode_Manual)
   {
     const float vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
     const float vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
@@ -52,7 +52,7 @@ void Chassis_Control()
 
     Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
   }
-  else if (rc_channels.ch[4] > 0)
+  else if (Robot_Mode == Robot_Mode_Auto)
   {
     const float vx_cmd = PC_frame.cmd_vx*0.25;
     const float vy_cmd = PC_frame.cmd_vy*0.25;

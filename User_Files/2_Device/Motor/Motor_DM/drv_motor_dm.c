@@ -307,8 +307,8 @@ void Motor_DM_Init_All(void)
     Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan1, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_1_Config);
     Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //抬升用4310
     Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //平面前后移动用4310
-    Motor_DM_Init(&DM_Motor_Instances[2], &hfdcan2, 0x13, 0x03, Motor_DM_Control_Method_NORMAL_MIT, DM_3519_PMAX, DM_3519_VMAX, DM_3519_TMAX, DM_3519_Current_MAX); //大旋转轴4310
-    Motor_DM_Init(&DM_Motor_Instances[3], &hfdcan2, 0x14, 0x04, Motor_DM_Control_Method_NORMAL_MIT, DM_3519_PMAX, DM_3519_VMAX, DM_3519_TMAX, DM_3519_Current_MAX); //小旋转轴4310
+    Motor_DM_Init(&DM_Motor_Instances[2], &hfdcan2, 0x13, 0x03, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //大旋转轴4310
+    Motor_DM_Init(&DM_Motor_Instances[3], &hfdcan2, 0x14, 0x04, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //小旋转轴4310
 }
 
 /**
@@ -497,10 +497,10 @@ void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance)
 }
 
 /**
- * @brief DMcan2回调函数编写
+ * @brief DMcan1回调函数编写
  * 
  */
-void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
     if ((Header == NULL) || (Buffer == NULL))
     {
@@ -525,6 +525,53 @@ void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer
         default:
         break;
     }
+}
+
+void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+{
+    if ((Header == NULL) || (Buffer == NULL))
+       {
+           return;
+       }
+       switch (Header->Identifier)
+       {
+          case (0x11):
+          {
+              if(DM_Motor_Instances[0].CAN_Manage_Object != NULL)
+              {
+                  DM_Motor_Instances[0].Flag +=1;
+                  Motor_DM_Normal_Data_Process(&DM_Motor_Instances[0]);
+              }
+          }
+          break;
+          case (0x12):
+          {
+              if(DM_Motor_Instances[1].CAN_Manage_Object != NULL)
+              {
+                  DM_Motor_Instances[1].Flag +=1;
+                  Motor_DM_Normal_Data_Process(&DM_Motor_Instances[1]);
+              }
+          }
+          break;
+          case (0x13):
+          {
+              if(DM_Motor_Instances[2].CAN_Manage_Object != NULL)
+              {
+                  DM_Motor_Instances[2].Flag +=1;
+                  Motor_DM_Normal_Data_Process(&DM_Motor_Instances[2]);
+              }
+          }
+          break;
+          case (0x14):
+          {
+              if(DM_Motor_Instances[3].CAN_Manage_Object != NULL)
+              {
+                  DM_Motor_Instances[3].Flag +=1;
+                  Motor_DM_Normal_Data_Process(&DM_Motor_Instances[3]);
+              }
+          }
+          break;
+       }
 }
 
 /**

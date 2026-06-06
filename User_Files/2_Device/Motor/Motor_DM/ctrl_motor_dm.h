@@ -5,14 +5,15 @@
 #include "crsf.h"
 #include "alg_filter_frequency.h"
 #include "alg_sin.h"
- #include "drv_motor_dm.h"
- #include "drv_uart.h"
- #include "alg_pid.h"
- #include "cmsis_os2.h"
- #include <stdio.h>
- #include <string.h>
- #include "alg_transData.h"
- #include "Lift.h"
+#include "drv_motor_dm.h"
+#include "drv_uart.h"
+#include "alg_pid.h"
+#include "cmsis_os2.h"
+#include <stdio.h>
+#include <string.h>
+#include "alg_transData.h"
+#include "Lift.h"
+#include "robot_def.h"
 
 
 /* Exported macros -----------------------------------------------------------*/

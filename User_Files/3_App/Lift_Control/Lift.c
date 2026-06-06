@@ -26,6 +26,8 @@ FSMstate MeasureMAXMIN_Front_t;
 FSMstate MeasureMAXMIN_Back_t;
 Event MeasureEvent_Front_t;
 Event MeasureEvent_Back_t;  
+FSMstate LiftingState_t;
+Event LiftingEvent_t;
 /* Private variables ---------------------------------------------------------*/
 
 float count;
@@ -34,6 +36,8 @@ volatile float Lowering3time = 0.0f;
 volatile float Debug_PID_Output = 0.0f;
 bool Front_Calibrated = false;
 bool Back_Calibrated = false;
+float Lift_HightFront = 0.0f;
+float Lift_HightBack = 0.0f;
 Normali_S remote_channel_ch2;
 float test_remote_ch2;
 /* Private function declarations ---------------------------------------------*/
@@ -56,7 +60,15 @@ void MeasureFSM_Run()
     MeasureFSM_Dispatch(&MeasureMAXMIN_Back_t, &MeasureEvent_Back_t, &Motor_DM_1_To_4_PID[1],&DM_Motor_1to4_Instances[1],&Back_Calibrated);
 }
 
+void LiftFSM_Run()
+{
+    LiftFSM_Dispatch(&LiftingState_t, &LiftingEvent_t);
+}
 
+/**
+ * @brief 上升机构校准有限状态机状态切换检测函数
+ * 
+ */
 void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_Instance *motor_instance,bool *calibrated)
 {
     static float Max1, Max2, Max3, Min1, Min2, Min3;
@@ -257,6 +269,10 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
     }
 }
 
+/**
+ * @brief 堵转检测函数，返回true表示堵转
+ * 
+ */
 bool Blocking_Check(PID_TypeDef *pid)
 {
     float target_abs = ABS(pid->Target);
@@ -289,6 +305,10 @@ bool Blocking_Check(PID_TypeDef *pid)
     return false;
 }
 
+/**
+ * @brief 上升机构校准有限状态机事件生成检测函数
+ * 
+ */
 void MeasureEvent_Generate(FSMstate *me, Event *e,PID_TypeDef *pid)
 {
     e->sig = MeasureEvent_None;
@@ -363,7 +383,11 @@ void MeasureEvent_Generate(FSMstate *me, Event *e,PID_TypeDef *pid)
     }
 }
 
-void Lift_Control(FSMstate *me, DM_Motor_1to4_Instance *motor_instance)
+/**
+ * @brief 上升机构校准有限状态机运行动作函数
+ * 
+ */
+void Lift_Calibrate(FSMstate *me, DM_Motor_1to4_Instance *motor_instance)
 {
     switch(me->state)
     {
@@ -398,14 +422,102 @@ void Lift_Control(FSMstate *me, DM_Motor_1to4_Instance *motor_instance)
     }
 }
 
+/**
+ * @brief 上升机构运动有限状态机状态切换函数
+ * 
+ */
+void LiftFSM_Dispatch(FSMstate *me,Event *e)
+{
+    LiftEvent_Generate(me,e);
+    switch(me->state)
+    {
+        case No_Lifting:
+            switch(e->sig)
+            {
+                case LiftEvent_LiftLevel200:
+                me->state = LiftLevel200;
+                break;
+                case LiftEvent_LiftLevel400:
+                me->state = LiftLevel400;
+                break;
+            }
+        break;
+        case LiftLevel200:
+            switch(e->sig)
+            {
+                case LiftEvent_None:
+                me->state = No_Lifting;
+                break;
+            }
+        break;
+        case LiftLevel400:
+            switch(e->sig)
+            {
+                case LiftEvent_None:
+                me->state = No_Lifting;
+                break;
+            }
+        break;
+    }
+}
+
+/**
+ * @brief 上升机构运动有限状态机事件生成函数
+ * 
+ */
+void LiftEvent_Generate(FSMstate *me,Event *e)
+{
+    e->sig = MeasureEvent_None;
+    if(me->state==No_Lifting && rc_channels.ch[12]>0)
+    {
+        e->sig = LiftEvent_LiftLevel200;
+    }
+    if(me->state==LiftLevel200 && rc_channels.ch[12]<=0)
+    {
+        e->sig = LiftEvent_None;
+    }
+    if(me->state==No_Lifting && rc_channels.ch[13]>0)
+    {
+        e->sig = LiftEvent_LiftLevel400;
+    }
+    if(me->state==LiftLevel400 && rc_channels.ch[13]<=0)
+    {
+        e->sig = LiftEvent_None;
+    }
+}
+
+/**
+ * @brief 上升机构校准有限状态机运行高度设定函数
+ * 
+ */
+void Lift_Set_Target(FSMstate *me)
+{
+    switch(me->state)
+    {
+        case No_Lifting:
+            Lift_HightFront = 0.95f;
+            Lift_HightBack = 0.95f;
+        break;
+        case LiftLevel200:
+            Lift_HightFront = 0.65f;
+            Lift_HightBack = 0.65f;
+        break;
+        case LiftLevel400:
+            Lift_HightFront = 0.35f;
+            Lift_HightBack = 0.35f;
+        break;
+    }
+}
+
 void Lift_Task(void *argument)
 {
     MeasureFSM_Init();
     while (1)
     {
       test_remote_ch2 = Basic_Math_Modulus_Return(&remote_channel_ch2, (int32_t)rc_channels.ch[2]);
-      Lift_Control(&MeasureMAXMIN_Front_t, &DM_Motor_1to4_Instances[0]);
-      Lift_Control(&MeasureMAXMIN_Back_t, &DM_Motor_1to4_Instances[1]);
+      Lift_Calibrate(&MeasureMAXMIN_Front_t, &DM_Motor_1to4_Instances[0]);
+      Lift_Calibrate(&MeasureMAXMIN_Back_t, &DM_Motor_1to4_Instances[1]);
+      Lift_Set_Target(&LiftingState_t);
       osDelay(1); // 每1ms更新一次
     }
 }

@@ -83,7 +83,13 @@
           "Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc",
           "USB_DEVICE/App",
           "USB_DEVICE/Target",
-          "User_Files/3_App/communcation"
+          "User_Files/3_App/TimerTask_configandCallback",
+          "User_Files/3_App/Tele_task",
+          "User_Files/3_App/Arm_Control",
+          "User_Files/3_App/Lift_Control",
+          "User_Files/3_App/communication",
+          "User_Files/3_App/Chassis",
+          "User_Files/3_App/Buzzer_Music"
         ],
         "libList": [],
         "defineList": [

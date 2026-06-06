@@ -234,6 +234,7 @@ C_INCLUDES =  \
 -IUser_Files/3_App/TimerTask_configandCallback \
 -IUser_Files/3_App/Tele_task \
 -IUser_Files/3_App/Arm_Control \
+-IUser_Files/3_App/Lift_Control \
 -IUser_Files/3_App/communication \
 -IUser_Files/3_App/Chassis \
 -IMiddlewares/Third_Party/FreeRTOS/Source \

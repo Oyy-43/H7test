@@ -1,6 +1,20 @@
 #ifndef _ROBOT_DEF_H
 #define _ROBOT_DEF_H
 
+
+
+/**
+ * @brief 机器人手动模式和自动模式的枚举定义
+ * 
+ */
+typedef enum Enum_Robot_Mode
+{
+    Robot_Mode_Stop=0,
+    Robot_Mode_Manual,
+    Robot_Mode_Auto,
+}Enum_Robot_Mode;
+
+extern Enum_Robot_Mode Robot_Mode;
 /**
  * @brief 选择开启C++的宏定义
  * 
