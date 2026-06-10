@@ -27,6 +27,7 @@
 #include "ctrl_motor_dm.h"
 #include "robot_def.h"
 #include "drv_tfmini.h"
+#include "bsp_bmi088.h"
 
 
 void Task_Init();

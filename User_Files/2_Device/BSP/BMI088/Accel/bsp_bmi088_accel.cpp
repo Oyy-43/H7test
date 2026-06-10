@@ -16,6 +16,7 @@
 /* Private macros ------------------------------------------------------------*/
 
 /* Private types -------------------------------------------------------------*/
+PID_TypeDef PID_Temperature;
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -48,7 +49,8 @@ void Class_BMI088_Accel::Init(const bool &__Heater_Enable)
     Heater_Enable = __Heater_Enable;
 
     // 初始化PID
-    PID_Temperature.Init(100.0f, 10.0f, 0.0f, 0.0f, 300.0f, 500.0f, 0.128f);
+    PID_Init(&PID_Temperature,500.0f,300.0f,0.0f,100.0f,10.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
+    // PID_Temperature.Init(100.0f, 10.0f, 0.0f, 0.0f, 300.0f, 500.0f, 0.128f);
 
     // 启动PWM
     if (Heater_Enable)
@@ -64,20 +66,20 @@ void Class_BMI088_Accel::Init(const bool &__Heater_Enable)
     while (Register.ACC_CHIP_ID_RO != 0x1e)
     {
         Read_Single_Register(offsetof(Struct_BMI088_Accel_Register, ACC_CHIP_ID_RO));
-        Namespace_SYS_Timestamp::Delay_Millisecond(100);
+        Timestamp_Delay_Millisecond(100);
     }
 
     // 软重启
     res = 0xb6;
     Write_Single_Register(offsetof(Struct_BMI088_Accel_Register, ACC_PWR_CTRL_RW), &res);
-    Namespace_SYS_Timestamp::Delay_Millisecond(100);
+    Timestamp_Delay_Millisecond(100);
 
     // 检测通信是否正常
     Register.ACC_CHIP_ID_RO = 0x00;
     while (Register.ACC_CHIP_ID_RO != 0x1e)
     {
         Read_Single_Register(offsetof(Struct_BMI088_Accel_Register, ACC_CHIP_ID_RO));
-        Namespace_SYS_Timestamp::Delay_Millisecond(100);
+        Timestamp_Delay_Millisecond(100);
     }
 
     for (uint8_t i = 0; i < BMI088_ACCEL_INIT_INSTRUCTION_NUM; i++)
@@ -87,17 +89,17 @@ void Class_BMI088_Accel::Init(const bool &__Heater_Enable)
         {
             // 写入寄存器
             Write_Single_Register(BMI088_ACCEL_REGISTER_CONFIG[i][0], &BMI088_ACCEL_REGISTER_CONFIG[i][1]);
-            Namespace_SYS_Timestamp::Delay_Millisecond(100);
+            Timestamp_Delay_Millisecond(100);
 
             // 读取寄存器
             Read_Single_Register(BMI088_ACCEL_REGISTER_CONFIG[i][0]);
-            Namespace_SYS_Timestamp::Delay_Millisecond(100);
+            Timestamp_Delay_Millisecond(100);
         }
     }
 
     // 预读取一次加速度计数据
     Read_Multi_Register(offsetof(Struct_BMI088_Accel_Register, ACC_X_RO), 6);
-    Namespace_SYS_Timestamp::Delay_Millisecond(100);
+    Timestamp_Delay_Millisecond(100);
 }
 
 /**
@@ -194,13 +196,14 @@ void Class_BMI088_Accel::TIM_128ms_Heater_PID_PeriodElapsedCallback()
         }
         else
         {
-            PID_Temperature.Set_Now(Now_Temperature);
-            PID_Temperature.Set_Target(HEATER_TARGET_TEMPERATURE);
-            PID_Temperature.TIM_Calculate_PeriodElapsedCallback();
-            tmp = PID_Temperature.Get_Out();
+            // PID_Temperature.Set_Now(Now_Temperature);
+            // PID_Temperature.Set_Target(HEATER_TARGET_TEMPERATURE);
+            // PID_Temperature.TIM_Calculate_PeriodElapsedCallback();
+            // tmp = PID_Temperature.Get_Out();
+            tmp = PID_Calculate(&PID_Temperature, Now_Temperature, HEATER_TARGET_TEMPERATURE, 0.128f);
         }
-        float output = tmp / (BSP_Power.Get_Power_Voltage() * BSP_Power.Get_Power_Voltage()) * HEATER_NOMINAL_VOLTAGE * HEATER_NOMINAL_VOLTAGE;
-        Basic_Math_Constrain(&output, 0.0f, 10000.0f);
+        float output = tmp / (BSP_Power_Get_Power_Voltage() * BSP_Power_Get_Power_Voltage()) * HEATER_NOMINAL_VOLTAGE * HEATER_NOMINAL_VOLTAGE;
+        output = Basic_Math_Constrain(output, 0.0f, 10000.0f);
         __HAL_TIM_SET_COMPARE(htim, TIM_Channel, (uint32_t)(output));
     }
     else

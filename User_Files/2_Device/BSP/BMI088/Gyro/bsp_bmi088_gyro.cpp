@@ -45,20 +45,20 @@ void Class_BMI088_Gyro::Init()
     while (Register.GYRO_CHIP_ID_RO != 0x0f)
     {
         Read_Single_Register(offsetof(Struct_BMI088_Gyro_Register, GYRO_CHIP_ID_RO));
-        Namespace_SYS_Timestamp::Delay_Millisecond(100);
+        Timestamp_Delay_Millisecond(100);
     }
 
     // 软重启
     res = 0xb6;
     Write_Single_Register(offsetof(Struct_BMI088_Gyro_Register, GYRO_SOFTRESET_WO), &res);
-    Namespace_SYS_Timestamp::Delay_Millisecond(100);
+    Timestamp_Delay_Millisecond(100);
 
     // 检测通信是否正常
     Register.GYRO_CHIP_ID_RO = 0x00;
     while (Register.GYRO_CHIP_ID_RO != 0x0f)
     {
         Read_Single_Register(offsetof(Struct_BMI088_Gyro_Register, GYRO_CHIP_ID_RO));
-        Namespace_SYS_Timestamp::Delay_Millisecond(100);
+        Timestamp_Delay_Millisecond(100);
     }
 
     for (uint8_t i = 0; i < BMI088_GYRO_INIT_INSTRUCTION_NUM; i++)
@@ -68,17 +68,17 @@ void Class_BMI088_Gyro::Init()
         {
             // 写入寄存器
             Write_Single_Register(BMI088_GYRO_REGISTER_CONFIG[i][0], &BMI088_GYRO_REGISTER_CONFIG[i][1]);
-            Namespace_SYS_Timestamp::Delay_Millisecond(100);
+            Timestamp_Delay_Millisecond(100);
 
             // 读取寄存器
             Read_Single_Register(BMI088_GYRO_REGISTER_CONFIG[i][0]);
-            Namespace_SYS_Timestamp::Delay_Millisecond(100);
+            Timestamp_Delay_Millisecond(100);
         }
     }
 
     // 预读取一次陀螺仪数据
     Read_Multi_Register(offsetof(Struct_BMI088_Gyro_Register, RATE_X_RO), 6);
-    Namespace_SYS_Timestamp::Delay_Millisecond(100);
+    Timestamp_Delay_Millisecond(100);
 }
 
 /**

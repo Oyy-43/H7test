@@ -294,8 +294,8 @@ static void f_PID_ErrorHandle(PID_TypeDef *pid)
 /*****************PID structure initialize*********************/
 void PID_Init(
     PID_TypeDef *pid,
-    uint16_t max_out,
-    uint16_t intergral_limit,
+    float max_out,
+    float intergral_limit,
     float deadband,
 
     float kp,

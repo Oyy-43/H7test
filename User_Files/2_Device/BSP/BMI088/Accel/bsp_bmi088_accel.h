@@ -45,7 +45,6 @@ class Class_BMI088_Accel
 {
 public:
     // 温控PID
-    Class_PID PID_Temperature;
 
     void Init(const bool &__Heater_Enable = false);
 
@@ -160,7 +159,6 @@ protected:
 
 extern const float GRAVITY_ACCELERATION;
 
-extern Class_Power BSP_Power;
 
 /* Exported function declarations --------------------------------------------*/
 
