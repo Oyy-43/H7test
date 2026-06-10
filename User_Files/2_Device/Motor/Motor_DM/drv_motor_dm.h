@@ -36,6 +36,7 @@
     #define DM_3519_OUT_MAX (16384.0f)
     #define DM_3519_Gearbox_Rate (19.2f)
     #define DM_3519_Gearbox_RatePlus (33.88f)
+    #define Pitch_Circle_C  (106.8) //齿轮分度圆周长，单位mm，编码器值/8192=圈数，圈数/19=齿轮转数，齿轮转数*齿条每圈长度=齿条伸出长度
 
 /* Exported types ------------------------------------------------------------*/
 /**
@@ -304,10 +305,12 @@ typedef struct DM_Motor_1to4_Instance
     float Filtered_Omega;
     // 记录编码器最大最小值
     Normali_S Encoder_Limit;
-    // 当前编码器值在总行程内的占比
-    float Encoder_Part;
+    // 当前电机计算后得到的齿条伸出长度
+    float Outch_Length;
     // 目标总编码器值
     float Target_Total_Encoder;
+    // 目标伸出长度
+    float Target_Length;
 }DM_Motor_1to4_Instance;
 
 
@@ -337,8 +340,8 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance);
 
 void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance);
 
-void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 void Motor_DM_CAN2_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
+void Motor_DM_CAN3_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer);
 void Motor_DM_Normal_Send_Enter(DM_Motor_Instance *motor_instance);
 void Motor_DM_Normal_Send_Exit(DM_Motor_Instance *motor_instance);
 void Motor_DM_Normal_Send_Clear_Error(DM_Motor_Instance *motor_instance);

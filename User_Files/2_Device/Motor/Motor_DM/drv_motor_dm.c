@@ -303,8 +303,8 @@ void Motor_DM_Init_All(void)
 {
     // Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
     // Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_8009P_PMAX, DM_8009P_VMAX, DM_8009P_TMAX, DM_8009P_Current_MAX);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[0], &hfdcan1, 0, Motor_DM_ID_0x205, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_0_Config);
-    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan1, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_RatePlus, &DM_3519_1_Config);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[0], &hfdcan3, 0, Motor_DM_ID_0x205, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_Rate, &DM_3519_0_Config);
+    Motor_DM_1_To_4_Init(&DM_Motor_1to4_Instances[1], &hfdcan3, 0, Motor_DM_ID_0x206, Motor_DM_Control_Method_1_TO_4_OMEGA, 0.0f, DM_3519_Gearbox_Rate, &DM_3519_1_Config);
     Motor_DM_Init(&DM_Motor_Instances[0], &hfdcan2, 0x11, 0x01, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //抬升用4310
     Motor_DM_Init(&DM_Motor_Instances[1], &hfdcan2, 0x12, 0x02, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //平面前后移动用4310
     Motor_DM_Init(&DM_Motor_Instances[2], &hfdcan2, 0x13, 0x03, Motor_DM_Control_Method_NORMAL_MIT, DM_4310_PMAX, DM_4310_VMAX, DM_4310_TMAX, DM_4310_Current_MAX); //大旋转轴4310
@@ -407,6 +407,7 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
         motor_instance->Rx_Data.Total_Round--;
     }
     motor_instance->Rx_Data.Total_Encoder = motor_instance->Rx_Data.Total_Round * DM_3519_ENCODER_NUM_PER_ROUND + (int32_t)tmp_encoder + motor_instance->Encoder_Offset;
+    motor_instance->Outch_Length = ((float)(motor_instance->Rx_Data.Total_Encoder - motor_instance->Encoder_Limit.Min)/(float)DM_3519_ENCODER_NUM_PER_ROUND)/motor_instance->Gearbox_Rate * (float)Pitch_Circle_C; //更新输出的齿条长度，使用浮点除法避免整型截断
 
     // 计算电机本身信息
     motor_instance->Rx_Data.Now_Angle = (float) motor_instance->Rx_Data.Total_Encoder / (float) DM_3519_ENCODER_NUM_PER_ROUND * 2.0f * PI;
@@ -414,7 +415,6 @@ void Motor_DM_1_To_4_Data_Process(DM_Motor_1to4_Instance *motor_instance)
     motor_instance->Rx_Data.Now_Torque = (tmp_current / DM_3519_OUT_MAX) * DM_3519_CURRENT_TO_TORQUE;
     motor_instance->Rx_Data.Error_code = tmp_buffer->Error_code;
     motor_instance->Rx_Data.Now_Rotor_Temperature = tmp_buffer->Rotor_Temperature ;
-    motor_instance->Encoder_Part = Basic_Math_Modulus_Return(&motor_instance->Encoder_Limit, motor_instance->Rx_Data.Total_Encoder);
     // 存储预备信息
     motor_instance->Rx_Data.Pre_Encoder = tmp_encoder;
 }
@@ -500,7 +500,7 @@ void Motor_DM_Normal_Output(DM_Motor_Instance *motor_instance)
  * @brief DMcan1回调函数编写
  * 
  */
-void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
+void Motor_DM_CAN3_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
     if ((Header == NULL) || (Buffer == NULL))
     {
@@ -508,14 +508,14 @@ void Motor_DM_CAN1_RxCpltCallback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer
     }
     switch (Header->Identifier)
     {
-        case (0x203):
+        case (0x205):
         if(DM_Motor_1to4_Instances[0].CAN_Manage_Object != NULL)
         {
             DM_Motor_1to4_Instances[0].Flag +=1;
             Motor_DM_1_To_4_Data_Process(&DM_Motor_1to4_Instances[0]);
         }
         break;
-        case (0x204):
+        case (0x206):
         if(DM_Motor_1to4_Instances[1].CAN_Manage_Object != NULL)
         {
             DM_Motor_1to4_Instances[1].Flag +=1;

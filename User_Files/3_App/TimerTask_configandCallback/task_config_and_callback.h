@@ -26,6 +26,8 @@
 #include "drv_motor_dm.h"
 #include "ctrl_motor_dm.h"
 #include "robot_def.h"
+#include "drv_tfmini.h"
+
 
 void Task_Init();
 void Task1ms_Callback();

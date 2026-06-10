@@ -25,14 +25,11 @@ void Chassis_Omega_update(float vx, float vy, float vz)
 {
   const float inv_mecanum_r = 2.0f / chassis_d;
   const float wz_term = vz * (chassis_a + chassis_b);
-  const float inv_omni_r = 2.0f / chassis_omni_d;
-  const float wheel4_x_omega = (-vx + vz * chassis_omni_b) * inv_omni_r;
-  const float wheel5_x_omega = (vx + vz * chassis_omni_b) * inv_omni_r;
 
-  DJI_Motor_Instances[0].Target_Omega =  ((-vx + vy + wz_term) * inv_mecanum_r);
-  DJI_Motor_Instances[1].Target_Omega =  ((-vx - vy + wz_term) * inv_mecanum_r);
-  DJI_Motor_Instances[2].Target_Omega =  ((vx - vy + wz_term) * inv_mecanum_r);
-  DJI_Motor_Instances[3].Target_Omega =  ((vx + vy + wz_term) * inv_mecanum_r);
+  DJI_Motor_Instances[0].Target_Omega =  ((vx - vy + wz_term) * inv_mecanum_r);
+  DJI_Motor_Instances[1].Target_Omega =  ((vx + vy + wz_term) * inv_mecanum_r);
+  DJI_Motor_Instances[2].Target_Omega =  ((-vx + vy + wz_term) * inv_mecanum_r);
+  DJI_Motor_Instances[3].Target_Omega =  ((-vx - vy + wz_term) * inv_mecanum_r);
   // 4/5号轮驱动X向分量，同时叠加绕中心旋转的切向速度分量
   // DJI_Motor_Instances[4].Target_Omega =  wheel4_x_omega;
   // DJI_Motor_Instances[5].Target_Omega =  wheel5_x_omega;
@@ -46,21 +43,43 @@ void Chassis_Control()
   }
   else if (Robot_Mode == Robot_Mode_Manual)
   {
-    const float vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
-    const float vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
-    const float wz_cmd = -rc_channels.ch[3] * 0.01f / 15.0f;
-
+    float vx_cmd = 0.0f;
+    float vy_cmd = 0.0f;
+    float wz_cmd = 0.0f;
+    if(LiftingState_t.state == No_Lifting)
+    {
+      vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
+      vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
+      wz_cmd = rc_channels.ch[3] * 0.01f / 15.0f;
+    }
+    else
+    {
+      vx_cmd = LiftStand_Speedvx;
+      vy_cmd = LiftStand_Speedvy;
+      wz_cmd = LiftStand_Speedvz;
+    }
     Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
   }
   else if (Robot_Mode == Robot_Mode_Auto)
   {
-    const float vx_cmd = PC_frame.cmd_vx*0.25;
-    const float vy_cmd = PC_frame.cmd_vy*0.25;
-    const float wz_cmd = PC_frame.cmd_vz*0.185;
-
+    float vx_cmd,vy_cmd,wz_cmd=0.0f;
+    if(LiftingState_t.state == No_Lifting)
+    {
+       vx_cmd = PC_frame.cmd_vx;
+       vy_cmd = PC_frame.cmd_vy;
+       wz_cmd = PC_frame.cmd_vz;
+    }
+    else
+    {
+      vx_cmd = LiftStand_Speedvx;
+      vy_cmd = LiftStand_Speedvy;
+      wz_cmd = LiftStand_Speedvz;
+    }
+    // const float vx_cmd = -rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
+    // const float vy_cmd = rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
+    // const float wz_cmd = rc_channels.ch[3] * 0.01f / 15.0f;
     Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
   }
-  
 }
 
 

@@ -17,9 +17,10 @@
 #define Turning_Time 1000.0f
 #define Lift_toMaxSpeed -2.0f
 #define LoweringSpeed 0.5f
-#define Down_toMinSpeed 1.5f
-#define LiftingSpeed -0.5f
+#define Down_toMinSpeed -1.5f
+#define LiftingSpeed 0.5f
 #define BlockingDetect_MinTime 50.0f
+
 
 /* Private types -------------------------------------------------------------*/
 FSMstate MeasureMAXMIN_Front_t;
@@ -29,7 +30,7 @@ Event MeasureEvent_Back_t;
 FSMstate LiftingState_t;
 Event LiftingEvent_t;
 /* Private variables ---------------------------------------------------------*/
-
+int16_t Last_CH;
 float count;
 volatile float Lowering2time = 0.0f;
 volatile float Lowering3time = 0.0f;
@@ -40,13 +41,17 @@ float Lift_HightFront = 0.0f;
 float Lift_HightBack = 0.0f;
 Normali_S remote_channel_ch2;
 float test_remote_ch2;
+float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz;
+
 /* Private function declarations ---------------------------------------------*/
 void MeasureFSM_Init()
 {
     FSM_Init(&MeasureMAXMIN_Front_t);
     FSM_Init(&MeasureMAXMIN_Back_t);
+    FSM_Init(&LiftingState_t);
     MeasureEvent_Front_t.sig = MeasureEvent_None;
     MeasureEvent_Back_t.sig = MeasureEvent_None;
+    LiftingEvent_t.sig = LiftEvent_None;
     Basic_Math_Modulus_Init(&remote_channel_ch2,820,-820);
 }
 
@@ -71,7 +76,7 @@ void LiftFSM_Run()
  */
 void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_Instance *motor_instance,bool *calibrated)
 {
-    static float Max1, Max2, Max3, Min1, Min2, Min3;
+    static float Min1, Min2, Min3;
     MeasureEvent_Generate(me, e, pid);
     switch(me->state)
     {
@@ -80,92 +85,10 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_Start:
-                me->state = Lifting_to_Max1;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case Lifting_to_Max1:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_Blocking:
-                me->state = BlockingatMax1;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case BlockingatMax1:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_BlockingTimeOut:
-                Max1 = motor_instance->Rx_Data.Total_Encoder;
-                me->state = Lowering1;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case Lowering1:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_LoweringTimeOut:
-                me->state =Lifting_to_Max2;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case Lifting_to_Max2:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_Blocking:
-                me->state = BlockingatMax2;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case BlockingatMax2:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_BlockingTimeOut:
-                Max2 = motor_instance->Rx_Data.Total_Encoder;
-                me->state = Lowering2;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case Lowering2:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_LoweringTimeOut:
-                me->state =Lifting_to_Max3;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case Lifting_to_Max3:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_Blocking:
-                me->state = BlockingatMax3;
-                me->state_time = 0.0f;
-                break;
-            }
-        break;
-        case BlockingatMax3:
-            me->state_time+=1.0f;
-            switch(e->sig)
-            {
-                case MeasureEvent_BlockingTimeOut:
-                Max3 = motor_instance->Rx_Data.Total_Encoder;
-                motor_instance->Encoder_Limit.Max = (Max1+Max2+Max3)/3.0f;
-                me->state = Lowering_to_Min1;
-                me->state_time = 0.0f;
+                // me->state = Lowering_to_Min1;
+                // me->state_time = 0.0f;
+                motor_instance->Encoder_Limit.Min=motor_instance->Rx_Data.Total_Encoder;
+                me->state = done;
                 pid->ERRORHandler.ERRORCount = 0;
                 break;
             }
@@ -175,7 +98,8 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_Blocking:
-                me->state =BlockingatMin1;
+                Min1 = motor_instance->Rx_Data.Total_Encoder;
+                me->state = BlockingatMin1;
                 me->state_time = 0.0f;
                 break;
             }
@@ -185,7 +109,6 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_BlockingTimeOut:
-                Min1 = motor_instance->Rx_Data.Total_Encoder;
                 me->state = Lifting1;
                 me->state_time = 0.0f;
                 pid->ERRORHandler.ERRORCount = 0;
@@ -197,7 +120,7 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_LiftingTimeOut:
-                me->state = Lowering_to_Min2;
+                me->state =Lowering_to_Min2;
                 me->state_time = 0.0f;
                 pid->ERRORHandler.ERRORCount = 0;
                 break;
@@ -205,11 +128,11 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
         break;
         case Lowering_to_Min2:
             me->state_time+=1.0f;
-            Lowering2time += 1.0f;
             switch(e->sig)
             {
                 case MeasureEvent_Blocking:
-                me->state =BlockingatMin2;
+                Min2 = motor_instance->Rx_Data.Total_Encoder;
+                me->state = BlockingatMin2;
                 me->state_time = 0.0f;
                 break;
             }
@@ -219,7 +142,6 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_BlockingTimeOut:
-                Min2 = motor_instance->Rx_Data.Total_Encoder;
                 me->state = Lifting2;
                 me->state_time = 0.0f;
                 pid->ERRORHandler.ERRORCount = 0;
@@ -231,19 +153,20 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_LiftingTimeOut:
-                me->state = Lowering_to_Min3;
+                me->state =Lowering_to_Min3;
                 me->state_time = 0.0f;
                 pid->ERRORHandler.ERRORCount = 0;
                 break;
             }
         break;
         case Lowering_to_Min3:
-            Lowering3time += 1.0f;
             me->state_time+=1.0f;
             switch(e->sig)
             {
                 case MeasureEvent_Blocking:
-                me->state =BlockingatMin3;
+                Min3 = motor_instance->Rx_Data.Total_Encoder;
+                motor_instance->Encoder_Limit.Min = (Min1+Min2+Min3)/3.0f;
+                me->state = BlockingatMin3;
                 me->state_time = 0.0f;
                 break;
             }
@@ -253,11 +176,9 @@ void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_I
             switch(e->sig)
             {
                 case MeasureEvent_BlockingTimeOut:
-                Min3 = motor_instance->Rx_Data.Total_Encoder;
-                motor_instance->Encoder_Limit.Min = (Min1+Min2+Min3)/3.0f;
-                Basic_Math_Modulus_Init(&motor_instance->Encoder_Limit, motor_instance->Encoder_Limit.Max, motor_instance->Encoder_Limit.Min);
                 me->state = done;
                 me->state_time = 0.0f;
+                pid->ERRORHandler.ERRORCount = 0;
                 break;
             }
         break;
@@ -299,12 +220,11 @@ bool Blocking_Check(PID_TypeDef *pid)
 
     if (pid->ERRORHandler.ERRORCount > 1000)
     {
-        //电机堵转超过1000次
+        //电机堵转超过250次
         return true;
     }
     return false;
 }
-
 /**
  * @brief 上升机构校准有限状态机事件生成检测函数
  * 
@@ -315,38 +235,6 @@ void MeasureEvent_Generate(FSMstate *me, Event *e,PID_TypeDef *pid)
     if(me->state==WaitingForStart && ch9_status.Key_Status==CH_Status_TRIG_FREE_PRESSED)
     {
         e->sig = MeasureEvent_Start;
-    }
-    if(me->state==Lifting_to_Max1 && (Blocking_Check(pid)))
-    {
-        e->sig = MeasureEvent_Blocking;
-    }
-    if(me->state==BlockingatMax1)
-    {
-        e->sig = MeasureEvent_BlockingTimeOut;
-    }
-    if(me->state==Lowering1 && me->state_time>Turning_Time)
-    {
-        e->sig = MeasureEvent_LoweringTimeOut;
-    }
-    if(me->state==Lifting_to_Max2 && (Blocking_Check(pid)))
-    {
-        e->sig = MeasureEvent_Blocking;
-    }
-    if(me->state==BlockingatMax2)
-    {
-        e->sig = MeasureEvent_BlockingTimeOut;
-    }
-    if(me->state==Lowering2 && me->state_time>Turning_Time)
-    {
-        e->sig = MeasureEvent_LoweringTimeOut;
-    }
-    if(me->state==Lifting_to_Max3 && (Blocking_Check(pid)))
-    {
-        e->sig = MeasureEvent_Blocking;
-    }
-    if(me->state==BlockingatMax3)
-    {
-        e->sig = MeasureEvent_BlockingTimeOut;
     }
     if(me->state==Lowering_to_Min1 && (Blocking_Check(pid)))
     {
@@ -392,23 +280,11 @@ void Lift_Calibrate(FSMstate *me, DM_Motor_1to4_Instance *motor_instance)
     switch(me->state)
     {
         case WaitingForStart:
-        case BlockingatMax1:
-        case BlockingatMax2:
-        case BlockingatMax3:
         case BlockingatMin1:
         case BlockingatMin2:
         case BlockingatMin3:
         case done:
             motor_instance->Target_Omega = 0.0f;
-        break;
-        case Lifting_to_Max1:
-        case Lifting_to_Max2:
-        case Lifting_to_Max3:
-            motor_instance->Target_Omega = Lift_toMaxSpeed;
-        break;
-        case Lowering1:
-        case Lowering2:
-            motor_instance->Target_Omega = LoweringSpeed;
         break;
         case Lowering_to_Min1:
         case Lowering_to_Min2:
@@ -432,28 +308,76 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
     switch(me->state)
     {
         case No_Lifting:
+            me->state_time+=1.0f;
             switch(e->sig)
             {
-                case LiftEvent_LiftLevel200:
-                me->state = LiftLevel200;
+                case LiftEvent_Lift200_StartEvent:
+                me->state = LiftLevel200_Step1;
                 break;
-                case LiftEvent_LiftLevel400:
-                me->state = LiftLevel400;
-                break;
-            }
-        break;
-        case LiftLevel200:
-            switch(e->sig)
-            {
-                case LiftEvent_None:
-                me->state = No_Lifting;
+                case LiftEvent_Lift400_Step1:
+                me->state = LiftLevel400_Step1;
                 break;
             }
         break;
-        case LiftLevel400:
+        case LiftLevel200_Step1:
+            me->state_time+=1.0f;
             switch(e->sig)
             {
-                case LiftEvent_None:
+                case LiftEvent_Lift200_FrontClose:
+                me->state = LiftLevel200_Step2;
+                break;
+            }
+        break;
+        case LiftLevel200_Step2:
+            me->state_time+=1.0f;
+            switch(e->sig)
+            {
+                case LiftEvent_Lift200_HightEvent:
+                me->state = LiftLevel200_Step3;
+                break;
+            }
+        break;
+        case LiftLevel200_Step3:
+            me->state_time+=1.0f;
+            switch(e->sig)
+            {
+                case LiftEvent_Lift200_DistanceEvent1:
+                me->state = LiftLevel200_Step4;
+                break;
+            }
+        break;
+        case LiftLevel200_Step4:
+            me->state_time+=1.0f;
+            switch(e->sig)
+            {
+                case LiftEvent_Lift200_HightEvent2:
+                me->state = LiftLevel200_Step5;
+                break;
+            }
+        break;
+        case LiftLevel200_Step5:
+            me->state_time+=1.0f;
+            switch(e->sig)
+            {
+                case LiftEvent_Lift200_DistanceEvent2:
+                me->state = LiftLevel200_Step6;
+                break;
+            }
+        break;
+        case LiftLevel200_Step6:
+            me->state_time+=1.0f;
+            switch(e->sig)
+            {
+                case LiftEvent_Lift200_HightEvent3:
+                me->state = LiftLevel200_Step7;
+                break;
+            }
+        break;
+        case LiftLevel200_Step7:
+            me->state_time+=1.0f;
+            switch(e->sig)
+            {
+                case LiftEvent_Lift200_FrontClose2:
                 me->state = No_Lifting;
                 break;
             }
@@ -467,23 +391,62 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
  */
 void LiftEvent_Generate(FSMstate *me,Event *e)
 {
-    e->sig = MeasureEvent_None;
-    if(me->state==No_Lifting && rc_channels.ch[12]>0)
+    e->sig = LiftEvent_None;
+    if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && (Last_CH<0 && rc_channels.ch[12]>0))
     {
-        e->sig = LiftEvent_LiftLevel200;
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_StartEvent;
     }
-    if(me->state==LiftLevel200 && rc_channels.ch[12]<=0)
+    if(me->state==LiftLevel200_Step1 && TFmini_RxData[0].Distance <= 3)
+    { 
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_FrontClose;
+    }
+    if(me->state==LiftLevel200_Step2 && (fabs(DM_Motor_1to4_Instances[0].Target_Length-DM_Motor_1to4_Instances[0].Outch_Length)<0.5)&&(fabs(DM_Motor_1to4_Instances[1].Target_Length-DM_Motor_1to4_Instances[1].Outch_Length)<0.5))
+    // if(me->state==LiftLevel200_Step2 && (me->state_time >5000))
     {
-        e->sig = LiftEvent_None;
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig =LiftEvent_Lift200_HightEvent;
     }
-    if(me->state==No_Lifting && rc_channels.ch[13]>0)
+    // if(me->state==LiftLevel200_Step3 && TFmini_RxData[0].Distance < 160) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step3 && (me->state_time >5000))
     {
-        e->sig = LiftEvent_LiftLevel400;
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_DistanceEvent1;
     }
-    if(me->state==LiftLevel400 && rc_channels.ch[13]<=0)
+    if(me->state==LiftLevel200_Step4 && (fabs(DM_Motor_1to4_Instances[0].Target_Length-DM_Motor_1to4_Instances[0].Outch_Length)<0.5))
+    // if(me->state==LiftLevel200_Step4 && (me->state_time >5000))
     {
-        e->sig = LiftEvent_None;
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_HightEvent2;
     }
+    // if(me->state==LiftLevel200_Step5 && TFmini_RxData[0].Distance < 90) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step5 && (me->state_time >5000))
+    {
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_DistanceEvent2;
+    }
+    if(me->state==LiftLevel200_Step6 && (fabs(DM_Motor_1to4_Instances[1].Target_Length-DM_Motor_1to4_Instances[1].Outch_Length)<0.5)) //感觉改成用光电好一点
+    // if(me->state==LiftLevel200_Step6 && (me->state_time >5000)) //感觉改成用光电好一点
+    {
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_HightEvent3;         //检测到后轮收回完毕（检测电机的目标值和当前值是否已经一致）
+    }
+    // if(me->state==LiftLevel200_Step7 && TFmini_RxData[0].Distance < 55) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step7 && (me->state_time >5000))
+    {
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = LiftEvent_Lift200_FrontClose2;         //检测已完全登上台阶，上台阶完毕
+    }
+    Last_CH = rc_channels.ch[12];
 }
 
 /**
@@ -495,16 +458,62 @@ void Lift_Set_Target(FSMstate *me)
     switch(me->state)
     {
         case No_Lifting:
-            Lift_HightFront = 0.95f;
-            Lift_HightBack = 0.95f;
+            LiftStand_Speedvx = 0.0f; // 上台阶过程中禁止底盘移动
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = 0.0f;
+            Lift_HightBack = 0.0f;
         break;
-        case LiftLevel200:
-            Lift_HightFront = 0.65f;
-            Lift_HightBack = 0.65f;
+        case LiftLevel200_Step1:
+            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            // Lift_HightFront = 37.0f;
+            Lift_HightFront = 0.0f;
+            // Lift_HightBack = 36.0f;
+            Lift_HightBack = 0.0f;
         break;
-        case LiftLevel400:
-            Lift_HightFront = 0.35f;
-            Lift_HightBack = 0.35f;
+        case LiftLevel200_Step2:
+            LiftStand_Speedvx = 0.0f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = -40.0f; //48
+            Lift_HightBack = -40.0f;  //45
+        break;
+        case LiftLevel200_Step3:
+            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = -40.0f;
+            Lift_HightBack = -40.0f;
+        break;
+        case LiftLevel200_Step4:
+            LiftStand_Speedvx = 0.0f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = 0.0f;
+            Lift_HightBack = -40.0f;
+        break;
+        case LiftLevel200_Step5:
+            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = 0.0f;
+            Lift_HightBack = -40.0f;
+        break;
+        case LiftLevel200_Step6:
+            LiftStand_Speedvx = 0.0f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = 0.0f;
+            Lift_HightBack = 0.0f;
+        break;
+        case LiftLevel200_Step7:
+            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvy = 0.0f;
+            LiftStand_Speedvz = 0.0f;
+            Lift_HightFront = 0.0f;
+            Lift_HightBack = 0.0f;
         break;
     }
 }
@@ -515,8 +524,8 @@ void Lift_Task(void *argument)
     while (1)
     {
       test_remote_ch2 = Basic_Math_Modulus_Return(&remote_channel_ch2, (int32_t)rc_channels.ch[2]);
-      Lift_Calibrate(&MeasureMAXMIN_Front_t, &DM_Motor_1to4_Instances[0]);
-      Lift_Calibrate(&MeasureMAXMIN_Back_t, &DM_Motor_1to4_Instances[1]);
+    //   Lift_Calibrate(&MeasureMAXMIN_Front_t, &DM_Motor_1to4_Instances[0]);
+    //   Lift_Calibrate(&MeasureMAXMIN_Back_t, &DM_Motor_1to4_Instances[1]);
       Lift_Set_Target(&LiftingState_t);
       osDelay(1); // 每1ms更新一次
     }

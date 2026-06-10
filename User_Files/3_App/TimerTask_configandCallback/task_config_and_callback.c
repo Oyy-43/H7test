@@ -22,11 +22,12 @@ bool blue_minus_flag = true;
 void Motor_CanMessage_Transmit()
 {
     CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-	CAN_Transmit_Data(&hfdcan1,0x1FF,CAN1_0x1ff_Tx_Data,8);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
+	// CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x1ff_Tx_Data,8);
+    CAN_Transmit_Data(&hfdcan3,0x1FF,CAN3_0x1ff_Tx_Data,8);
+    // Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
+    // Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
+    // Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
+    // Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
 }
 
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -39,21 +40,24 @@ void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
         case (0x204):
         Motor_DJI_CAN1_RxCpltCallback(Header, Buffer);
         break;
-        case (0x205):
-        case (0x206):
-        Motor_DM_CAN1_RxCpltCallback(Header, Buffer);
-        break;
     }
 }
 
 void CAN2_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
     Motor_DM_CAN2_RxCpltCallback(Header, Buffer);
+
 }
 
 void CAN3_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
 {
-    Motor_LK_CAN3_RxCpltCallback(Header, Buffer);
+    switch(Header->Identifier)
+    {
+        case (0x205):
+        case (0x206):
+        Motor_DM_CAN3_RxCpltCallback(Header, Buffer);
+        break;
+    }
 }
 
 void serial_Callback(uint8_t *Buffer, uint16_t Length)
@@ -93,7 +97,7 @@ void Task3600s_Callback()
  */
 void Task1ms_Callback()
 {
-    PC_rx_timeout_1ms_process();
+    // PC_rx_timeout_1ms_process();
     Remote_Status_Update(&ch9_status, 9);
     MeasureFSM_Run();
     LiftFSM_Run();
@@ -191,12 +195,14 @@ void Task_Init()
     Timestamp_Init(&htim5);
 
    //USB通讯初始化
-    USB_Init(serial_Callback);
+    // USB_Init(serial_Callback);
+    UART_Init(&huart10,TFmini_GetDistanceFront);
+    // UART_Init(&huart10,TFmini_GetDistanceDown);
 
    //WS2812 spi初始化
     SPI_Init(&hspi6, NULL);
 
-   //CAN初始化
+   //CAN初始化`
     CAN_Init(&hfdcan1, CAN1_Callback);
     CAN_Init(&hfdcan2, CAN2_Callback);
     CAN_Init(&hfdcan3, CAN3_Callback);
