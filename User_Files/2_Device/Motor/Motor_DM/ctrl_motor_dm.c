@@ -29,7 +29,7 @@
  float DM_PIDKf[DM_Motor_1_To_4_Num] = {100.0f, 100.0f};
  float DM3519_POS_kp[DM_Motor_1_To_4_Num] = {2.0f, 2.0f};  //0.0001
  float DM3519_POS_ki[DM_Motor_1_To_4_Num] = {0.065f, 0.065f};
- float DM3519_POS_kd[DM_Motor_1_To_4_Num] = {2.25f, 2.25f};
+ float DM3519_POS_kd[DM_Motor_1_To_4_Num] = {0.0f, 0.0f};
  float DM3519_POS_kf[DM_Motor_1_To_4_Num] = {0.0f, 0.0f};
  float DM_SPEEDPIDKP[DM_Motor_Normal_Num] = {0.35f, 0.0f,0.0f,0.0f};
  float DM_SPEEDPIDKI[DM_Motor_Normal_Num] = {0.0025f, 0.0f,0.0f,0.0f};
@@ -47,6 +47,7 @@ int16_t last_ch2;
  float Default_anglef = 0.0f;
  float Default_angleb = 0.0f;
  /* Private function declarations ---------------------------------------------*/
+
 /** 
  * @brief 初始化PID控制器
  * @param void
@@ -58,7 +59,7 @@ void Motor_DM_InitPID()
 
 	PID_Init(&Motor_DM_1_To_4_PID[0],16384.0f,2500.0f,0.0f,DM_PIDKP[0],DM_PIDKI[0],DM_PIDKD[0],DM_PIDKf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
 	PID_Init(&Motor_DM_1_To_4_PID[1],16384.0f,2500.0f,0.0f,DM_PIDKP[1],DM_PIDKI[1],DM_PIDKD[1],DM_PIDKf[1],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
-	PID_Init(&Motor_DM3519_POS_PID[0],5.0f,2.0f,0.0f,DM3519_POS_kp[0],DM3519_POS_ki[0],DM3519_POS_kd[0],DM3519_POS_kf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
+	PID_Init(&Motor_DM3519_POS_PID[0],6.0f,2.0f,0.0f,DM3519_POS_kp[0],DM3519_POS_ki[0],DM3519_POS_kd[0],DM3519_POS_kf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
 	PID_Init(&Motor_DM3519_POS_PID[1],5.0f,2.0f,0.0f,DM3519_POS_kp[1],DM3519_POS_ki[1],DM3519_POS_kd[1],DM3519_POS_kf[1],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
 	for (i = 0U; i < DM_Motor_Normal_Num; i++)
 	{
@@ -85,10 +86,10 @@ void Motor_DM_InitPID()
                               0.0f,
                               0.0f,
                               Filter_Frequency_Type_LOWPASS,
-                              30.0f,
+                              60.0f,
                               FREQUENCY_FILTER_DEFAULT_SAMPLING_FREQUENCY / 2.0f,
                               1000.0f,
-                              16U);
+                              2U);
 	}
 }
 /** 
@@ -116,25 +117,33 @@ void Motor_DM_CalPID()
     DM_Motor_1to4_Instances[1].Filtered_Omega = Filter_Frequency_Get_Out(&Motor_3519_Speed_Filter[1]);
     DM_Motor_1to4_Instances[1].Out = PID_Calculate(&Motor_DM_1_To_4_PID[1], DM_Motor_1to4_Instances[1].Filtered_Omega, DM_Motor_1to4_Instances[1].Target_Omega, 0.001f);
 	
-	DM_Motor_Instances[0].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[0], DM_Motor_Instances[0].Rx_Data.Now_Angle, DM_Motor_Instances[0].Target_Angle, 0.001f);
+	// DM_Motor_Instances[0].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[0],
+	// DM_Motor_Instances[0].Target_Angle - Basic_Math_Modulus_Normalization(DM_Motor_Instances[0].Target_Angle - DM_Motor_Instances[0].Rx_Data.Now_Angle, 2.0f * DM_Motor_Instances[0].PMAX),
+	// DM_Motor_Instances[0].Target_Angle, 0.001f);
 	Filter_Frequency_Set_Now(&Motor_4310_Speed_Filter[0], DM_Motor_Instances[0].Rx_Data.Now_Omega);
     Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Motor_4310_Speed_Filter[0]);
     DM_Motor_Instances[0].Filtered_Omega = Filter_Frequency_Get_Out(&Motor_4310_Speed_Filter[0]);
     DM_Motor_Instances[0].Control_Torque = PID_Calculate(&Motor_DM_SPEED_PID[0], DM_Motor_Instances[0].Filtered_Omega, DM_Motor_Instances[0].Target_Omega, 0.001f);
 
-	DM_Motor_Instances[1].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[1], DM_Motor_Instances[1].Rx_Data.Now_Angle, DM_Motor_Instances[1].Target_Angle, 0.001f);
+	DM_Motor_Instances[1].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[1],
+	DM_Motor_Instances[1].Target_Angle - Basic_Math_Modulus_Normalization(DM_Motor_Instances[1].Target_Angle - DM_Motor_Instances[1].Rx_Data.Now_Angle, 2.0f * DM_Motor_Instances[1].PMAX),
+	DM_Motor_Instances[1].Target_Angle, 0.001f);
 	Filter_Frequency_Set_Now(&Motor_4310_Speed_Filter[1], DM_Motor_Instances[1].Rx_Data.Now_Omega);
 	Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Motor_4310_Speed_Filter[1]);
 	DM_Motor_Instances[1].Filtered_Omega = Filter_Frequency_Get_Out(&Motor_4310_Speed_Filter[1]);
 	DM_Motor_Instances[1].Control_Torque = PID_Calculate(&Motor_DM_SPEED_PID[1], DM_Motor_Instances[1].Filtered_Omega, DM_Motor_Instances[1].Target_Omega, 0.001f);
 
-	DM_Motor_Instances[2].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[2], DM_Motor_Instances[2].Rx_Data.Now_Angle, DM_Motor_Instances[2].Target_Angle, 0.001f);
+	DM_Motor_Instances[2].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[2],
+	DM_Motor_Instances[2].Target_Angle - Basic_Math_Modulus_Normalization(DM_Motor_Instances[2].Target_Angle - DM_Motor_Instances[2].Rx_Data.Now_Angle, 2.0f * DM_Motor_Instances[2].PMAX),
+	DM_Motor_Instances[2].Target_Angle, 0.001f);
 	Filter_Frequency_Set_Now(&Motor_4310_Speed_Filter[2], DM_Motor_Instances[2].Rx_Data.Now_Omega);
 	Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Motor_4310_Speed_Filter[2]);
 	DM_Motor_Instances[2].Filtered_Omega = Filter_Frequency_Get_Out(&Motor_4310_Speed_Filter[2]);
 	DM_Motor_Instances[2].Control_Torque = PID_Calculate(&Motor_DM_SPEED_PID[2], DM_Motor_Instances[2].Filtered_Omega, DM_Motor_Instances[2].Target_Omega, 0.001f);
 
-	DM_Motor_Instances[3].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[3], DM_Motor_Instances[3].Rx_Data.Now_Angle, DM_Motor_Instances[3].Target_Angle, 0.001f);
+	DM_Motor_Instances[3].Target_Omega = PID_Calculate(&Motor_DM_POSITION_PID[3],
+	DM_Motor_Instances[3].Target_Angle - Basic_Math_Modulus_Normalization(DM_Motor_Instances[3].Target_Angle - DM_Motor_Instances[3].Rx_Data.Now_Angle, 2.0f * DM_Motor_Instances[3].PMAX),
+	DM_Motor_Instances[3].Target_Angle, 0.001f);
 	Filter_Frequency_Set_Now(&Motor_4310_Speed_Filter[3], DM_Motor_Instances[3].Rx_Data.Now_Omega);
 	Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Motor_4310_Speed_Filter[3]);
 	DM_Motor_Instances[3].Filtered_Omega = Filter_Frequency_Get_Out(&Motor_4310_Speed_Filter[3]);
@@ -220,7 +229,7 @@ void DMsetOutput(void *argument)
 		}
 		else if(Robot_Mode == Robot_Mode_Manual)
 		{
-			// test_out = ALG_Sin_Generate(&test_out, 3.0f, 20.0f, 1000.0f);
+			test_out = ALG_Sin_Generate(&test_out, 3.0f, 20.0f, 1000.0f);
 			// DM_Motor_1to4_Instances[0].Target_Omega=test_out;
 			// DM_Motor_1to4_Instances[1].Out = test_out;
 			// TransData_Send_Two_Float_Frame(&huart1, DM_Motor_Instances[0].Control_Torque, DM_Motor_Instances[0].Filtered_Omega, 2);
@@ -228,14 +237,15 @@ void DMsetOutput(void *argument)
 			{
 				DM_Motor_1to4_Instances[0].Target_Length = 0;
 				DM_Motor_1to4_Instances[1].Target_Length = 0;
-
+				DM_Motor_Instances[0].Target_Omega = test_out;
+				DM_Motor_Instances[1].Target_Angle = Default_angleb;
 			}
 			else
 			{
 				// DM_Motor_1to4_Instances[0].Target_Length = test_remote_ch2*70;
-				DM_Motor_1to4_Instances[0].Target_Length =80.0f;
+				DM_Motor_1to4_Instances[0].Target_Length =200.0f;
 				// DM_Motor_1to4_Instances[1].Target_Length = test_remote_ch2*70;
-				DM_Motor_1to4_Instances[1].Target_Length =60.0f;
+				DM_Motor_1to4_Instances[1].Target_Length =200.0f;
 			}
 		}
 		else if(Robot_Mode == Robot_Mode_Auto)

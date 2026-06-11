@@ -105,7 +105,7 @@ extern bool Back_Calibrated;
 extern float test_remote_ch2;
 extern float Lift_HightFront, Lift_HightBack;
 extern FSMstate LiftingState_t;
-extern float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz;
+extern float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz,Target_Yaw;
 /* Exported function declarations --------------------------------------------*/
 void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_Instance *motor_instance,bool *calibrated);
 void MeasureFSM_Run();

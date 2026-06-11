@@ -24,10 +24,10 @@ void Motor_CanMessage_Transmit()
     CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
 	// CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x1ff_Tx_Data,8);
     CAN_Transmit_Data(&hfdcan3,0x1FF,CAN3_0x1ff_Tx_Data,8);
-    // Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
-    // Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
-    // Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
-    // Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
+    Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
 }
 
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -65,17 +65,6 @@ void serial_Callback(uint8_t *Buffer, uint16_t Length)
    PC_rx_idle_callback(Buffer, Length);
 }
 
-/**
- * @brief SPI2任务回调函数
- *
- */
-void SPI2_Callback(uint8_t *Tx_Buffer, uint8_t *Rx_Buffer, uint16_t Tx_Length, uint16_t Rx_Length)
-{
-    if (SPI2_Manage_Object.Activate_GPIOx == BMI088_ACCEL__SPI_CS_GPIO_Port && SPI2_Manage_Object.Activate_GPIO_Pin == BMI088_ACCEL__SPI_CS_Pin || SPI2_Manage_Object.Activate_GPIOx == BMI088_GYRO__SPI_CS_GPIO_Port && SPI2_Manage_Object.Activate_GPIO_Pin == BMI088_GYRO__SPI_CS_Pin)
-    {
-        BSP_BMI088.SPI_RxCpltCallback();
-    }
-}
 
 void Robot_Mode_Change_Check()
 {
@@ -202,56 +191,56 @@ void Task1ms_Callback()
         mod128 = 0;
 
         // 处理陀螺仪相关
-        BSP_BMI088.TIM_128ms_Calculate_PeriodElapsedCallback();
+        // BSP_BMI088.TIM_128ms_Calculate_PeriodElapsedCallback();
     }
     
-    filter_kalman.Vector_Z[0][0] = motor.Get_Now_Angle();
-    filter_kalman.Vector_Z[1][0] = motor.Get_Now_Omega();
-    filter_kalman.TIM_Predict_PeriodElapsedCallback();
-    filter_kalman.TIM_Update_PeriodElapsedCallback();
+    // filter_kalman.Vector_Z[0][0] = motor.Get_Now_Angle();
+    // filter_kalman.Vector_Z[1][0] = motor.Get_Now_Omega();
+    // filter_kalman.TIM_Predict_PeriodElapsedCallback();
+    // filter_kalman.TIM_Update_PeriodElapsedCallback();
 
-    float yaw = BSP_BMI088.Get_Euler_Angle()[0][0] / BASIC_MATH_DEG_TO_RAD;
-    float pitch = BSP_BMI088.Get_Euler_Angle()[1][0] / BASIC_MATH_DEG_TO_RAD;
-    float roll = BSP_BMI088.Get_Euler_Angle()[2][0] / BASIC_MATH_DEG_TO_RAD;
-    float q0 = BSP_BMI088.Get_Quaternion()[0];
-    float q1 = BSP_BMI088.Get_Quaternion()[1];
-    float q2 = BSP_BMI088.Get_Quaternion()[2];
-    float q3 = BSP_BMI088.Get_Quaternion()[3];
-    float temperature = BSP_BMI088.BMI088_Accel.Get_Now_Temperature();
-    float calculating_time = BSP_BMI088.Get_Calculating_Time();
-    float loss = BSP_BMI088.Get_Accel_Chi_Square_Loss();
-    float origin_accel_x = BSP_BMI088.Get_Original_Accel()[0][0];
-    float origin_accel_y = BSP_BMI088.Get_Original_Accel()[1][0];
-    float origin_accel_z = BSP_BMI088.Get_Original_Accel()[2][0];
-    float origin_gyro_x = BSP_BMI088.Get_Original_Gyro()[0][0];
-    float origin_gyro_y = BSP_BMI088.Get_Original_Gyro()[1][0];
-    float origin_gyro_z = BSP_BMI088.Get_Original_Gyro()[2][0];
-    float now_time = SYS_Timestamp.Get_Now_Microsecond() / 1000000.0f;
-    float accel_x = BSP_BMI088.Get_Accel()[0][0];
-    float accel_y = BSP_BMI088.Get_Accel()[1][0];
-    float accel_z = BSP_BMI088.Get_Accel()[2][0];
-    float gyro_x = BSP_BMI088.Get_Gyro()[0][0];
-    float gyro_y = BSP_BMI088.Get_Gyro()[1][0];
-    float gyro_z = BSP_BMI088.Get_Gyro()[2][0];
-    float rotation_matrix_r00 = BSP_BMI088.Get_Rotation_Matrix()[0][0];
-    float rotation_matrix_r01 = BSP_BMI088.Get_Rotation_Matrix()[0][1];
-    float rotation_matrix_r02 = BSP_BMI088.Get_Rotation_Matrix()[0][2];
-    float rotation_matrix_r10 = BSP_BMI088.Get_Rotation_Matrix()[1][0];
-    float rotation_matrix_r11 = BSP_BMI088.Get_Rotation_Matrix()[1][1];
-    float rotation_matrix_r12 = BSP_BMI088.Get_Rotation_Matrix()[1][2];
-    float rotation_matrix_r20 = BSP_BMI088.Get_Rotation_Matrix()[2][0];
-    float rotation_matrix_r21 = BSP_BMI088.Get_Rotation_Matrix()[2][1];
-    float rotation_matrix_r22 = BSP_BMI088.Get_Rotation_Matrix()[2][2];
-    float motor_target_angle = motor.Get_Target_Angle();
-    float motor_now_angle = motor.Get_Now_Angle();
-    float motor_target_omega = motor.Get_Target_Omega();
-    float motor_now_omega = motor.Get_Now_Omega();
-    float motor_target_torque = motor.Get_Target_Torque();
-    float motor_now_torque = motor.Get_Now_Torque();
-    float filter_omega = filter_kalman.Vector_X[1][0];
-    float float_red = static_cast<float>(red);
-    float float_green = static_cast<float>(green);
-    float float_blue = static_cast<float>(blue);
+    // float yaw = BSP_BMI088.Get_Euler_Angle()[0][0] / BASIC_MATH_DEG_TO_RAD;
+    // float pitch = BSP_BMI088.Get_Euler_Angle()[1][0] / BASIC_MATH_DEG_TO_RAD;
+    // float roll = BSP_BMI088.Get_Euler_Angle()[2][0] / BASIC_MATH_DEG_TO_RAD;
+    // float q0 = BSP_BMI088.Get_Quaternion()[0];
+    // float q1 = BSP_BMI088.Get_Quaternion()[1];
+    // float q2 = BSP_BMI088.Get_Quaternion()[2];
+    // float q3 = BSP_BMI088.Get_Quaternion()[3];
+    // float temperature = BSP_BMI088.BMI088_Accel.Get_Now_Temperature();
+    // float calculating_time = BSP_BMI088.Get_Calculating_Time();
+    // float loss = BSP_BMI088.Get_Accel_Chi_Square_Loss();
+    // float origin_accel_x = BSP_BMI088.Get_Original_Accel()[0][0];
+    // float origin_accel_y = BSP_BMI088.Get_Original_Accel()[1][0];
+    // float origin_accel_z = BSP_BMI088.Get_Original_Accel()[2][0];
+    // float origin_gyro_x = BSP_BMI088.Get_Original_Gyro()[0][0];
+    // float origin_gyro_y = BSP_BMI088.Get_Original_Gyro()[1][0];
+    // float origin_gyro_z = BSP_BMI088.Get_Original_Gyro()[2][0];
+    // float now_time = SYS_Timestamp.Get_Now_Microsecond() / 1000000.0f;
+    // float accel_x = BSP_BMI088.Get_Accel()[0][0];
+    // float accel_y = BSP_BMI088.Get_Accel()[1][0];
+    // float accel_z = BSP_BMI088.Get_Accel()[2][0];
+    // float gyro_x = BSP_BMI088.Get_Gyro()[0][0];
+    // float gyro_y = BSP_BMI088.Get_Gyro()[1][0];
+    // float gyro_z = BSP_BMI088.Get_Gyro()[2][0];
+    // float rotation_matrix_r00 = BSP_BMI088.Get_Rotation_Matrix()[0][0];
+    // float rotation_matrix_r01 = BSP_BMI088.Get_Rotation_Matrix()[0][1];
+    // float rotation_matrix_r02 = BSP_BMI088.Get_Rotation_Matrix()[0][2];
+    // float rotation_matrix_r10 = BSP_BMI088.Get_Rotation_Matrix()[1][0];
+    // float rotation_matrix_r11 = BSP_BMI088.Get_Rotation_Matrix()[1][1];
+    // float rotation_matrix_r12 = BSP_BMI088.Get_Rotation_Matrix()[1][2];
+    // float rotation_matrix_r20 = BSP_BMI088.Get_Rotation_Matrix()[2][0];
+    // float rotation_matrix_r21 = BSP_BMI088.Get_Rotation_Matrix()[2][1];
+    // float rotation_matrix_r22 = BSP_BMI088.Get_Rotation_Matrix()[2][2];
+    // float motor_target_angle = motor.Get_Target_Angle();
+    // float motor_now_angle = motor.Get_Now_Angle();
+    // float motor_target_omega = motor.Get_Target_Omega();
+    // float motor_now_omega = motor.Get_Now_Omega();
+    // float motor_target_torque = motor.Get_Target_Torque();
+    // float motor_now_torque = motor.Get_Now_Torque();
+    // float filter_omega = filter_kalman.Vector_X[1][0];
+    // float float_red = static_cast<float>(red);
+    // float float_green = static_cast<float>(green);
+    // float float_blue = static_cast<float>(blue);
 
 }
 
@@ -266,16 +255,16 @@ void Task_Init()
 
    //USB通讯初始化
     // USB_Init(serial_Callback);
-    UART_Init(&huart10,TFmini_GetDistanceFront);
-    // UART_Init(&huart10,TFmini_GetDistanceDown);
+    UART_Init(&huart10,hipnuc_data_unpacked); 
+    UART_Init(&huart1,TFmini_GetDistanceFront);
 
     // 陀螺仪的SPI
-    SPI_Init(&hspi2, SPI2_Callback);
+    // SPI_Init(&hspi2, SPI2_Callback);
 
    //WS2812 spi初始化
     SPI_Init(&hspi6, NULL);
 
-   //CAN初始化`
+   //CAN初始化
     CAN_Init(&hfdcan1, CAN1_Callback);
     CAN_Init(&hfdcan2, CAN2_Callback);
     CAN_Init(&hfdcan3, CAN3_Callback);

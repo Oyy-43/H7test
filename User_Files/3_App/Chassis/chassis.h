@@ -12,6 +12,8 @@
 #include "ctrl_motor_dji.h"
 #include "drv_motor_dji.h"
 #include "Lift.h"
+#include "alg_pid.h"
+#include "Hl12H1_Ml1_000.h"
 
 /* Exported macros -----------------------------------------------------------*/
 //0号电机的坐标（a,b)

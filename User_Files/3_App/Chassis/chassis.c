@@ -13,14 +13,24 @@
 
 
 /* Private macros ------------------------------------------------------------*/
-
+#define Turn_KP 0.0f
+#define Turn_KI 0.0f
+#define Turn_KD 0.0f
+#define Turn_Kf 0.0f 
 
 /* Private types -------------------------------------------------------------*/
+//转向控制PID
+PID_TypeDef Turn_PID;
 
 
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function declarations ---------------------------------------------*/
+void Chassis_Turing_Init()
+{
+  PID_Init(&Turn_PID,1.0f,0.0f,0.0f,Turn_KP, Turn_KI, Turn_KD, Turn_Kf, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,0.0f,Integral_Limit);
+}
+
 void Chassis_Omega_update(float vx, float vy, float vz)
 {
   const float inv_mecanum_r = 2.0f / chassis_d;
@@ -37,6 +47,8 @@ void Chassis_Omega_update(float vx, float vy, float vz)
 
 void Chassis_Control()
 {
+  float vz_turn_cmd = 0.0f;
+  vz_turn_cmd = PID_Calculate(&Turn_PID,hipnuc_imu_data.eul[2],Target_Yaw,0.001f);
   if(Robot_Mode == Robot_Mode_Stop)
   {
     Chassis_Omega_update(0,0,0);
@@ -48,8 +60,8 @@ void Chassis_Control()
     float wz_cmd = 0.0f;
     if(LiftingState_t.state == No_Lifting)
     {
-      vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
-      vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
+      vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 4.0f;
+      vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 4.0f;
       wz_cmd = rc_channels.ch[3] * 0.01f / 15.0f;
     }
     else
@@ -58,27 +70,34 @@ void Chassis_Control()
       vy_cmd = LiftStand_Speedvy;
       wz_cmd = LiftStand_Speedvz;
     }
-    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
+    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd-vz_turn_cmd);
   }
   else if (Robot_Mode == Robot_Mode_Auto)
   {
-    float vx_cmd,vy_cmd,wz_cmd=0.0f;
-    if(LiftingState_t.state == No_Lifting)
+    static float vx_cmd,vy_cmd,wz_cmd=0.0f;
+    switch (LiftingState_t.state)
     {
+      case No_Lifting:
        vx_cmd = PC_frame.cmd_vx;
        vy_cmd = PC_frame.cmd_vy;
        wz_cmd = PC_frame.cmd_vz;
-    }
-    else
-    {
+      break;
+      case LiftLevel200_Step1:
+      case LiftLevel200_Step2:
+      case LiftLevel200_Step3:
+      case LiftLevel200_Step4:
+      case LiftLevel200_Step5:
+      case LiftLevel200_Step6:
+      case LiftLevel200_Step7:
       vx_cmd = LiftStand_Speedvx;
       vy_cmd = LiftStand_Speedvy;
       wz_cmd = LiftStand_Speedvz;
+      break;
     }
     // const float vx_cmd = -rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
     // const float vy_cmd = rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
     // const float wz_cmd = rc_channels.ch[3] * 0.01f / 15.0f;
-    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd);
+    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd-vz_turn_cmd);
   }
 }
 

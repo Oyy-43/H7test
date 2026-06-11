@@ -21,6 +21,10 @@
 #define LiftingSpeed 0.5f
 #define BlockingDetect_MinTime 50.0f
 
+#define front_speed 0.5f
+#define Down200_Front 200.0f
+#define Down200_Back 200.0f
+#define Down200_Front_up -50.0f
 
 /* Private types -------------------------------------------------------------*/
 FSMstate MeasureMAXMIN_Front_t;
@@ -41,7 +45,7 @@ float Lift_HightFront = 0.0f;
 float Lift_HightBack = 0.0f;
 Normali_S remote_channel_ch2;
 float test_remote_ch2;
-float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz;
+float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz,Target_Yaw;
 
 /* Private function declarations ---------------------------------------------*/
 void MeasureFSM_Init()
@@ -404,43 +408,43 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_FrontClose;
     }
-    if(me->state==LiftLevel200_Step2 && (fabs(DM_Motor_1to4_Instances[0].Target_Length-DM_Motor_1to4_Instances[0].Outch_Length)<0.5)&&(fabs(DM_Motor_1to4_Instances[1].Target_Length-DM_Motor_1to4_Instances[1].Outch_Length)<0.5))
-    // if(me->state==LiftLevel200_Step2 && (me->state_time >5000))
+    // if(me->state==LiftLevel200_Step2 && (fabs(DM_Motor_1to4_Instances[0].Target_Length-DM_Motor_1to4_Instances[0].Outch_Length)<0.5)&&(fabs(DM_Motor_1to4_Instances[1].Target_Length-DM_Motor_1to4_Instances[1].Outch_Length)<0.5))
+    if(me->state==LiftLevel200_Step2 && fabs((DM_Motor_1to4_Instances[0].Outch_Length - (200.0f))) < 0.3 && fabs((DM_Motor_1to4_Instances[1].Outch_Length - (200.0f))) < 0.3)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig =LiftEvent_Lift200_HightEvent;
     }
-    // if(me->state==LiftLevel200_Step3 && TFmini_RxData[0].Distance < 160) //感觉改成用光电好一点
-    if(me->state==LiftLevel200_Step3 && (me->state_time >5000))
+    if(me->state==LiftLevel200_Step3 && TFmini_RxData[0].Distance < 100) //感觉改成用光电好一点
+    // if(me->state==LiftLevel200_Step3 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_DistanceEvent1;
     }
-    if(me->state==LiftLevel200_Step4 && (fabs(DM_Motor_1to4_Instances[0].Target_Length-DM_Motor_1to4_Instances[0].Outch_Length)<0.5))
+    if(me->state==LiftLevel200_Step4 && (fabs((DM_Motor_1to4_Instances[0].Outch_Length - (-50.0f))) < 0.3))
     // if(me->state==LiftLevel200_Step4 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_HightEvent2;
     }
-    // if(me->state==LiftLevel200_Step5 && TFmini_RxData[0].Distance < 90) //感觉改成用光电好一点
-    if(me->state==LiftLevel200_Step5 && (me->state_time >5000))
+    if(me->state==LiftLevel200_Step5 && TFmini_RxData[0].Distance < 70) //感觉改成用光电好一点
+    // if(me->state==LiftLevel200_Step5 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_DistanceEvent2;
     }
-    if(me->state==LiftLevel200_Step6 && (fabs(DM_Motor_1to4_Instances[1].Target_Length-DM_Motor_1to4_Instances[1].Outch_Length)<0.5)) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step6 && (fabs((DM_Motor_1to4_Instances[1].Outch_Length - (0.0f))) < 0.3)) //感觉改成用光电好一点
     // if(me->state==LiftLevel200_Step6 && (me->state_time >5000)) //感觉改成用光电好一点
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_HightEvent3;         //检测到后轮收回完毕（检测电机的目标值和当前值是否已经一致）
     }
-    // if(me->state==LiftLevel200_Step7 && TFmini_RxData[0].Distance < 55) //感觉改成用光电好一点
-    if(me->state==LiftLevel200_Step7 && (me->state_time >5000))
+    if(me->state==LiftLevel200_Step7 && TFmini_RxData[0].Distance < 40) //感觉改成用光电好一点
+    // if(me->state==LiftLevel200_Step7 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
@@ -465,7 +469,7 @@ void Lift_Set_Target(FSMstate *me)
             Lift_HightBack = 0.0f;
         break;
         case LiftLevel200_Step1:
-            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvx = 0.3f;
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
             // Lift_HightFront = 37.0f;
@@ -477,42 +481,42 @@ void Lift_Set_Target(FSMstate *me)
             LiftStand_Speedvx = 0.0f;
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
-            Lift_HightFront = -40.0f; //48
-            Lift_HightBack = -40.0f;  //45
+            Lift_HightFront = Down200_Front; //200
+            Lift_HightBack = Down200_Back;  //200
         break;
         case LiftLevel200_Step3:
-            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvx = 0.3f; //0.0f
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
-            Lift_HightFront = -40.0f;
-            Lift_HightBack = -40.0f;
+            Lift_HightFront = Down200_Front; //200
+            Lift_HightBack = Down200_Back;  //200
         break;
         case LiftLevel200_Step4:
             LiftStand_Speedvx = 0.0f;
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
-            Lift_HightFront = 0.0f;
-            Lift_HightBack = -40.0f;
+            Lift_HightFront = Down200_Front_up; //-80
+            Lift_HightBack = Down200_Back;  //200
         break;
         case LiftLevel200_Step5:
-            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvx = 0.3f;  //0.6
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
-            Lift_HightFront = 0.0f;
-            Lift_HightBack = -40.0f;
+            Lift_HightFront = Down200_Front_up; //-80
+            Lift_HightBack = Down200_Back;  //200
         break;
         case LiftLevel200_Step6:
             LiftStand_Speedvx = 0.0f;
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
-            Lift_HightFront = 0.0f;
-            Lift_HightBack = 0.0f;
+            Lift_HightFront = Down200_Front_up;  //-80
+            Lift_HightBack = 0.0f;     //0.0
         break;
         case LiftLevel200_Step7:
-            LiftStand_Speedvx = 0.1f;
+            LiftStand_Speedvx = 0.3f;  //0.6
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
-            Lift_HightFront = 0.0f;
+            Lift_HightFront = Down200_Front_up;
             Lift_HightBack = 0.0f;
         break;
     }
