@@ -12,9 +12,10 @@
 #include "withPC.h"
 #include "buzzer_music.h"
 #include "bsp_buzzer.h"
+#include "Hl12H1_Ml1_000.h"
 
 /* Exported macros -----------------------------------------------------------*/
-
+#define LIFT_Height_CHECK(x,y,z) (fabs((DM_Motor_1to4_Instances[x].Outch_Length - (y))) < (z))
 /* Exported types ------------------------------------------------------------*/
 typedef enum FSM_MeasureState
 {
@@ -85,11 +86,14 @@ typedef enum
     LiftEvent_Lift400_Step1,
     LiftEvent_Lift400_Step2,
     LiftEvent_Lift400_Step3,
-    LiftEvent_DownLevel200_Step1,   //车体旋转为后轮朝向
-    LiftEvent_DownLevel200_Step2,   //车体向后移动，直到检测到后轮完全离地
-    LiftEvent_DownLevel200_Step3,   //车体继续向后移动，直到检测到前轮离地
-    LiftEvent_DownLevel200_Step4,   //前轮向下下降
-    LiftEvent_DownLevel200_Step5,   //车体后移，并且车身下降
+    LiftEvent_DownLevel200_StartEvent,   //按键触发，开始进行下台阶动作，车体旋转为后轮朝向
+    LiftEvent_DownLevel200_Step2Event,   //车体向后移动，直到检测到后轮完全离地（TFmini或者光电检测）
+    LiftEvent_DownLevel200_Step3Event,   //后轮向下下降
+    LiftEvent_DownLevel200_Step4Event,   //车体继续向后移动，直到检测到前轮离地
+    LiftEvent_DownLevel200_Step5Event,   //前升降下降
+    LiftEvent_DownLevel200_Step6Event,   //车体继续向后移动，直到车体完全离开台阶
+    LiftEvent_DownLevel200_Step7Event,   //前后抬升回0，完成下台阶
+    LiftEvent_DownLevel200_Step8Event,   //检测已完全下台阶，下台阶完毕
     LiftEvent_DownLevel400_Step1,   //车体旋转为后轮朝向
     LiftEvent_DownLevel400_Step2,   //车体向后移动，直到检测到后轮完全离地
     LiftEvent_DownLevel400_Step3,   //车体继续向后移动，直到检测到前轮离地
@@ -106,6 +110,7 @@ extern float test_remote_ch2;
 extern float Lift_HightFront, Lift_HightBack;
 extern FSMstate LiftingState_t;
 extern float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz,Target_Yaw;
+extern bool Calibration_finished;
 /* Exported function declarations --------------------------------------------*/
 void MeasureFSM_Dispatch(FSMstate *me, Event *e,PID_TypeDef *pid,DM_Motor_1to4_Instance *motor_instance,bool *calibrated);
 void MeasureFSM_Run();

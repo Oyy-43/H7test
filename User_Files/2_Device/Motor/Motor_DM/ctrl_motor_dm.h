@@ -14,11 +14,17 @@
 #include "alg_transData.h"
 #include "Lift.h"
 #include "robot_def.h"
-
+#include "withPC.h"
 
 /* Exported macros -----------------------------------------------------------*/
 
 /* Exported types ------------------------------------------------------------*/
+typedef struct
+{
+    float amplitude;
+    float phase;
+    float offset;
+} GravityFeedforward_Config; //重力前馈拟合曲线
 
 /* Exported constants --------------------------------------------------------*/
 

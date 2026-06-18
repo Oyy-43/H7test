@@ -94,6 +94,7 @@ void hipnuc_data_unpacked(uint8_t *buf, uint16_t length)
     {
         hipnuc_imu_data.quat[i] = R4(&buf[0]+offest+60 + i * 4);
     }
+    HIPNUC_YAW_init();
 }
 
 void Reset_euler_angle(void)
@@ -101,6 +102,21 @@ void Reset_euler_angle(void)
     HAL_UART_Transmit_DMA(HIPNUC_UART, (uint8_t *)hip_cmd1, sizeof(hip_cmd1) - 1);
 }
 
+void HIPNUC_YAW_init(void)
+{
+    static bool yaw_init_flag = false;
+    if (!yaw_init_flag)
+    {
+        if(hipnuc_imu_data.timestamp >=6500)
+        {
+            hipnuc_imu_data.Begin_Yaw = hipnuc_imu_data.eul[2];
+            yaw_init_flag = true;
+        }
+    }
+    else{
+        return;
+    }
+}
 
 /* Function prototypes -------------------------------------------------------*/
 

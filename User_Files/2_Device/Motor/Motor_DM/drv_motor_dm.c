@@ -368,8 +368,27 @@ void Motor_DM_Normal_Data_Process(DM_Motor_Instance *motor_instance)
 
     motor_instance->Rx_Data.Control_Status = (Enum_Motor_DM_Control_Status_Normal)(tmp_buffer->Control_Status_Enum);
 
-    // 计算电机本身信息
-    motor_instance->Rx_Data.Now_Angle = Basic_Math_Int_To_Float(tmp_encoder, 0x7fff, (1 << 16) - 1, 0,motor_instance->PMAX);
+    // 计算电机本身信息（对角度解卷绕，编码器范围[-PMAX,PMAX]，步长2*PMAX）
+    float raw_angle = Basic_Math_Int_To_Float(tmp_encoder, 0x7fff, (1 << 16) - 1, 0, motor_instance->PMAX);
+    if (motor_instance->Rx_Data.Angle_Valid)
+    {
+        float delta = raw_angle - motor_instance->Rx_Data.Pre_Raw_Angle;
+        if (delta < -motor_instance->PMAX * 0.5f)
+        {
+            motor_instance->Rx_Data.Total_Round++;   // 正向过PMAX回绕
+        }
+        else if (delta > motor_instance->PMAX * 0.5f)
+        {
+            motor_instance->Rx_Data.Total_Round--;   // 反向过0回绕
+        }
+        motor_instance->Rx_Data.Now_Angle = (float)motor_instance->Rx_Data.Total_Round * 2.0f * motor_instance->PMAX + raw_angle;
+    }
+    else
+    {
+        motor_instance->Rx_Data.Now_Angle = raw_angle;
+        motor_instance->Rx_Data.Angle_Valid = 1;
+    }
+    motor_instance->Rx_Data.Pre_Raw_Angle = raw_angle;
     motor_instance->Rx_Data.Now_Omega = Basic_Math_Int_To_Float(tmp_omega, 0x7ff, (1 << 12) - 1, 0, motor_instance->VMAX);
     motor_instance->Rx_Data.Now_Torque = Basic_Math_Int_To_Float(tmp_torque, 0x7ff, (1 << 12) - 1, 0, motor_instance->TMAX);
     motor_instance->Rx_Data.Now_MOS_Temperature = tmp_buffer->MOS_Temperature + BASIC_MATH_CELSIUS_TO_KELVIN;

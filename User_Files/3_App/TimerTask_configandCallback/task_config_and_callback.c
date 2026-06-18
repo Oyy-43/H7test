@@ -4,9 +4,12 @@
 uint64_t us_time=0;
 uint32_t ms_time=0;
 uint16_t s_time=0;
+uint16_t Servo_Angle1 = 0;
+uint16_t Servo_Angle2 = 0;
 
 // 全局初始化完成标志位
 bool init_finished = false;
+bool Calibration_finished = false; //底盘电机校准完成标志位
 
 // 机器人模式全局状态
 Enum_Robot_Mode Robot_Mode = Robot_Mode_Stop;
@@ -68,11 +71,11 @@ void serial_Callback(uint8_t *Buffer, uint16_t Length)
 
 void Robot_Mode_Change_Check()
 {
-    if(rc_channels.ch[4]<0)
+    if(rc_channels.ch[4]==0)
     {
         Robot_Mode = Robot_Mode_Stop;
     }
-    else if(rc_channels.ch[4]==0)
+    else if(rc_channels.ch[4]<0)
     {
         Robot_Mode = Robot_Mode_Manual;
     }
@@ -82,6 +85,79 @@ void Robot_Mode_Change_Check()
     }
 }
 
+void Servo_Motor_Control()
+{
+    switch(Robot_Mode)
+    {
+        case Robot_Mode_Stop:
+        Servo_Angle1 = 0.0f;
+        Servo_Angle2 = 0.0f;
+        break;
+        case Robot_Mode_Manual:
+        if(rc_channels.ch[7] < 0 )
+        {
+            Servo_Angle1 = 55.0f;
+            Servo_Angle2 = 0.0f;
+        }
+        else if(rc_channels.ch[7] == 0 )
+        {
+            Servo_Angle1 = 55.0f;
+            Servo_Angle2 = 90.0f;
+        }
+        else if(rc_channels.ch[7] > 0 )
+        {
+            Servo_Angle1 = 145.0f;
+            Servo_Angle2 = 90.0f;
+        }
+        break;
+        case Robot_Mode_Auto:
+            switch (PC_frame.cmd_servocontrol)
+            {
+                case 0x00:
+                Servo_Angle1 = 55.0f;
+                Servo_Angle2 = 0.0f;
+                break;
+                case 0x01:
+                Servo_Angle1 = 55.0f;
+                Servo_Angle2 = 90.0f;
+                break;
+                case 0x02:
+                Servo_Angle1 = 145.0f;
+                Servo_Angle2 = 90.0f;
+                break;
+            }
+        break;
+    }
+}
+
+void Robot_Calibration_Check()
+{
+    switch (Robot_Mode)
+    {
+        case Robot_Mode_Stop:
+        break;
+        case Robot_Mode_Manual:
+        if(ch9_status.Key_Status==CH_Status_TRIG_FREE_PRESSED)
+        {
+            Calibration_finished = true;
+        }
+        else
+        {
+            Calibration_finished = false;
+        }
+        break;
+        case Robot_Mode_Auto:
+        if(PC_frame.Calibration_Flag == 1)
+        {
+            Calibration_finished = true;
+        }
+        else
+        {
+            Calibration_finished = false;
+        }
+        break;
+    }
+}
 
 /**
  * @brief 3600秒任务回调函数
@@ -102,6 +178,7 @@ void Task1ms_Callback()
     Remote_Status_Update(&ch9_status, 9);
     MeasureFSM_Run();
     LiftFSM_Run();
+    Robot_Calibration_Check();
     static int mod10 = 0;
     mod10++;
     if (mod10 == 10)
@@ -162,6 +239,7 @@ void Task1ms_Callback()
 
         // 发送实例
         TIM_10ms_Write_PeriodElapsedCallback();
+        Servo_Motor_Control();
     }
 
     BSP_Key_TIM_1ms_Process_PeriodElapsedCallback();
@@ -279,6 +357,10 @@ void Task_Init()
    //蜂鸣器初始化
     Buzzer_Init(4000,0.0f);
 
+   //舵机PWM初始化
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+
    //5V,24V电源输出初始化  第一位参数控制CAN1的2+2，第二位控制CAN2的2+2,第三位控制5v开关
     BSP_Power_Init(false,true,true);
 
@@ -312,6 +394,8 @@ void Timestamp_fuc(void *argument)
        DJI_Motor_Output();
        DM_Motor_Output();
        Motor_CanMessage_Transmit();
+       Servo_SetAngle(&htim1,TIM_CHANNEL_1,Servo_Angle1);
+       Servo_SetAngle(&htim2,TIM_CHANNEL_3,Servo_Angle2);
        osDelay(1);
     }
 }

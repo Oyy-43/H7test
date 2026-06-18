@@ -90,8 +90,8 @@ typedef struct _PID_TypeDef
 
     void (*PID_param_init)(
         struct _PID_TypeDef *pid,
-        uint16_t maxOut,
-        uint16_t integralLimit,
+        float maxOut,
+        float integralLimit,
         float deadband,
         float Kp,
         float ki,

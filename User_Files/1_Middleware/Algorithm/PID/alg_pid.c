@@ -33,8 +33,8 @@ static void f_PID_ErrorHandle(PID_TypeDef *pid);
  /***************************PID param initialize******************************/
 static void f_PID_param_init(
     PID_TypeDef *pid,
-    uint16_t max_out,
-    uint16_t intergral_limit,
+    float max_out,
+    float intergral_limit,
     float deadband,
 
     float kp,

@@ -14,6 +14,7 @@
 #include "Lift.h"
 #include "alg_pid.h"
 #include "Hl12H1_Ml1_000.h"
+#include "alg_filter_frequency.h"
 
 /* Exported macros -----------------------------------------------------------*/
 //0号电机的坐标（a,b)

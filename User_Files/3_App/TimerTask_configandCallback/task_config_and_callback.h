@@ -28,6 +28,8 @@
 #include "robot_def.h"
 #include "drv_tfmini.h"
 #include "Hl12H1_Ml1_000.h"
+#include "drv_servo_motor.h"
+
 
 void Task_Init();
 void Task1ms_Callback();

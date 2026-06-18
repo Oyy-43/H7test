@@ -31,6 +31,7 @@ float eul[3];       /* Attitude: Euler angle */
 float quat[4];      /* Attitude: quaternion */
 float pressure;     /* Air pressure */
 uint32_t timestamp; /* Timestamp */
+float Begin_Yaw;    /* 初始偏航角, 用于重置欧拉角 */
 }hipnuc_imu_data_t;
 
 /* Exported constants --------------------------------------------------------*/
@@ -45,6 +46,6 @@ void hipnuc_data_unpacked(uint8_t *buf, uint16_t length);
 void HIPNUC_uart_init(void);
 const hipnuc_imu_data_t *get_hipnuc_imu_point(void);
 void Reset_euler_angle(void);
-
+void HIPNUC_YAW_init(void);
 
 #endif /* _HL12H1_ML1_000_H_ */

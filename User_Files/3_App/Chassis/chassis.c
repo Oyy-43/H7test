@@ -13,22 +13,35 @@
 
 
 /* Private macros ------------------------------------------------------------*/
-#define Turn_KP 0.0f
+#define Turn_KP 0.15f
 #define Turn_KI 0.0f
 #define Turn_KD 0.0f
-#define Turn_Kf 0.0f 
+#define Turn_Kf 0.018f 
 
 /* Private types -------------------------------------------------------------*/
 //转向控制PID
 PID_TypeDef Turn_PID;
-
+Struct_Filter_Frequency Chassis_Vz_Fillter;
 
 /* Private variables ---------------------------------------------------------*/
-
+float test_yaw = 0.0f;
+float vz_turn_cmd = 0.0f;
+float target_y =0.0f;
 /* Private function declarations ---------------------------------------------*/
+
+
 void Chassis_Turing_Init()
 {
-  PID_Init(&Turn_PID,1.0f,0.0f,0.0f,Turn_KP, Turn_KI, Turn_KD, Turn_Kf, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,0.0f,Integral_Limit);
+  PID_Init(&Turn_PID,1.25f,0.0f,0.0f,Turn_KP, Turn_KI, Turn_KD, Turn_Kf, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,0.0f,Integral_Limit);
+  Filter_Frequency_Init(&Chassis_Vz_Fillter,
+      0.0f,
+      0.0f,
+      Filter_Frequency_Type_LOWPASS,
+      10.0f,
+      FREQUENCY_FILTER_DEFAULT_SAMPLING_FREQUENCY / 2.0f,
+      1000.0f,
+      1U);
+
 }
 
 void Chassis_Omega_update(float vx, float vy, float vz)
@@ -47,63 +60,75 @@ void Chassis_Omega_update(float vx, float vy, float vz)
 
 void Chassis_Control()
 {
-  float vz_turn_cmd = 0.0f;
-  vz_turn_cmd = PID_Calculate(&Turn_PID,hipnuc_imu_data.eul[2],Target_Yaw,0.001f);
-  if(Robot_Mode == Robot_Mode_Stop)
+  float  vx_cmd = 0.0f, vy_cmd = 0.0f, wz_cmd = 0.0f;
+
+  // 将目标航向限制在 [0, 360) 范围内
+  if (Target_Yaw >= 360.0f) Target_Yaw -= 360.0f;
+  else if (Target_Yaw < 0.0f) Target_Yaw += 360.0f;
+
+  // 角度误差归一化：将误差限制在 [-180, 180] 范围内
+  // 避免陀螺仪 360°→0° 跳变导致 PID 误差突变
+
+  // float yaw_measure = hipnuc_imu_data.eul[2];
+  Filter_Frequency_Set_Now(&Chassis_Vz_Fillter, hipnuc_imu_data.eul[2]);
+  Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Chassis_Vz_Fillter);
+  float yaw_measure =Filter_Frequency_Get_Out(&Chassis_Vz_Fillter);
+  float yaw_error = Basic_Math_Modulus_Normalization(Target_Yaw - yaw_measure, 360.0f);
+  float effective_target = yaw_measure + yaw_error;
+
+  switch(Robot_Mode)
   {
-    Chassis_Omega_update(0,0,0);
-  }
-  else if (Robot_Mode == Robot_Mode_Manual)
-  {
-    float vx_cmd = 0.0f;
-    float vy_cmd = 0.0f;
-    float wz_cmd = 0.0f;
-    if(LiftingState_t.state == No_Lifting)
-    {
+    case Robot_Mode_Stop:
+      vx_cmd = 0.0f;
+      vy_cmd = 0.0f;
+      wz_cmd = 0.0f;
+      vz_turn_cmd = 0.0f;
+      Chassis_Omega_update(0.0f, 0.0f, 0.0f);
+      return;
+    break;
+    case Robot_Mode_Manual:
       vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 4.0f;
       vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 4.0f;
-      wz_cmd = rc_channels.ch[3] * 0.01f / 15.0f;
-    }
-    else
-    {
-      vx_cmd = LiftStand_Speedvx;
-      vy_cmd = LiftStand_Speedvy;
-      wz_cmd = LiftStand_Speedvz;
-    }
-    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd-vz_turn_cmd);
+      // Target_Yaw -= rc_channels.ch[3] * 0.01f / 20.0f;
+      if(rc_channels.ch[3] > 10)
+      {
+        Target_Yaw -= 0.025f;
+      }
+      else if(rc_channels.ch[3] < -10)
+      {
+        Target_Yaw += 0.025f;
+      }
+    break;
+    case Robot_Mode_Auto:
+      switch (LiftingState_t.state)
+      {
+        case No_Lifting:
+          vx_cmd = PC_frame.cmd_vx;
+          vy_cmd = PC_frame.cmd_vy;
+          // wz_cmd = PC_frame.cmd_vz;
+        break;
+        case LiftLevel200_Step1:
+        case LiftLevel200_Step2:
+        case LiftLevel200_Step3:
+        case LiftLevel200_Step4:
+        case LiftLevel200_Step5:
+        case LiftLevel200_Step6:
+        case LiftLevel200_Step7:
+          vx_cmd = LiftStand_Speedvx;
+          vy_cmd = LiftStand_Speedvy;
+          // wz_cmd = LiftStand_Speedvz;
+        break;
+      }
+    break;
   }
-  else if (Robot_Mode == Robot_Mode_Auto)
-  {
-    static float vx_cmd,vy_cmd,wz_cmd=0.0f;
-    switch (LiftingState_t.state)
-    {
-      case No_Lifting:
-       vx_cmd = PC_frame.cmd_vx;
-       vy_cmd = PC_frame.cmd_vy;
-       wz_cmd = PC_frame.cmd_vz;
-      break;
-      case LiftLevel200_Step1:
-      case LiftLevel200_Step2:
-      case LiftLevel200_Step3:
-      case LiftLevel200_Step4:
-      case LiftLevel200_Step5:
-      case LiftLevel200_Step6:
-      case LiftLevel200_Step7:
-      vx_cmd = LiftStand_Speedvx;
-      vy_cmd = LiftStand_Speedvy;
-      wz_cmd = LiftStand_Speedvz;
-      break;
-    }
-    // const float vx_cmd = -rc_channels.ch[1] * 0.05f / 10.0f / 8.0f;
-    // const float vy_cmd = rc_channels.ch[0] * 0.05f / 10.0f / 8.0f;
-    // const float wz_cmd = rc_channels.ch[3] * 0.01f / 15.0f;
-    Chassis_Omega_update(vx_cmd, vy_cmd, wz_cmd-vz_turn_cmd);
-  }
+  vz_turn_cmd = PID_Calculate(&Turn_PID, yaw_measure, effective_target, 0.001f);
+  Chassis_Omega_update(vx_cmd, vy_cmd, -vz_turn_cmd);
 }
 
 
 void Chassis_Task(void *argument)
-{
+{ 
+    Chassis_Turing_Init();
     while (1)
     {
       Chassis_Control();

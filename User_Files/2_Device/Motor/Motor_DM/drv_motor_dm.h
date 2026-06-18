@@ -126,6 +126,9 @@ typedef struct Struct_Motor_DM_Rx_Data_Normal
     float Now_Torque;
     float Now_MOS_Temperature;
     float Now_Rotor_Temperature;
+    float Pre_Raw_Angle;
+    int32_t Total_Round;
+    uint8_t  Angle_Valid;
 } Struct_Motor_DM_Rx_Data_Normal;
 
 
@@ -290,7 +293,7 @@ typedef struct DM_Motor_1to4_Instance
     // 减速比, 默认带减速箱
     float Gearbox_Rate;
     // 输出量
-    float Out;
+    int16_t Out;
     // 目标的角度, 单位度
     float Target_Angle;
     // 目标的速度, rad/s
