@@ -21,10 +21,7 @@
 #define LiftingSpeed 0.5f
 #define BlockingDetect_MinTime 50.0f
 
-#define front_speed 0.5f
-#define Down200_Front 200.0f
-#define Down200_Back 191.0f
-#define Down200_Front_up -50.0f
+
 
 /* Private types -------------------------------------------------------------*/
 FSMstate MeasureMAXMIN_Front_t;
@@ -46,6 +43,8 @@ float Lift_HightBack = 0.0f;
 Normali_S remote_channel_ch2;
 float test_remote_ch2;
 float LiftStand_Speedvx, LiftStand_Speedvy, LiftStand_Speedvz,Target_Yaw;
+bool LiftDown_CheckFlagFront = false;
+bool LiftDown_CheckFlagBack = false;
 
 /* Private function declarations ---------------------------------------------*/
 void MeasureFSM_Init()
@@ -395,6 +394,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
             me->state_time+=1.0f;
             switch(e->sig)
             {
+                LiftDown_CheckFlagBack = true; //进入下台阶流程后设置标志位，在电机控制函数中根据该标志位输出微弱的反向电流以检测是否离地
                 case LiftEvent_DownLevel200_Step2Event:
                 me->state = DownLevel200_Step2;
                 break;
@@ -422,6 +422,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
             me->state_time+=1.0f;
             switch(e->sig)
             {
+                LiftDown_CheckFlagFront = true;
                 case LiftEvent_DownLevel200_Step5Event:
                 me->state = DownLevel200_Step5;
                 break;
@@ -478,41 +479,41 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
         e->sig = LiftEvent_Lift200_FrontClose;
     }
     // if(me->state==LiftLevel200_Step2 && (fabs(DM_Motor_1to4_Instances[0].Target_Length-DM_Motor_1to4_Instances[0].Outch_Length)<0.5)&&(fabs(DM_Motor_1to4_Instances[1].Target_Length-DM_Motor_1to4_Instances[1].Outch_Length)<0.5))
-    if(me->state==LiftLevel200_Step2 && LIFT_Height_CHECK(0, 200.0f, 0.3f) && LIFT_Height_CHECK(1, 200.0f, 0.3f))
+    if(me->state==LiftLevel200_Step2 && (fabs((DM_Motor_1to4_Instances[0].Outch_Length-(-Down200_Front))) < (0.5f)))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig =LiftEvent_Lift200_HightEvent;
     }
-    if(me->state==LiftLevel200_Step3 && TFmini_RxData[0].Distance < 100) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step3 && TFmini_RxData[0].Distance < 105.0f) //感觉改成用光电好一点
     // if(me->state==LiftLevel200_Step3 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_DistanceEvent1;
     }
-    if(me->state==LiftLevel200_Step4 && LIFT_Height_CHECK(0, Down200_Front_up, 0.3f))
+    if(me->state==LiftLevel200_Step4 && (fabs((DM_Motor_1to4_Instances[0].Outch_Length-(-Down200_Front_up))) < (0.3f)))
     // if(me->state==LiftLevel200_Step4 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_HightEvent2;
     }
-    if(me->state==LiftLevel200_Step5 && TFmini_RxData[0].Distance < 70) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step5 && TFmini_RxData[0].Distance < 70.0f) //感觉改成用光电好一点
     // if(me->state==LiftLevel200_Step5 && (me->state_time >5000))
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_DistanceEvent2;
     }
-    if(me->state==LiftLevel200_Step6 && LIFT_Height_CHECK(1, 0.0f, 0.3f)) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step6 && (fabs((DM_Motor_1to4_Instances[1].Outch_Length-(0.0f))) < (0.3f))) //感觉改成用光电好一点
     // if(me->state==LiftLevel200_Step6 && (me->state_time >5000)) //感觉改成用光电好一点
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_Lift200_HightEvent3;         //检测到后轮收回完毕（检测电机的目标值和当前值是否已经一致）
     }
-    if(me->state==LiftLevel200_Step7 && TFmini_RxData[0].Distance < 40) //感觉改成用光电好一点
+    if(me->state==LiftLevel200_Step7 && TFmini_RxData[0].Distance < 40.0f) //感觉改成用光电好一点
     // if(me->state==LiftLevel200_Step7 && (me->state_time >5000))
     {
         me->state_time = 0;
@@ -527,35 +528,35 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
-        Target_Yaw += 180.0f;
         e->sig = LiftEvent_DownLevel200_StartEvent;
     }
-    if(me->state==DownLevel200_Step1 && fabs(Target_Yaw-hipnuc_imu_data.eul[2])<0.1f)
+    if(me->state==DownLevel200_Step1)
     // if(me->state==DownLevel200_Step1 && me->state_time >= 5000.0f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         // e->sig = LiftEvent_DownLevel200_Step2Event;
     }
-    if(me->state==DownLevel200_Step2 && TFmini_RxData[0].Distance > 60)
+    if(me->state==DownLevel200_Step2 && DM_Motor_1to4_Instances[1].Outch_Length > 50.0f) //感觉改成用光电好一点
     {
+        LiftDown_CheckFlagBack = false;
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_DownLevel200_Step3Event;
     }
-    if(me->state==DownLevel200_Step3 && LIFT_Height_CHECK(1, Down200_Back, 0.3f)) //感觉改成用光电好一点
+    if(me->state==DownLevel200_Step3 && (fabs((DM_Motor_1to4_Instances[1].Outch_Length-(Down200_Back))) < (0.3f))) //感觉改成用光电好一点
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_DownLevel200_Step4Event;
     }
-    if(me->state==DownLevel200_Step4 && TFmini_RxData[0].Distance > 100)
+    if(me->state==DownLevel200_Step4 && DM_Motor_1to4_Instances[0].Outch_Length < -50.0f) //感觉改成用光电好一点
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_DownLevel200_Step5Event;
     }
-    if(me->state==DownLevel200_Step5 && LIFT_Height_CHECK(0, 0.0f, 0.3f)) //感觉改成用光电好一点
+    if(me->state==DownLevel200_Step5 && (fabs((DM_Motor_1to4_Instances[0].Outch_Length-(-Down200_Front))) < (0.3f))) //感觉改成用光电好一点
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
@@ -567,7 +568,7 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_DownLevel200_Step7Event;
     }
-    if(me->state==DownLevel200_Step7 && LIFT_Height_CHECK(0, 0.0f, 0.3f) && LIFT_Height_CHECK(1, 0.0f, 0.3f)) //感觉改成用光电好一点
+    if(me->state==DownLevel200_Step7 && (fabs((DM_Motor_1to4_Instances[0].Outch_Length-(0.0f))) < (0.3f)) && (fabs((DM_Motor_1to4_Instances[1].Outch_Length-(0.0f))) < (0.3f))) //感觉改成用光电好一点
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
@@ -650,7 +651,7 @@ void Lift_Set_Target(FSMstate *me)
             Lift_HightBack = 0.0f;
         break;
         case DownLevel200_Step2:
-            LiftStand_Speedvx = -0.3f;  //0.6
+            LiftStand_Speedvx = -0.15f;  //0.6
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
             Lift_HightFront = 0.0f;
@@ -664,7 +665,7 @@ void Lift_Set_Target(FSMstate *me)
             Lift_HightBack = Down200_Back;
         break;
         case DownLevel200_Step4:
-            LiftStand_Speedvx = -0.3f;  //0.6
+            LiftStand_Speedvx = -0.15f;  //0.6
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
             Lift_HightFront = 0.0f;
@@ -678,7 +679,7 @@ void Lift_Set_Target(FSMstate *me)
             Lift_HightBack = Down200_Back;
         break;
         case DownLevel200_Step6:
-            LiftStand_Speedvx = -0.3f;  //0.6
+            LiftStand_Speedvx = -0.15f;  //0.6
             LiftStand_Speedvy = 0.0f;
             LiftStand_Speedvz = 0.0f;
             Lift_HightFront = Down200_Front;

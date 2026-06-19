@@ -90,11 +90,11 @@ void Chassis_Control()
       vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 4.0f;
       vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 4.0f;
       // Target_Yaw -= rc_channels.ch[3] * 0.01f / 20.0f;
-      if(rc_channels.ch[3] > 10)
+      if(rc_channels.ch[3] > 2)
       {
         Target_Yaw -= 0.025f;
       }
-      else if(rc_channels.ch[3] < -10)
+      else if(rc_channels.ch[3] < -2)
       {
         Target_Yaw += 0.025f;
       }

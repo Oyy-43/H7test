@@ -15,7 +15,11 @@
 #include "Hl12H1_Ml1_000.h"
 
 /* Exported macros -----------------------------------------------------------*/
-#define LIFT_Height_CHECK(x,y,z) (fabs((DM_Motor_1to4_Instances[x].Outch_Length - (y))) < (z))
+#define LIFT_Height_CHECK(x,y,z) (fabs((DM_Motor_1to4_Instances[x].Target_Length-(y))) < (z))
+#define front_speed 0.5f
+#define Down200_Front 205.0f
+#define Down200_Back 197.0f
+#define Down200_Front_up -30.0f
 /* Exported types ------------------------------------------------------------*/
 typedef enum FSM_MeasureState
 {
@@ -58,10 +62,10 @@ typedef enum FSM_LiftStatte
     LiftLevel400_Step3, //向前，直到后轮已靠近着台阶
     LiftLevel400_Step4, //停下，后轮向上抬起
     LiftLevel400_Step5, //向前，直到前方距离到达设定值
-    DownLevel200_Step1, //转弯，车体旋转为后轮朝向
+    DownLevel200_Step1, //将后电机的升降的试探标志位给1，给一个微弱的反向电流
     DownLevel200_Step2, //向后移动，直到检测到后轮完全离地
     DownLevel200_Step3, //停下，后轮向下下降
-    DownLevel200_Step4, //继续向后移动，直到检测到前方升降机构离地
+    DownLevel200_Step4, //给前电机的升降的试探标志位给1，给一个微弱的反向电流，继续向后移动，直到检测到前方升降机构离地
     DownLevel200_Step5, //停下，前轮向下下降
     DownLevel200_Step6, //继续向后移动，直到车体完全离开台阶
     DownLevel200_Step7, //停下，前后抬升回0，完成下台阶
@@ -86,10 +90,10 @@ typedef enum
     LiftEvent_Lift400_Step1,
     LiftEvent_Lift400_Step2,
     LiftEvent_Lift400_Step3,
-    LiftEvent_DownLevel200_StartEvent,   //按键触发，开始进行下台阶动作，车体旋转为后轮朝向
+    LiftEvent_DownLevel200_StartEvent,   //按键触发，开始进行下台阶动作，将后升降电机的试探标志位给1，给一个微弱的反向电流
     LiftEvent_DownLevel200_Step2Event,   //车体向后移动，直到检测到后轮完全离地（TFmini或者光电检测）
     LiftEvent_DownLevel200_Step3Event,   //后轮向下下降
-    LiftEvent_DownLevel200_Step4Event,   //车体继续向后移动，直到检测到前轮离地
+    LiftEvent_DownLevel200_Step4Event,   //将前升降电机的试探标志位给1，车体继续向后移动，直到检测到前轮离地
     LiftEvent_DownLevel200_Step5Event,   //前升降下降
     LiftEvent_DownLevel200_Step6Event,   //车体继续向后移动，直到车体完全离开台阶
     LiftEvent_DownLevel200_Step7Event,   //前后抬升回0，完成下台阶
@@ -106,6 +110,8 @@ typedef enum
 /* Exported variables --------------------------------------------------------*/
 extern bool Front_Calibrated;
 extern bool Back_Calibrated;
+extern bool LiftDown_CheckFlagFront;
+extern bool LiftDown_CheckFlagBack;
 extern float test_remote_ch2;
 extern float Lift_HightFront, Lift_HightBack;
 extern FSMstate LiftingState_t;
