@@ -2,7 +2,8 @@
 #define _WITH_PC_H_
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "Lift.h"
+#include "drv_usb.h"
 
 /* Exported macros -----------------------------------------------------------*/
 #define FRAME_HEADER 0xAA
@@ -27,6 +28,14 @@ typedef struct __attribute__((packed))
     uint8_t suction_cup_control;     // 吸盘控制指令
     uint8_t tail; // 帧尾
 }Computer_Frame_S;
+
+typedef struct __attribute__((packed))
+{
+    uint8_t header;                       //帧头
+    uint8_t Calibration_flag;             // 1字节，校准标志位，发0x00则为未校准，发0x01则为已校准
+    uint8_t Lift_flag;                    // 1字节，升降状态标志位，0表示未升降，1表示正在上台阶，2表示正在下台阶 
+    uint8_t tail;                         // 帧尾
+}ComputerTransmit_Frame_S;
 /* Exported constants --------------------------------------------------------*/
 
 
@@ -36,6 +45,7 @@ extern Computer_Frame_S PC_frame;
 /* Exported function declarations --------------------------------------------*/
 void PC_rx_idle_callback(uint8_t *Buffer, uint16_t Length);
 void PC_rx_timeout_1ms_process(void);
+void PC_transmitData(void);
 
 
 

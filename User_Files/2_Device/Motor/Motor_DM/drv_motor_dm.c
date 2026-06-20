@@ -40,6 +40,10 @@ DM_Motor_1to4_Instance DM_Motor_1to4_Instances[DM_Motor_1_To_4_Num] = {0};
 Normali_S DM_3519_0_Config;
 Normali_S DM_3519_1_Config;
 
+// 调试：记录每次复位后电机1第一帧的原始编码器值和raw_angle
+volatile uint16_t debug_first_encoder[DM_Motor_Normal_Num];
+volatile float debug_first_raw_angle[DM_Motor_Normal_Num];
+
 /* Private function declarations ---------------------------------------------*/
 
 /* Function prototypes -------------------------------------------------------*/
@@ -387,6 +391,16 @@ void Motor_DM_Normal_Data_Process(DM_Motor_Instance *motor_instance)
     {
         motor_instance->Rx_Data.Now_Angle = raw_angle;
         motor_instance->Rx_Data.Angle_Valid = 1;
+        // 记录首次接收的编码器值（调试用）
+        for(uint8_t i = 0; i < DM_Motor_Normal_Num; i++)
+        {
+            if(motor_instance == &DM_Motor_Instances[i])
+            {
+                debug_first_encoder[i] = tmp_encoder;
+                debug_first_raw_angle[i] = raw_angle;
+                break;
+            }
+        }
     }
     motor_instance->Rx_Data.Pre_Raw_Angle = raw_angle;
     motor_instance->Rx_Data.Now_Omega = Basic_Math_Int_To_Float(tmp_omega, 0x7ff, (1 << 12) - 1, 0, motor_instance->VMAX);

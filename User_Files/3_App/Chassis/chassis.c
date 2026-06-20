@@ -114,6 +114,13 @@ void Chassis_Control()
         case LiftLevel200_Step5:
         case LiftLevel200_Step6:
         case LiftLevel200_Step7:
+        case DownLevel200_Step1:
+        case DownLevel200_Step2:
+        case DownLevel200_Step3:
+        case DownLevel200_Step4:
+        case DownLevel200_Step5:
+        case DownLevel200_Step6:
+        case DownLevel200_Step7:
           vx_cmd = LiftStand_Speedvx;
           vy_cmd = LiftStand_Speedvy;
           // wz_cmd = LiftStand_Speedvz;

@@ -19,6 +19,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 Computer_Frame_S PC_frame;
+ComputerTransmit_Frame_S PC_Transmit_Frame;
 static uint16_t pc_rx_timeout_ms = 0;
 
 /* Private function declarations ---------------------------------------------*/
@@ -45,6 +46,43 @@ void PC_rx_idle_callback(uint8_t *Buffer, uint16_t Length)
     memcpy(&PC_frame, Buffer, sizeof(Computer_Frame_S));
     pc_rx_timeout_ms = 0;
 }
+
+void PC_transmitData(void)
+{
+    PC_Transmit_Frame.header = FRAME_HEADER;
+    PC_Transmit_Frame.Calibration_flag = (Front_Calibrated && Back_Calibrated) ? 0x01 : 0x00;
+    switch(LiftingState_t.state)
+    {
+        case No_Lifting:
+            PC_Transmit_Frame.Lift_flag = 0x00;
+            break;
+        case LiftLevel200_Step1:
+        case LiftLevel200_Step2:
+        case LiftLevel200_Step3:
+        case LiftLevel200_Step4:
+        case LiftLevel200_Step5:
+        case LiftLevel200_Step6:
+        case LiftLevel200_Step7:
+            PC_Transmit_Frame.Lift_flag = 0x01;
+            break;
+        case DownLevel200_Step1:
+        case DownLevel200_Step2:
+        case DownLevel200_Step3:
+        case DownLevel200_Step4:
+        case DownLevel200_Step5:
+        case DownLevel200_Step6:
+        case DownLevel200_Step7:
+            PC_Transmit_Frame.Lift_flag = 0x02;
+            break;
+        default:
+            PC_Transmit_Frame.Lift_flag = 0x00;
+            break;
+    }
+    PC_Transmit_Frame.tail = FRAME_TAIL;
+    USB_Transmit_Data((uint8_t *)&PC_Transmit_Frame, sizeof(ComputerTransmit_Frame_S));
+}
+
+
 
 void PC_rx_timeout_1ms_process(void)
 {

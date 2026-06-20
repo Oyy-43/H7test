@@ -24,13 +24,16 @@ bool blue_minus_flag = true;
 
 void Motor_CanMessage_Transmit()
 {
-    CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-	// CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x1ff_Tx_Data,8);
-    CAN_Transmit_Data(&hfdcan3,0x1FF,CAN3_0x1ff_Tx_Data,8);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
-    Motor_DM_Normal_Output(&DM_Motor_Instances[3]);
+
+        CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
+       
+	    // CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x1ff_Tx_Data,8);
+        CAN_Transmit_Data(&hfdcan3,0x1FF,CAN3_0x1ff_Tx_Data,8);
+
+        Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
+        Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
+        Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
+        Motor_DM_Normal_Output(&DM_Motor_Instances[3]);  
 }
 
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -332,7 +335,7 @@ void Task_Init()
     Timestamp_Init(&htim5);
 
    //USB通讯初始化
-    // USB_Init(serial_Callback);
+    USB_Init(serial_Callback);
     UART_Init(&huart10,hipnuc_data_unpacked); 
     UART_Init(&huart1,TFmini_GetDistanceFront);
 
@@ -396,6 +399,7 @@ void Timestamp_fuc(void *argument)
        Motor_CanMessage_Transmit();
        Servo_SetAngle(&htim1,TIM_CHANNEL_1,Servo_Angle1);
        Servo_SetAngle(&htim2,TIM_CHANNEL_3,Servo_Angle2);
+       PC_transmitData();
        osDelay(1);
     }
 }
