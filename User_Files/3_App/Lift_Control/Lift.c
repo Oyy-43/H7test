@@ -557,7 +557,7 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_DownLevel200_Step4Event;
     }
-    if(me->state==DownLevel200_Step4 && DM_Motor_1to4_Instances[0].Outch_Length < -40.0f) //感觉改成用光电好一点
+    if(me->state==DownLevel200_Step4 && DM_Motor_1to4_Instances[0].Outch_Length < -25.0f) //感觉改成用光电好一点
     {
         LiftDown_CheckFlagFront = false;
         me->state_time = 0;
