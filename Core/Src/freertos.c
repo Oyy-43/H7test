@@ -26,7 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include "drv_can.h"
+#include "buzzer_music.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +61,7 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t timestamp_test_Handle;
 const osThreadAttr_t timestamp_test__attributes = {
   .name = "timestamp_test_",
-  .stack_size = 128 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for Music_Task */
@@ -87,28 +89,14 @@ const osThreadAttr_t Remote_Task_attributes = {
 osThreadId_t Chassis_ControlHandle;
 const osThreadAttr_t Chassis_Control_attributes = {
   .name = "Chassis_Control",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for Arm_Task */
-osThreadId_t Arm_TaskHandle;
-const osThreadAttr_t Arm_Task_attributes = {
-  .name = "Arm_Task",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for LKControlTask */
-osThreadId_t LKControlTaskHandle;
-const osThreadAttr_t LKControlTask_attributes = {
-  .name = "LKControlTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for DJIControl_Task */
 osThreadId_t DJIControl_TaskHandle;
 const osThreadAttr_t DJIControl_Task_attributes = {
   .name = "DJIControl_Task",
-  .stack_size = 1024 * 4,
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for LiftControl_Tas */
@@ -130,8 +118,6 @@ void MusicTask_func(void *argument);
 void DMsetOutput(void *argument);
 void tele_task(void *argument);
 void Chassis_Task(void *argument);
-void Arm_Control(void *argument);
-void LKsetOutput(void *argument);
 void DJISetOut(void *argument);
 void Lift_Task(void *argument);
 
@@ -182,12 +168,6 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Chassis_Control */
   Chassis_ControlHandle = osThreadNew(Chassis_Task, NULL, &Chassis_Control_attributes);
-
-  /* creation of Arm_Task */
-  Arm_TaskHandle = osThreadNew(Arm_Control, NULL, &Arm_Task_attributes);
-
-  /* creation of LKControlTask */
-  LKControlTaskHandle = osThreadNew(LKsetOutput, NULL, &LKControlTask_attributes);
 
   /* creation of DJIControl_Task */
   DJIControl_TaskHandle = osThreadNew(DJISetOut, NULL, &DJIControl_Task_attributes);
@@ -315,42 +295,6 @@ __weak void Chassis_Task(void *argument)
   /* USER CODE END Chassis_Task */
 }
 
-/* USER CODE BEGIN Header_Arm_Control */
-/**
-* @brief Function implementing the Arm_Task thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_Arm_Control */
-__weak void Arm_Control(void *argument)
-{
-  /* USER CODE BEGIN Arm_Control */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END Arm_Control */
-}
-
-/* USER CODE BEGIN Header_LKsetOutput */
-/**
-* @brief Function implementing the LKControlTask thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_LKsetOutput */
-__weak void LKsetOutput(void *argument)
-{
-  /* USER CODE BEGIN LKsetOutput */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END LKsetOutput */
-}
-
 /* USER CODE BEGIN Header_DJISetOut */
 /**
 * @brief Function implementing the DJIControl_Task thread.
@@ -389,6 +333,37 @@ __weak void Lift_Task(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+
+/* 栈溢出钩子：开启 configCHECK_FOR_STACK_OVERFLOW=2 后触发 */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+    /* 应急刹车：清零 CAN 缓冲区，防止脏数据继续发送 */
+    memset(CAN1_0x200_Tx_Data, 0, 8);
+    memset(CAN3_0x1ff_Tx_Data, 0, 8);
+
+    while (1)
+    {   
+        memset(CAN1_0x200_Tx_Data, 0, 8);
+        CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_G6, 1.0f, 80); // 发出提示音
+        /* 触发断点或点亮错误 LED，方便调试 */
+        __asm("BKPT #0");
+    }
+}
+
+void vApplicationMallocFailedHook(void)
+{
+    memset(CAN1_0x200_Tx_Data, 0, 8);
+    memset(CAN3_0x1ff_Tx_Data, 0, 8);
+
+    while (1)
+    {
+        memset(CAN1_0x200_Tx_Data, 0, 8);
+        CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_G6, 1.0f, 80);
+        __asm("BKPT #0");
+    }
+}
 
 /* USER CODE END Application */
 

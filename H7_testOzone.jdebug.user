@@ -1,20 +1,27 @@
 
 
-GraphedExpression="(Motor_DM_1_To_4_PID[0]).Target", Color=#e56a6f, Show=0
-GraphedExpression="(Motor_DM_1_To_4_PID[0]).Measure", Color=#35792b, Show=0
-GraphedExpression="(Motor_DM3519_POS_PID[0]).Measure", Color=#769dda, Show=0
-GraphedExpression="(Motor_DM3519_POS_PID[0]).Target", Color=#b14f0d, Show=0
-GraphedExpression="(Motor_DM_1_To_4_PID[1]).Target", Color=#b3c38e, Show=0
-GraphedExpression="(Motor_DM_1_To_4_PID[1]).Measure", Color=#ab7b05, Show=0
-GraphedExpression="(TFmini_RxData[0]).Distance", DisplayFormat=DISPLAY_FORMAT_DEC, Color=#7fd3b7, Show=0
-OpenDocument="withPC.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/communication/withPC.c", Line=30
+
+Breakpoint=d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/stm32h7xx_it.c:112, State=BP_STATE_ON
+GraphedExpression="(Motor_DM_POSITION_PID[2]).Target", Color=#e56a6f, Show=0
+GraphedExpression="(Motor_DM_POSITION_PID[2]).Measure", Color=#35792b, Show=0
+GraphedExpression="(Motor_DM_SPEED_PID[3]).Measure", Color=#769dda, Show=0
+GraphedExpression="(Motor_DM_SPEED_PID[3]).Target", Color=#b14f0d, Show=0
+GraphedExpression="(Motor_DM_POSITION_PID[3]).Target", Color=#b3c38e
+GraphedExpression="(Motor_DM_POSITION_PID[3]).Measure", Color=#ab7b05
+OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=12
 OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=76
+OpenDocument="stm32h7xx_hal.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c", Line=334
+OpenDocument="tasks.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3744
+OpenDocument="Ozone_DataSampling_260625.csv", FilePath="C:/Users/25774/Desktop/Ozone_DataSampling_260625.csv", Line=0
+OpenDocument="ctrl_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/ctrl_motor_dm.c", Line=36
+OpenDocument="stm32h7xx_it.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/stm32h7xx_it.c", Line=96
+OpenDocument="withPC.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/communication/withPC.c", Line=30
+OpenDocument="chassis.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Chassis/chassis.c", Line=72
 OpenDocument="startup_stm32h723xx.s", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/startup_stm32h723xx.s", Line=55
-OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=129
 OpenDocument="Lift.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Lift_Control/Lift.c", Line=519
-OpenDocument="ctrl_motor_dji.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DJI/ctrl_motor_dji.c", Line=9
-OpenDocument="ctrl_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/ctrl_motor_dm.c", Line=333
-OpenDocument="chassis.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Chassis/chassis.c", Line=120
+OpenDocument="ctrl_motor_dji.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DJI/ctrl_motor_dji.c", Line=24
+OpenDocument="drv_motor_dji.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DJI/drv_motor_dji.c", Line=57
+OpenDocument="stm32h7xx_hal_fdcan.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_fdcan.c", Line=5326
 OpenDocument="Hl12H1_Ml1_000.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/IMU/HIPNUC/Hl12H1-Ml1-000/Hl12H1_Ml1_000.c", Line=27
 OpenDocument="alg_pid.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Algorithm/PID/alg_pid.h", Line=41
 OpenDocument="drv_servo_motor.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Servo_Motor/drv_servo_motor.c", Line=14
@@ -24,22 +31,21 @@ OpenDocument="arm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Fi
 OpenDocument="drv_motor_dm.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/drv_motor_dm.h", Line=220
 OpenDocument="usart.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Inc/usart.h", Line=34
 OpenDocument="drv_uart.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/UART/drv_uart.c", Line=460
-OpenDocument="tasks.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=5180
-OpenToolbar="Debug", Floating=0, x=-1, y=-1
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=671, h=175, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=671, h=175, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
-OpenWindow="Source Files", DockArea=BOTTOM, x=2, y=0, w=256, h=527, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=2, w=671, h=174, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=533, h=878, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=398, h=527, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=1904, h=527, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=0, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="0;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1635;-93", CodeGraphLegendShown=0, CodeGraphLegendPosition="1667;0"
-OpenWindow="Find Results", DockArea=RIGHT, x=0, y=3, w=671, h=172, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=0, w=671, h=178, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing=""
+OpenToolbar="Debug", Floating=0, x=0, y=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=671, h=173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=671, h=173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Source Files", DockArea=BOTTOM, x=2, y=0, w=256, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=2, w=671, h=172, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=533, h=866, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=579, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
+OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=1723, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 s / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="0;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1454;-93", CodeGraphLegendShown=0, CodeGraphLegendPosition="1486;0"
+OpenWindow="Find Results", DockArea=RIGHT, x=0, y=3, w=671, h=169, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=0, w=671, h=175, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[317;190;261;100;121;118]
 TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[223;100;100;100;1312]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" (Motor_DM_1_To_4_PID[0]).Target";" (Motor_DM_1_To_4_PID[0]).Measure";" (Motor_DM3519_POS_PID[0]).Measure";" (Motor_DM3519_POS_PID[0]).Target";" (Motor_DM_1_To_4_PID[1]).Target";" (Motor_DM_1_To_4_PID[1]).Measure";" (TFmini_RxData[0]).Distance"], ColWidths=[100;100;100;100;100;100;100;100;100]
-TableHeader="Data Sampling Setup", SortCol="Type", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes"], ColWidths=[162;182;182;182;146;194;132]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" (Motor_DM_POSITION_PID[2]).Target";" (Motor_DM_POSITION_PID[2]).Measure";" (Motor_DM_SPEED_PID[3]).Measure";" (Motor_DM_SPEED_PID[3]).Target";" (Motor_DM_POSITION_PID[3]).Target";" (Motor_DM_POSITION_PID[3]).Measure"], ColWidths=[100;100;100;100;100;100;100;100]
+TableHeader="Data Sampling Setup", SortCol="Type", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes"], ColWidths=[376;100;158;158;158;194;132]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="Task List", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Name";"Run Count";"Priority";"Status";"Timeout";"Stack Info";"ID";"Mutex Count";"Notified Value";"Notify State"], ColWidths=[110;110;110;110;110;110;110;110;110;110]
 TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[207;144;399]
@@ -54,6 +60,7 @@ WatchedExpression="vz_turn_cmd", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="DM_Motor_Instances", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="hipnuc_imu_data", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="test_out", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Default_anglef", RefreshRate=1, Window=Watched Data 1
 WatchedExpression="Motor_DM_POSITION_PID", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="Motor_DM_SPEED_PID", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="Servo_Angle1", RefreshRate=5, Window=Watched Data 1
@@ -64,7 +71,6 @@ WatchedExpression="Calibration_finished", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="DJI_Motor_Instances", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="TFmini_RxData", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="LiftingState_t", Window=Watched Data 1
-WatchedExpression="Default_anglef", RefreshRate=1, Window=Watched Data 1
 WatchedExpression="Default_angleb", RefreshRate=1, Window=Watched Data 1
 WatchedExpression="DM_Motor_1to4_Instances", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="Motor_DM_1_To_4_PID", RefreshRate=5, Window=Watched Data 1
@@ -72,3 +78,8 @@ WatchedExpression="hipnuc_imu_data", RefreshRate=2, Window=Watched Data 1
 WatchedExpression="debug_first_encoder", RefreshRate=1, Window=Watched Data 1
 WatchedExpression="debug_first_raw_angle", RefreshRate=1, Window=Watched Data 1
 WatchedExpression="PC_frame", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="DM_Motor_1to4_Instances", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Motor_3508_SPEED_PID", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="g_forwardsee", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="vz_turn_cmd", Window=Watched Data 1
+WatchedExpression="rc_channels", Window=Watched Data 1

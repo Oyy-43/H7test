@@ -262,6 +262,8 @@ typedef struct DM_Motor_Instance
     float Target_Angle;
     // 低通滤波后的速度
     float Filtered_Omega;
+    //  额外的减速比
+    float Extra_Gearbox_Rate;
 } DM_Motor_Instance;
 
 /**
@@ -329,7 +331,7 @@ extern Normali_S DM_3519_1_Config;
 uint8_t *allocate_tx_data_DM(const FDCAN_HandleTypeDef *hcan, Enum_Motor_DM_Motor_ID_1_To_4 __CAN_Rx_ID_1_To_4);
 
 void Motor_DM_Init(DM_Motor_Instance *motor_instance, const FDCAN_HandleTypeDef *hcan, uint8_t __CAN_Rx_ID, uint8_t __CAN_Tx_ID,
-    Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __PMax, float __VMax, float __TMax, float __Current_Max);
+    Enum_Motor_DM_Control_Method __Motor_DM_Control_Method, float __PMax, float __VMax, float __TMax, float __Current_Max,float Extra_Gearbox_Rate);
 
 void Motor_DM_Init_All(void);
 

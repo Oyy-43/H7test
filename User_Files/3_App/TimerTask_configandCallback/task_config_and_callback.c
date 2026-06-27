@@ -1,4 +1,5 @@
 #include "task_config_and_callback.h"
+#include <string.h>
 
 /* Private variables ---------------------------------------------------------*/
 uint64_t us_time=0;
@@ -24,16 +25,31 @@ bool blue_minus_flag = true;
 
 void Motor_CanMessage_Transmit()
 {
+    /* 发送前强制清零，防止缓冲区被意外污染导致脏数据发送 */
+    // memset(CAN1_0x200_Tx_Data, 0, 8);
 
         CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
        
 	    // CAN_Transmit_Data(&hfdcan2,0x200,CAN2_0x1ff_Tx_Data,8);
+    // memset(CAN3_0x1ff_Tx_Data, 0, 8);
         CAN_Transmit_Data(&hfdcan3,0x1FF,CAN3_0x1ff_Tx_Data,8);
 
         Motor_DM_Normal_Output(&DM_Motor_Instances[0]);
         Motor_DM_Normal_Output(&DM_Motor_Instances[1]);
         Motor_DM_Normal_Output(&DM_Motor_Instances[2]);
         Motor_DM_Normal_Output(&DM_Motor_Instances[3]);  
+}
+
+void Remote_Valt_OutputControl()
+{
+    if(rc_channels.ch[8]<=0)
+    {
+        BSP_Power_Set_DC24_0(true);
+    }
+    else
+    {
+        BSP_Power_Set_DC24_0(false);
+    }
 }
 
 void CAN1_Callback(FDCAN_RxHeaderTypeDef *Header, uint8_t *Buffer)
@@ -74,17 +90,35 @@ void serial_Callback(uint8_t *Buffer, uint16_t Length)
 
 void Robot_Mode_Change_Check()
 {
-    if(rc_channels.ch[4]==0)
+    static uint8_t mode_debounce = 0;
+    static Enum_Robot_Mode mode_candidate = Robot_Mode_Stop;
+    Enum_Robot_Mode want;
+
+    if(rc_channels.ch[4] < -10)
     {
-        Robot_Mode = Robot_Mode_Stop;
+        want = Robot_Mode_Manual;
     }
-    else if(rc_channels.ch[4]<0)
+    else if(rc_channels.ch[4] > 10)
     {
-        Robot_Mode = Robot_Mode_Manual;
+        want = Robot_Mode_Auto;
     }
-    else if(rc_channels.ch[4]>0)
+    else
     {
-        Robot_Mode = Robot_Mode_Auto;
+        want = Robot_Mode_Stop;
+    }
+
+    // 防抖：连续 5ms（5 次）采样一致才切换模式
+    if (want == mode_candidate)
+    {
+        if (mode_debounce < 5)
+            mode_debounce++;
+        if (mode_debounce >= 5)
+            Robot_Mode = want;
+    }
+    else
+    {
+        mode_candidate = want;
+        mode_debounce = 0;
     }
 }
 
@@ -99,34 +133,43 @@ void Servo_Motor_Control()
         case Robot_Mode_Manual:
         if(rc_channels.ch[7] < 0 )
         {
-            Servo_Angle1 = 55.0f;
+            Servo_Angle1 = 35.0f;
             Servo_Angle2 = 0.0f;
         }
         else if(rc_channels.ch[7] == 0 )
         {
-            Servo_Angle1 = 55.0f;
-            Servo_Angle2 = 90.0f;
+            Servo_Angle1 = 35.0f;
+            Servo_Angle2 = 180.0f;
+        }
+        else if(rc_channels.ch[7]>0 && rc_channels.ch[5]>0)
+        {
+            Servo_Angle1 = 145.0f;
+            Servo_Angle2 = 0.0f;
         }
         else if(rc_channels.ch[7] > 0 )
         {
             Servo_Angle1 = 145.0f;
-            Servo_Angle2 = 90.0f;
+            Servo_Angle2 = 180.0f;
         }
         break;
         case Robot_Mode_Auto:
             switch (PC_frame.cmd_servocontrol)
             {
                 case 0x00:
-                Servo_Angle1 = 55.0f;
+                Servo_Angle1 = 35.0f;
                 Servo_Angle2 = 0.0f;
                 break;
                 case 0x01:
-                Servo_Angle1 = 55.0f;
-                Servo_Angle2 = 90.0f;
+                Servo_Angle1 = 35.0f;
+                Servo_Angle2 = 180.0f;
                 break;
                 case 0x02:
                 Servo_Angle1 = 145.0f;
-                Servo_Angle2 = 90.0f;
+                Servo_Angle2 = 180.0f;
+                break;
+                case 0x03:
+                Servo_Angle1 = 145.0f;
+                Servo_Angle2 = 0.0f;
                 break;
             }
         break;
@@ -177,7 +220,7 @@ void Task3600s_Callback()
  */
 void Task1ms_Callback()
 {
-    // PC_rx_timeout_1ms_process();
+    PC_rx_timeout_1ms_process();
     Remote_Status_Update(&ch9_status, 9);
     MeasureFSM_Run();
     LiftFSM_Run();
@@ -242,6 +285,7 @@ void Task1ms_Callback()
 
         // 发送实例
         TIM_10ms_Write_PeriodElapsedCallback();
+        Remote_Valt_OutputControl();
         Servo_Motor_Control();
     }
 
@@ -365,7 +409,7 @@ void Task_Init()
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
 
    //5V,24V电源输出初始化  第一位参数控制CAN1的2+2，第二位控制CAN2的2+2,第三位控制5v开关
-    BSP_Power_Init(false,true,true);
+    BSP_Power_Init(true,true,true);
 
 
    //初始化WS2812灯珠

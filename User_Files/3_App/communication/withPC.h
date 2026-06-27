@@ -33,7 +33,8 @@ typedef struct __attribute__((packed))
 {
     uint8_t header;                       //帧头
     uint8_t Calibration_flag;             // 1字节，校准标志位，发0x00则为未校准，发0x01则为已校准
-    uint8_t Lift_flag;                    // 1字节，升降状态标志位，0表示未升降，1表示正在上台阶，2表示正在下台阶 
+    uint8_t Lift_flag;                    // 1字节，升降状态标志位，0表示未升降，1表示正在上台阶，2表示正在下台阶
+    float Eul_YAW;                        // 4字节，当前的yaw角
     uint8_t tail;                         // 帧尾
 }ComputerTransmit_Frame_S;
 /* Exported constants --------------------------------------------------------*/
@@ -46,6 +47,7 @@ extern Computer_Frame_S PC_frame;
 void PC_rx_idle_callback(uint8_t *Buffer, uint16_t Length);
 void PC_rx_timeout_1ms_process(void);
 void PC_transmitData(void);
+uint8_t PC_Is_Online(void);
 
 
 

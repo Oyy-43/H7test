@@ -472,7 +472,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
 void LiftEvent_Generate(FSMstate *me,Event *e)
 {
     e->sig = LiftEvent_None;
-    if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && (Last_CH12<0 && rc_channels.ch[12]>0))
+    if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && ((Last_CH12<0 && rc_channels.ch[12]>0) || PC_frame.cmd_lift==1))  //手动后启用
     // if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && (PC_frame.cmd_lift==1))  //自动后启用
     {
         me->state_time = 0;
@@ -530,7 +530,7 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
     Last_CH12 = rc_channels.ch[12];
     //以上为上200台阶相关事件生成
 //**====================================================================================================== */
-    if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && (Last_CH13<0 && rc_channels.ch[13]>0))
+    if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && ((Last_CH13<0 && rc_channels.ch[13]>0) || PC_frame.cmd_lift==2))
     // if(me->state==No_Lifting &&(Front_Calibrated && Back_Calibrated) && (Robot_Mode == Robot_Mode_Auto) && (PC_frame.cmd_lift==2))  //自动后启用
     {
         me->state_time = 0;

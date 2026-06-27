@@ -13,10 +13,10 @@
 
 
 /* Private macros ------------------------------------------------------------*/
-#define Turn_KP 0.15f
+#define Turn_KP 0.18f  
 #define Turn_KI 0.0f
 #define Turn_KD 0.0f
-#define Turn_Kf 0.018f 
+#define Turn_Kf 0.0f  //0.018
 
 /* Private types -------------------------------------------------------------*/
 //转向控制PID
@@ -60,7 +60,8 @@ void Chassis_Omega_update(float vx, float vy, float vz)
 
 void Chassis_Control()
 {
-  float  vx_cmd = 0.0f, vy_cmd = 0.0f, wz_cmd = 0.0f;
+  float  vx_cmd = 0.0f, vy_cmd = 0.0f;
+  float yaw_measure = hipnuc_imu_data.eul[2];
 
   // 将目标航向限制在 [0, 360) 范围内
   if (Target_Yaw >= 360.0f) Target_Yaw -= 360.0f;
@@ -69,10 +70,6 @@ void Chassis_Control()
   // 角度误差归一化：将误差限制在 [-180, 180] 范围内
   // 避免陀螺仪 360°→0° 跳变导致 PID 误差突变
 
-  // float yaw_measure = hipnuc_imu_data.eul[2];
-  Filter_Frequency_Set_Now(&Chassis_Vz_Fillter, hipnuc_imu_data.eul[2]);
-  Filter_Frequency_TIM_Calculate_PeriodElapsedCallback(&Chassis_Vz_Fillter);
-  float yaw_measure =Filter_Frequency_Get_Out(&Chassis_Vz_Fillter);
   float yaw_error = Basic_Math_Modulus_Normalization(Target_Yaw - yaw_measure, 360.0f);
   float effective_target = yaw_measure + yaw_error;
 
@@ -81,15 +78,18 @@ void Chassis_Control()
     case Robot_Mode_Stop:
       vx_cmd = 0.0f;
       vy_cmd = 0.0f;
-      wz_cmd = 0.0f;
       vz_turn_cmd = 0.0f;
+      Turn_PID.Iout = 0.0f;
+      Turn_PID.Output = 0.0f;
+      Target_Yaw = yaw_measure;
+
       Chassis_Omega_update(0.0f, 0.0f, 0.0f);
       return;
     break;
     case Robot_Mode_Manual:
       vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 4.0f;
       vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 4.0f;
-      // Target_Yaw -= rc_channels.ch[3] * 0.01f / 20.0f;
+      // 加大死区以滤除 CRSF 噪声（±3），对齐模式切换的 ±10 阈值
       if(rc_channels.ch[3] > 2)
       {
         Target_Yaw -= 0.025f;
@@ -100,11 +100,21 @@ void Chassis_Control()
       }
     break;
     case Robot_Mode_Auto:
+      if (!PC_Is_Online())
+      {
+        Target_Yaw = yaw_measure;
+        vz_turn_cmd = 0.0f;
+        Turn_PID.Iout = 0.0f;
+        Turn_PID.Output = 0.0f;
+        Chassis_Omega_update(0.0f, 0.0f, 0.0f);
+        return;
+      }
       switch (LiftingState_t.state)
       {
         case No_Lifting:
           vx_cmd = PC_frame.cmd_vx;
           vy_cmd = PC_frame.cmd_vy;
+          Target_Yaw = PC_frame.cmd_yaw;
           // wz_cmd = PC_frame.cmd_vz;
         break;
         case LiftLevel200_Step1:
@@ -123,6 +133,7 @@ void Chassis_Control()
         case DownLevel200_Step7:
           vx_cmd = LiftStand_Speedvx;
           vy_cmd = LiftStand_Speedvy;
+          Target_Yaw = PC_frame.cmd_yaw;
           // wz_cmd = LiftStand_Speedvz;
         break;
       }

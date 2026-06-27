@@ -19,10 +19,10 @@
 /* Private types -------------------------------------------------------------*/
 PID_TypeDef Motor_3508_SPEED_PID[DJI_Motor_C620_Num];
 /* Private variables ---------------------------------------------------------*/
-float PID_3508_SPEEDKP[DJI_Motor_C620_Num] = {1250.0f, 1250.0f, 1250.0f, 1250.0f};  //0.2732 0.6664
-float PID_3508_SPEEDKI[DJI_Motor_C620_Num] = {1.0f, 1.0f, 1.0f, 1.0f};
+float PID_3508_SPEEDKP[DJI_Motor_C620_Num] = {1200.0f, 1200.0f, 1200.0f, 1200.0f};  //0.2732 0.6664
+float PID_3508_SPEEDKI[DJI_Motor_C620_Num] = {0.5f, 0.5f, 0.5f, 0.5f};  //1.0f 排除是i项积累的问题，先不要i了
 float PID_3508_SPEEDKD[DJI_Motor_C620_Num] = {0.0f, 0.0f, 0.0f, 0.0f};
-float PID_3508_SPEEDKf[DJI_Motor_C620_Num] = {50.0f, 50.0f, 50.0f, 50.0f};
+float PID_3508_SPEEDKf[DJI_Motor_C620_Num] = {25.0f, 25.0f, 25.0f, 25.0f};
 float Sin_Target;
 float test_Target;
 Struct_Filter_Frequency Motor_3508_Speed_Filter[DJI_Motor_C620_Num];
@@ -74,6 +74,7 @@ void Motor_DJI_CalPID()
     DJI_Motor_Instances[3].Out = PID_Calculate(&Motor_3508_SPEED_PID[3], DJI_Motor_Instances[3].Filtered_Omega, DJI_Motor_Instances[3].Target_Omega, 0.001f);
 }
 
+
 void DJI_Motor_Output()
 {
     Motor_DJI_CalPID();
@@ -92,7 +93,7 @@ void DJISetOut(void *argument)
 
     for(;;)
     {
-        Sin_Target = ALG_Sin_Generate(&Sin_Target, 3.0f, 10.0f, 1000.0f);
+        // Sin_Target = ALG_Sin_Generate(&Sin_Target, 3.0f, 10.0f, 1000.0f);
         // ALG_Value_Toggle_Periodic(&Sin_Target, 10.0f, -10.0f, 2.0f, 1000.0f);
         // DJI_Motor_Instances[0].Target_Omega = 10.0f;
         // DJI_Motor_Instances[1].Target_Omega = 10.0f;

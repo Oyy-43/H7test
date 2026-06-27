@@ -168,6 +168,11 @@ float PID_Calculate(PID_TypeDef *pid, float measure, float target, float Delta_T
     {
         pid->Target = pid->Measure;
         pid->Err = 0;
+        pid->Pout = 0.0f;
+        pid->ITerm = 0.0f;
+        pid->Dout = 0.0f;
+        pid->Fout = 0.0f;
+        pid->Output = 0.0f;
     }
     pid->Last_Measure = pid->Measure;
     pid->Last_Output = pid->Output;
