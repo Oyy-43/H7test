@@ -34,16 +34,6 @@ static uint8_t PC_frame_value_check(const Computer_Frame_S *frame)    //有效�
         return 0;
     }
 
-    if (!isfinite(frame->cmd_vx) || !isfinite(frame->cmd_vy) || !isfinite(frame->cmd_yaw))
-    {
-        return 0;
-    }
-
-    if ((fabsf(frame->cmd_vx) > Auto_VxMAX) || (fabsf(frame->cmd_vy) > Auto_VyMAX))
-    {
-        return 0;
-    }
-
     if ((frame->cmd_yaw < 0.0f) || (frame->cmd_yaw >= 360.0f))
     {
         return 0;
@@ -55,7 +45,7 @@ static uint8_t PC_frame_value_check(const Computer_Frame_S *frame)    //有效�
 /* Private function declarations ---------------------------------------------*/
 uint8_t PC_rx_msg_check(uint8_t *Buffer, uint16_t Length)
 {
-    if (Length != PC_FRAME_LEN)
+    if (Length != sizeof(Computer_Frame_S))
     {
         return 0;
     }
@@ -77,10 +67,10 @@ void PC_rx_idle_callback(uint8_t *Buffer, uint16_t Length)
     }
 
     memcpy(&tmp_frame, Buffer, sizeof(Computer_Frame_S));
-    if (!PC_frame_value_check(&tmp_frame))
-    {
-        return;
-    }
+    // if (!PC_frame_value_check(&tmp_frame))
+    // {
+    //     return;
+    // }
 
     PC_frame = tmp_frame;
     pc_rx_timeout_ms = 0;
@@ -123,17 +113,20 @@ void PC_transmitData(void)
 }
 
 
-
 void PC_rx_timeout_1ms_process(void)
 {
-    if (pc_rx_timeout_ms < PC_RX_TIMEOUT_MS)
+    if(Robot_Mode == Robot_Mode_Auto)
     {
-        pc_rx_timeout_ms++;
-    }
-    else
-    {
-        memset(&PC_frame, 0, sizeof(Computer_Frame_S));
-        PC_frame.cmd_yaw = hipnuc_imu_data.eul[2];
+        if (pc_rx_timeout_ms < PC_RX_TIMEOUT_MS)
+        {
+            pc_rx_timeout_ms++;
+        }
+        else
+        {
+            memset(&PC_frame, 0, sizeof(Computer_Frame_S));
+            PC_frame.cmd_yaw = hipnuc_imu_data.eul[2];  // 不跟随测量值，让Target_Yaw保持锁定
+            Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A6, 1.0f, 80);
+        }
     }
 }
 

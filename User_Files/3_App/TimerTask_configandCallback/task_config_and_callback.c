@@ -2,12 +2,13 @@
 #include <string.h>
 
 /* Private variables ---------------------------------------------------------*/
+uint8_t  test_angle3;
 uint64_t us_time=0;
 uint32_t ms_time=0;
 uint16_t s_time=0;
 uint16_t Servo_Angle1 = 0;
 uint16_t Servo_Angle2 = 0;
-
+bool IO_Status[4]= {false, false, false, false};  //0是夹爪上面的光电，1是对接完成信号，2是夹爪下面的光电
 // 全局初始化完成标志位
 bool init_finished = false;
 bool Calibration_finished = false; //底盘电机校准完成标志位
@@ -22,6 +23,42 @@ int32_t blue = 12;
 bool red_minus_flag = false;
 bool green_minus_flag = false;
 bool blue_minus_flag = true;
+
+void Check_IO_INPUT()
+{
+    if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == GPIO_PIN_SET)
+    {
+        IO_Status[0] = true;
+    }
+    else
+    {
+        IO_Status[0] = false;
+    }
+    if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_14) == GPIO_PIN_SET)
+    {
+        IO_Status[1] = true;
+    }
+    else
+    {
+        IO_Status[1] = false;
+    }
+    if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET)
+    {
+        IO_Status[2] = true;
+    }
+    else
+    {
+        IO_Status[2] = false;
+    }
+    if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_SET)
+    {
+        IO_Status[3] = true;
+    }
+    else
+    {
+        IO_Status[3] = false;
+    }
+}
 
 void Motor_CanMessage_Transmit()
 {
@@ -44,11 +81,11 @@ void Remote_Valt_OutputControl()
 {
     if(rc_channels.ch[8]<=0)
     {
-        BSP_Power_Set_DC24_0(true);
+        BSP_Power_Set_DC24_0(false);
     }
     else
     {
-        BSP_Power_Set_DC24_0(false);
+        BSP_Power_Set_DC24_0(true);
     }
 }
 
@@ -133,42 +170,53 @@ void Servo_Motor_Control()
         case Robot_Mode_Manual:
         if(rc_channels.ch[7] < 0 )
         {
-            Servo_Angle1 = 35.0f;
+            Servo_Angle1 = 64.0f;
             Servo_Angle2 = 0.0f;
         }
         else if(rc_channels.ch[7] == 0 )
         {
-            Servo_Angle1 = 35.0f;
+            Servo_Angle1 = 64.0f;
             Servo_Angle2 = 180.0f;
         }
         else if(rc_channels.ch[7]>0 && rc_channels.ch[5]>0)
         {
-            Servo_Angle1 = 145.0f;
+            Servo_Angle1 = 200.0f;
             Servo_Angle2 = 0.0f;
         }
         else if(rc_channels.ch[7] > 0 )
         {
-            Servo_Angle1 = 145.0f;
+            Servo_Angle1 = 200.0f;
             Servo_Angle2 = 180.0f;
         }
         break;
         case Robot_Mode_Auto:
-            switch (PC_frame.cmd_servocontrol)
+            switch(GetWeapon_State_t.state)
             {
-                case 0x00:
-                Servo_Angle1 = 35.0f;
+                case GetWeapon_Idle:
+                case GetWeapon_RuntoPosition1:
+                case GetWeapon_Process0:
+                case GetWeapon_Process1:
+                Servo_Angle1 = 64.0f;
                 Servo_Angle2 = 0.0f;
                 break;
-                case 0x01:
-                Servo_Angle1 = 35.0f;
+                case GetWeapon_Process2:
+                Servo_Angle1 = 64.0f;
                 Servo_Angle2 = 180.0f;
                 break;
-                case 0x02:
-                Servo_Angle1 = 145.0f;
+                case GetWeapon_Process3:
+                case GetWeapon_Process4:
+                case GetWeapon_Process5:
+                case GetWeapon_Process6:
+                Servo_Angle1 = 200.0f;
                 Servo_Angle2 = 180.0f;
                 break;
-                case 0x03:
-                Servo_Angle1 = 145.0f;
+                case GetWeapon_Process7:
+                Servo_Angle1 = 200.0f;
+                Servo_Angle2 = 0.0f;
+                break;
+                case GetWeapon_TurnBack:
+                case GetWeapon_Done:
+                Servo_Angle1 = 64.0f;
                 Servo_Angle2 = 0.0f;
                 break;
             }
@@ -221,10 +269,12 @@ void Task3600s_Callback()
 void Task1ms_Callback()
 {
     PC_rx_timeout_1ms_process();
-    Remote_Status_Update(&ch9_status, 9);
     MeasureFSM_Run();
+    GetKFS_FSM_Run();
     LiftFSM_Run();
-    Robot_Calibration_Check();
+    GetKFS_FSM_Run();
+    Check_IO_INPUT();
+    GetWeapon_FSM_Run();
     static int mod10 = 0;
     mod10++;
     if (mod10 == 10)
@@ -285,8 +335,11 @@ void Task1ms_Callback()
 
         // 发送实例
         TIM_10ms_Write_PeriodElapsedCallback();
-        Remote_Valt_OutputControl();
+        if(Robot_Mode == Robot_Mode_Manual){
+        Remote_Valt_OutputControl();}
         Servo_Motor_Control();
+        Robot_Calibration_Check();
+        Remote_Status_Update(&ch9_status, 9);
     }
 
     BSP_Key_TIM_1ms_Process_PeriodElapsedCallback();
@@ -381,7 +434,9 @@ void Task_Init()
    //USB通讯初始化
     USB_Init(serial_Callback);
     UART_Init(&huart10,hipnuc_data_unpacked); 
-    UART_Init(&huart1,TFmini_GetDistanceFront);
+    UART_Init(&huart1,TFmini_GetDistanceFront1);
+    UART_Init(&huart8,TFmini_GetDistanceDownF);
+    UART_Init(&huart9,TFmini_GetDistanceDownB);
 
     // 陀螺仪的SPI
     // SPI_Init(&hspi2, SPI2_Callback);

@@ -19,7 +19,7 @@
 #define front_speed 0.5f
 #define Down200_Front 205.0f
 #define Down200_Back 197.0f
-#define Down200_Front_up -30.0f
+#define Down200_Front_up -15.0f
 /* Exported types ------------------------------------------------------------*/
 typedef enum FSM_MeasureState
 {
@@ -98,11 +98,12 @@ typedef enum
     LiftEvent_DownLevel200_Step6Event,   //车体继续向后移动，直到车体完全离开台阶
     LiftEvent_DownLevel200_Step7Event,   //前后抬升回0，完成下台阶
     LiftEvent_DownLevel200_Step8Event,   //检测已完全下台阶，下台阶完毕
-    LiftEvent_DownLevel400_Step1,   //车体旋转为后轮朝向
-    LiftEvent_DownLevel400_Step2,   //车体向后移动，直到检测到后轮完全离地
-    LiftEvent_DownLevel400_Step3,   //车体继续向后移动，直到检测到前轮离地
-    LiftEvent_DownLevel400_Step4,   //前轮向下下降
-    LiftEvent_DownLevel400_Step5,   //车体后移，并且车身下降
+    LiftEvent_DownLevel400_Step1,        //车体旋转为后轮朝向
+    LiftEvent_DownLevel400_Step2,        //车体向后移动，直到检测到后轮完全离地
+    LiftEvent_DownLevel400_Step3,        //车体继续向后移动，直到检测到前轮离地
+    LiftEvent_DownLevel400_Step4,        //前轮向下下降
+    LiftEvent_DownLevel400_Step5,        //车体后移，并且车身下降
+    LiftEvent_TimeOut,                   //在某个状态中时间过久
 }LiftEvent;
 
 /* Exported constants --------------------------------------------------------*/

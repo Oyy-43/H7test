@@ -15,6 +15,8 @@
 #include "Lift.h"
 #include "robot_def.h"
 #include "withPC.h"
+#include "arm.h"
+#include "get_Weapon.h"
 
 /* Exported macros -----------------------------------------------------------*/
 

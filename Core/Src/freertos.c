@@ -61,7 +61,7 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t timestamp_test_Handle;
 const osThreadAttr_t timestamp_test__attributes = {
   .name = "timestamp_test_",
-  .stack_size = 1024 * 4,
+  .stack_size = 1560 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for Music_Task */
@@ -75,14 +75,14 @@ const osThreadAttr_t Music_Task_attributes = {
 osThreadId_t DMControlTaskHandle;
 const osThreadAttr_t DMControlTask_attributes = {
   .name = "DMControlTask",
-  .stack_size = 512 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for Remote_Task */
 osThreadId_t Remote_TaskHandle;
 const osThreadAttr_t Remote_Task_attributes = {
   .name = "Remote_Task",
-  .stack_size = 512 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for Chassis_Control */
@@ -96,7 +96,7 @@ const osThreadAttr_t Chassis_Control_attributes = {
 osThreadId_t DJIControl_TaskHandle;
 const osThreadAttr_t DJIControl_Task_attributes = {
   .name = "DJIControl_Task",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for LiftControl_Tas */
@@ -105,6 +105,20 @@ const osThreadAttr_t LiftControl_Tas_attributes = {
   .name = "LiftControl_Tas",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for ArmControl_Task */
+osThreadId_t ArmControl_TaskHandle;
+const osThreadAttr_t ArmControl_Task_attributes = {
+  .name = "ArmControl_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Position_Task */
+osThreadId_t Position_TaskHandle;
+const osThreadAttr_t Position_Task_attributes = {
+  .name = "Position_Task",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -120,6 +134,8 @@ void tele_task(void *argument);
 void Chassis_Task(void *argument);
 void DJISetOut(void *argument);
 void Lift_Task(void *argument);
+void Arm_Task(void *argument);
+void Position_Control(void *argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -174,6 +190,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of LiftControl_Tas */
   LiftControl_TasHandle = osThreadNew(Lift_Task, NULL, &LiftControl_Tas_attributes);
+
+  /* creation of ArmControl_Task */
+  ArmControl_TaskHandle = osThreadNew(Arm_Task, NULL, &ArmControl_Task_attributes);
+
+  /* creation of Position_Task */
+  Position_TaskHandle = osThreadNew(Position_Control, NULL, &Position_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -331,6 +353,42 @@ __weak void Lift_Task(void *argument)
   /* USER CODE END Lift_Task */
 }
 
+/* USER CODE BEGIN Header_Arm_Task */
+/**
+* @brief Function implementing the ArmControl_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Arm_Task */
+__weak void Arm_Task(void *argument)
+{
+  /* USER CODE BEGIN Arm_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Arm_Task */
+}
+
+/* USER CODE BEGIN Header_Position_Control */
+/**
+* @brief Function implementing the Position_Task thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_Position_Control */
+__weak void Position_Control(void *argument)
+{
+  /* USER CODE BEGIN Position_Control */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END Position_Control */
+}
+
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
@@ -345,7 +403,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
     {   
         memset(CAN1_0x200_Tx_Data, 0, 8);
         CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_G6, 1.0f, 80); // 发出提示音
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_F3, 1.0f, 80); // 发出提示音
         /* 触发断点或点亮错误 LED，方便调试 */
         __asm("BKPT #0");
     }
@@ -360,7 +418,7 @@ void vApplicationMallocFailedHook(void)
     {
         memset(CAN1_0x200_Tx_Data, 0, 8);
         CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_G6, 1.0f, 80);
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_F3, 1.0f, 80);
         __asm("BKPT #0");
     }
 }

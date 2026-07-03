@@ -13,10 +13,10 @@
 
 
 /* Private macros ------------------------------------------------------------*/
-#define Turn_KP 0.18f  
+#define Turn_KP 0.25f  
 #define Turn_KI 0.0f
 #define Turn_KD 0.0f
-#define Turn_Kf 0.0f  //0.018
+#define Turn_Kf 0.0025f  //0.018
 
 /* Private types -------------------------------------------------------------*/
 //转向控制PID
@@ -82,7 +82,6 @@ void Chassis_Control()
       Turn_PID.Iout = 0.0f;
       Turn_PID.Output = 0.0f;
       Target_Yaw = yaw_measure;
-
       Chassis_Omega_update(0.0f, 0.0f, 0.0f);
       return;
     break;
@@ -107,15 +106,55 @@ void Chassis_Control()
         Turn_PID.Iout = 0.0f;
         Turn_PID.Output = 0.0f;
         Chassis_Omega_update(0.0f, 0.0f, 0.0f);
-        return;
+        // return;
       }
       switch (LiftingState_t.state)
       {
         case No_Lifting:
-          vx_cmd = PC_frame.cmd_vx;
-          vy_cmd = PC_frame.cmd_vy;
-          Target_Yaw = PC_frame.cmd_yaw;
-          // wz_cmd = PC_frame.cmd_vz;
+            switch (GetWeapon_State_t.state)
+            {
+            case GetWeapon_Idle:
+            vx_cmd = Move_Pid_Out[0];
+            vy_cmd = Move_Pid_Out[1];
+            Target_Yaw = PC_frame.cmd_yaw;
+            break;
+            case GetWeapon_Process2:
+            case GetWeapon_Process3:
+            case GetWeapon_TurnBack:
+            case GetWeapon_Done:
+            vx_cmd = 0.0f;
+            vy_cmd = 0.0f;
+            Target_Yaw = 0.0f;
+            break;
+            case GetWeapon_RuntoPosition1:
+            case GetWeapon_Process4:
+            vx_cmd = Move_Pid_Out[0];
+            vy_cmd = Move_Pid_Out[1];
+            Target_Yaw = 0.0f;
+            break;
+            case GetWeapon_Process0:
+            vx_cmd = 0.3f;
+            vy_cmd = 0.0f;
+            Target_Yaw = 0.0f;
+            break;
+            case GetWeapon_Process0_5:
+            vx_cmd = 0.1f;
+            vy_cmd = 0.0f;
+            Target_Yaw = 0.0f;
+            break;
+            case GetWeapon_Process1:
+            vx_cmd = 0.0f;
+            vy_cmd = 0.18f;
+            Target_Yaw = 0.0f;
+            break;
+            case GetWeapon_Process5:
+            case GetWeapon_Process6:
+            case GetWeapon_Process7:
+            vx_cmd = 0.0f;
+            vy_cmd = 0.0f; 
+            Target_Yaw = 180.0f;
+            break;
+        }
         break;
         case LiftLevel200_Step1:
         case LiftLevel200_Step2:

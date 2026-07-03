@@ -16,7 +16,7 @@
 /* Private macros ------------------------------------------------------------*/
 
 /* Private types -------------------------------------------------------------*/
-TFminiRxData_S TFmini_RxData[3];
+TFminiRxData_S TFmini_RxData[4];
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -37,7 +37,8 @@ void TFmini_DataProcess(uint8_t *Buffer, uint16_t Length,TFminiRxData_S *tfmini_
     if (Length >= 9 &&Buffer[0] == 0x59 && Buffer[1] == 0x59)
     {
         if (CheckSum(Buffer) == Buffer[8])
-        {
+        {   
+            tfmini_S->Last_Distance = tfmini_S->Distance;
             tfmini_S->Frame_Haead1 = Buffer[0];
             tfmini_S->Frame_Haead2 = Buffer[1];
             tfmini_S->Distance = GET16(&Buffer[2]);
@@ -47,15 +48,19 @@ void TFmini_DataProcess(uint8_t *Buffer, uint16_t Length,TFminiRxData_S *tfmini_
     }
 }
 
-void TFmini_GetDistanceFront(uint8_t *Buffer, uint16_t Length)
+void TFmini_GetDistanceFront1(uint8_t *Buffer, uint16_t Length)
 {
     TFmini_DataProcess(Buffer, Length, &TFmini_RxData[0]);
 }
 
-void TFmini_GetDistanceDown(uint8_t *Buffer, uint16_t Length)
+void TFmini_GetDistanceDownF(uint8_t *Buffer, uint16_t Length)
 {
     TFmini_DataProcess(Buffer, Length, &TFmini_RxData[1]);
 }
 
+void TFmini_GetDistanceDownB(uint8_t *Buffer, uint16_t Length)
+{
+    TFmini_DataProcess(Buffer, Length, &TFmini_RxData[2]);
+}
 /* Function prototypes -------------------------------------------------------*/
 

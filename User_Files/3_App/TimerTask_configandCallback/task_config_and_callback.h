@@ -29,12 +29,12 @@
 #include "drv_tfmini.h"
 #include "Hl12H1_Ml1_000.h"
 #include "drv_servo_motor.h"
-
+#include "arm.h"
 
 void Task_Init();
 void Task1ms_Callback();
 void Task3600s_Callback();
 
-
+extern bool IO_Status[4];
 
 #endif // TASK_CONFIG_AND_CALLBACK_H

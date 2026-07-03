@@ -19,8 +19,8 @@
 /* Private types -------------------------------------------------------------*/
 PID_TypeDef Motor_3508_SPEED_PID[DJI_Motor_C620_Num];
 /* Private variables ---------------------------------------------------------*/
-float PID_3508_SPEEDKP[DJI_Motor_C620_Num] = {1200.0f, 1200.0f, 1200.0f, 1200.0f};  //0.2732 0.6664
-float PID_3508_SPEEDKI[DJI_Motor_C620_Num] = {0.5f, 0.5f, 0.5f, 0.5f};  //1.0f 排除是i项积累的问题，先不要i了
+float PID_3508_SPEEDKP[DJI_Motor_C620_Num] = {1350.0f, 1350.0f, 1350.0f, 1350.0f};  //0.2732 0.6664
+float PID_3508_SPEEDKI[DJI_Motor_C620_Num] = {2.5f, 2.5f, 2.5f, 2.5f};  //1.0f 排除是i项积累的问题，先不要i了
 float PID_3508_SPEEDKD[DJI_Motor_C620_Num] = {0.0f, 0.0f, 0.0f, 0.0f};
 float PID_3508_SPEEDKf[DJI_Motor_C620_Num] = {25.0f, 25.0f, 25.0f, 25.0f};
 float Sin_Target;
@@ -31,10 +31,10 @@ void Motor_DJI_InitPID()
 {
     uint8_t i;
 
-    PID_Init(&Motor_3508_SPEED_PID[0],16384.0f,2000.0f,0.0f,PID_3508_SPEEDKP[0],PID_3508_SPEEDKI[0],PID_3508_SPEEDKD[0],PID_3508_SPEEDKf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
-    PID_Init(&Motor_3508_SPEED_PID[1],16384.0f,2000.0f,0.0f,PID_3508_SPEEDKP[1],PID_3508_SPEEDKI[1],PID_3508_SPEEDKD[1],PID_3508_SPEEDKf[1],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit); 
-    PID_Init(&Motor_3508_SPEED_PID[2],16384.0f,2000.0f,0.0f,PID_3508_SPEEDKP[2],PID_3508_SPEEDKI[2],PID_3508_SPEEDKD[2],PID_3508_SPEEDKf[2],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
-    PID_Init(&Motor_3508_SPEED_PID[3],16384.0f,2000.0f,0.0f,PID_3508_SPEEDKP[3],PID_3508_SPEEDKI[3],PID_3508_SPEEDKD[3],PID_3508_SPEEDKf[3],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
+    PID_Init(&Motor_3508_SPEED_PID[0],16384.0f,1500.0f,0.0f,PID_3508_SPEEDKP[0],PID_3508_SPEEDKI[0],PID_3508_SPEEDKD[0],PID_3508_SPEEDKf[0],0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
+    PID_Init(&Motor_3508_SPEED_PID[1],16384.0f,1500.0f,0.0f,PID_3508_SPEEDKP[1],PID_3508_SPEEDKI[1],PID_3508_SPEEDKD[1],PID_3508_SPEEDKf[1],0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate); 
+    PID_Init(&Motor_3508_SPEED_PID[2],16384.0f,1500.0f,0.0f,PID_3508_SPEEDKP[2],PID_3508_SPEEDKI[2],PID_3508_SPEEDKD[2],PID_3508_SPEEDKf[2],0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
+    PID_Init(&Motor_3508_SPEED_PID[3],16384.0f,1500.0f,0.0f,PID_3508_SPEEDKP[3],PID_3508_SPEEDKI[3],PID_3508_SPEEDKD[3],PID_3508_SPEEDKf[3],0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
 
 
     for (i = 0U; i < DJI_Motor_C620_Num; i++)
