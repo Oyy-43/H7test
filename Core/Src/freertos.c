@@ -61,8 +61,8 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t timestamp_test_Handle;
 const osThreadAttr_t timestamp_test__attributes = {
   .name = "timestamp_test_",
-  .stack_size = 1560 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 1024 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for Music_Task */
 osThreadId_t Music_TaskHandle;
@@ -89,7 +89,7 @@ const osThreadAttr_t Remote_Task_attributes = {
 osThreadId_t Chassis_ControlHandle;
 const osThreadAttr_t Chassis_Control_attributes = {
   .name = "Chassis_Control",
-  .stack_size = 512 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for DJIControl_Task */
@@ -103,14 +103,14 @@ const osThreadAttr_t DJIControl_Task_attributes = {
 osThreadId_t LiftControl_TasHandle;
 const osThreadAttr_t LiftControl_Tas_attributes = {
   .name = "LiftControl_Tas",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for ArmControl_Task */
 osThreadId_t ArmControl_TaskHandle;
 const osThreadAttr_t ArmControl_Task_attributes = {
   .name = "ArmControl_Task",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for Position_Task */
@@ -395,16 +395,8 @@ __weak void Position_Control(void *argument)
 /* 栈溢出钩子：开启 configCHECK_FOR_STACK_OVERFLOW=2 后触发 */
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
-    /* 应急刹车：清零 CAN 缓冲区，防止脏数据继续发送 */
-    memset(CAN1_0x200_Tx_Data, 0, 8);
-    memset(CAN3_0x1ff_Tx_Data, 0, 8);
-
     while (1)
     {   
-        memset(CAN1_0x200_Tx_Data, 0, 8);
-        CAN_Transmit_Data(&hfdcan1,0x200,CAN1_0x200_Tx_Data,8);
-        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_F3, 1.0f, 80); // 发出提示音
-        /* 触发断点或点亮错误 LED，方便调试 */
         __asm("BKPT #0");
     }
 }

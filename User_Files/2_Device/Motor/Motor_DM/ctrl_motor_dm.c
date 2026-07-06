@@ -43,7 +43,7 @@
  float DM_SPEEDPIDKffStaticPos[DM_Motor_Normal_Num] = {0.0f, 0.0f,0.0f,0.0f};
  float DM_SPEEDPIDKffStaticNeg[DM_Motor_Normal_Num] = {0.0f, 0.0f,0.0f,0.0f};
  
- float DM_POSITIONPIDKP[DM_Motor_Normal_Num] = {5.0f,2.5f,4.5f,1.25f};
+ float DM_POSITIONPIDKP[DM_Motor_Normal_Num] = {7.5f,2.5f,4.5f,1.25f};
  float DM_POSITIONPIDKI[DM_Motor_Normal_Num] = {0.0f, 0.01f,0.5f,0.0015f};
  float DM_POSITIONPIDKD[DM_Motor_Normal_Num] = {0.0f, 0.0f,0.0f,0.0f};
  float DM_POSITIONPIDKf[DM_Motor_Normal_Num] = {0.0f, 0.0f,0.0f,0.0f};
@@ -75,8 +75,8 @@ void Motor_DM_InitPID()
 	PID_Init(&Motor_DM3519_POS_PID[0],7.0f,4.5f,0.0f,DM3519_POS_kp[0],DM3519_POS_ki[0],DM3519_POS_kd[0],DM3519_POS_kf[0],0.0f,0.0f,180.0f,10.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
 	PID_Init(&Motor_DM3519_POS_PID[1],7.0f,4.5f,0.0f,DM3519_POS_kp[1],DM3519_POS_ki[1],DM3519_POS_kd[1],DM3519_POS_kf[1],0.0f,0.0f,180.0f,10.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
 	/* 电机[0] */
-	PID_Init(&Motor_DM_SPEED_PID[0],15.0f,1.5f,0.0f,DM_SPEEDPIDKP[0],DM_SPEEDPIDKI[0],DM_SPEEDPIDKD[0],DM_SPEEDPIDKf[0],DM_SPEEDPIDKffStaticPos[0],DM_SPEEDPIDKffStaticNeg[0],5.0f,1.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
-	PID_Init(&Motor_DM_POSITION_PID[0],20.0f,0.0f,0.0f,DM_POSITIONPIDKP[0],DM_POSITIONPIDKI[0],DM_POSITIONPIDKD[0],DM_POSITIONPIDKf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
+	PID_Init(&Motor_DM_SPEED_PID[0],10.0f,1.5f,0.0f,DM_SPEEDPIDKP[0],DM_SPEEDPIDKI[0],DM_SPEEDPIDKD[0],DM_SPEEDPIDKf[0],DM_SPEEDPIDKffStaticPos[0],DM_SPEEDPIDKffStaticNeg[0],5.0f,1.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
+	PID_Init(&Motor_DM_POSITION_PID[0],30.0f,0.0f,0.0f,DM_POSITIONPIDKP[0],DM_POSITIONPIDKI[0],DM_POSITIONPIDKD[0],DM_POSITIONPIDKf[0],0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,Integral_Limit);
 	/* 电机[1] */
 	PID_Init(&Motor_DM_SPEED_PID[1],10.0f,1.5f,0.0f,DM_SPEEDPIDKP[1],DM_SPEEDPIDKI[1],DM_SPEEDPIDKD[1],DM_SPEEDPIDKf[1],DM_SPEEDPIDKffStaticPos[1],DM_SPEEDPIDKffStaticNeg[1],3.0f,1.0f,0.0f,0.0f,Integral_Limit|ChangingIntegralRate);
 	PID_Init(&Motor_DM_POSITION_PID[1],10.0f,0.0f,0.0f,DM_POSITIONPIDKP[1],DM_POSITIONPIDKI[1],DM_POSITIONPIDKD[1],DM_POSITIONPIDKf[1],0.0f,0.0f,3.0f,1.0f,0.0f,0.0f,Integral_Limit);
@@ -162,7 +162,7 @@ void Motor_DM_CalPID()
 				{
 					follow_speed = PID_Calculate(&Motor_LiftHeight_PID, hipnuc_imu_data.eul[0],0.0f,0.001f);
 				}
-					break;
+				break;
 				default:
 				break;
 				}
@@ -455,7 +455,7 @@ void DMsetOutput(void *argument)
 					DM_Motor_Instances[3].Control_Omega = 3.0f;
 				}
 				// DM_Motor_Instances[0].Target_Angle = 5.0f+(50.0f/820)*(rc_channels.ch[11]);
-				DM_Motor_Instances[0].Target_Angle = 38.5;
+				DM_Motor_Instances[0].Target_Angle = 38.0f;
 				DM_Motor_Instances[1].Target_Angle = (17.0f/800.0f)*(rc_channels.ch[2]);
 				DM_Motor_Instances[2].Target_Angle = (3.4f/820) * rc_channels.ch[10];
 				if(rc_channels.ch[14]<=0)
@@ -466,7 +466,7 @@ void DMsetOutput(void *argument)
 				{
 					DM_Motor_Instances[3].Control_Angle = Default_angleb;  // default -1.75
 				}
-				DM_Motor_1to4_Instances[0].Target_Length = -30.0f;
+				DM_Motor_1to4_Instances[0].Target_Length = -10.0f;
 				DM_Motor_1to4_Instances[1].Target_Length = 0.0f;
 
 				// DM_Motor_Instances[1].Target_Angle = Default_angleb;
@@ -492,23 +492,12 @@ void DMsetOutput(void *argument)
 		case Robot_Mode_Auto:
 			DM_Motor_1to4_Instances[0].Target_Length = Lift_HightFront;
 			DM_Motor_1to4_Instances[1].Target_Length = Lift_HightBack;
-			DM_Motor_Instances[3].Control_Omega = 3.0f;
+			DM_Motor_Instances[3].Control_Omega = 1.5f;
 			if(GetWeapon_State_t.state==GetWeapon_Idle){
 				switch(GetKFS_State_t.state)
 				{
 					case GetKFS_Idle:
-					if(GetWeapon_State_t.state==GetWeapon_Idle)
-					{
-						DM_Motor_Instances[0].Target_Angle = PC_frame.motor0_height;
-					}
-					else
-					{
-						DM_Motor_Instances[0].Target_Angle = PC_frame.motor0_height;
-					}
-
-					DM_Motor_Instances[1].Target_Angle = PC_frame.motor1_x_length;
-					// DM_Motor_Instances[2].Target_Angle = PC_frame.motor2_target_angle;
-					// DM_Motor_Instances[3].Target_Angle = PC_frame.motor3_target_angle;
+					DM_Motor_Instances[0].Target_Angle = 5.0f;
 					break;
 					case GetKFS_Process0:
 					case GetKFS_Process1:
@@ -533,13 +522,13 @@ void DMsetOutput(void *argument)
 				case GetWeapon_Process2_5:
 				case GetWeapon_Process3:
 				case GetWeapon_Process4:
-				DM_Motor_Instances[0].Target_Angle = 42.0f;
+				DM_Motor_Instances[0].Target_Angle = 47.0f;
 				DM_Motor_Instances[1].Target_Angle = 0.0f;
 				DM_Motor_Instances[2].Target_Angle = 0.0f;
 				DM_Motor_Instances[3].Control_Angle = 1.0f;
 				break;
 				default:
-				DM_Motor_Instances[0].Target_Angle = 37.5f;
+				DM_Motor_Instances[0].Target_Angle = 38.5f;
 				DM_Motor_Instances[1].Target_Angle = 0.0f;
 				DM_Motor_Instances[2].Target_Angle = 0.0f;
 				DM_Motor_Instances[3].Control_Angle = 1.0f;

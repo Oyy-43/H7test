@@ -30,6 +30,10 @@
 #include "Hl12H1_Ml1_000.h"
 #include "drv_servo_motor.h"
 #include "arm.h"
+#include "buzzer_music.h"
+
+// #define RedTeam
+#define BlueTeam
 
 void Task_Init();
 void Task1ms_Callback();

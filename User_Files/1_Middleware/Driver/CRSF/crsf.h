@@ -15,7 +15,7 @@
 #define CRSF_TX_DMA hdma_uart7_tx
 
 /* Exported types ------------------------------------------------------------*/
-
+extern int16_t Failsafe_count;
 /* Exported constants --------------------------------------------------------*/
 /** 
  * @brief 计算CRSF数据包的CRC8校验值    

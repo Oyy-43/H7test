@@ -44,7 +44,6 @@ if (BSP_Key.Pre_GPIO_State == KEY_FREE_STATE)
             BSP_Key.Key_Status = BSP_Key_Status_PRESSED;
         }
     }
-
     BSP_Key.Pre_GPIO_State = BSP_Key.Now_GPIO_State;
 }
 

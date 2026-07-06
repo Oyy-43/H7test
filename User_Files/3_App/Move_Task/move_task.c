@@ -21,7 +21,7 @@ PID_TypeDef Move_Pid_X,Move_Pid_Y;
 float measure_position[2] = {0.0f, 0.0f}; //测量位置
 float target_position[2] = {0.0f, 0.0f}; //目标位置
 float Move_Pid_Out[2] = {0.0f, 0.0f}; //PID输出
-float move_pid_kp[2] = {0.8f,0.8f};
+float move_pid_kp[2] = {1.25f,1.25f};
 float move_pid_ki[2] = {0.001f,0.001f};
 float move_pid_kd[2] = {0.0f,0.0f};
 float move_pid_kf[2] = {0.0f,0.0f};

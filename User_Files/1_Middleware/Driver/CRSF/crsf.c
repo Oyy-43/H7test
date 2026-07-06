@@ -21,7 +21,8 @@ RAM_D2_BUFFER uint8_t crsf_send_buffer[64] = {};
 crsf_boardcast_frame_t crsf_frame = {0};
 
 crsf_channels_t rc_channels;
- 
+
+int16_t Failsafe_count = 0;
  /* Private variables ---------------------------------------------------------*/
  
  /* Private function declarations ---------------------------------------------*/
@@ -51,6 +52,7 @@ void crsf_rx_idle_callback(uint8_t *buf, uint16_t length)
         return;
     }
     
+    Failsafe_count = 500;
     crsf_frame.addr = buf[0];
     crsf_frame.length = buf[1];
     crsf_frame.type = buf[2];

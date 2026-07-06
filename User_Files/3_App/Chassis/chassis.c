@@ -27,6 +27,25 @@ Struct_Filter_Frequency Chassis_Vz_Fillter;
 float test_yaw = 0.0f;
 float vz_turn_cmd = 0.0f;
 float target_y =0.0f;
+
+#ifdef RedTeam
+float Front_MoveSpeed = 0.3f;
+float Front_MoveSpeedSlow = 0.1f;
+float To_GetWeaponVySpeed = 0.18f;
+float Quit_Speed = -0.2f;
+float Normal_Target_Yaw = 0.0f;
+float Waiting_Target_Yaw =180.0f;
+float Quit_Vx_Forward =-0.1f;
+#endif
+#ifdef BlueTeam
+float Front_MoveSpeed = -0.3f;
+float Front_MoveSpeedSlow = -0.1f;
+float To_GetWeaponVySpeed = 0.18f;
+float Quit_Speed = -0.2f;
+float Normal_Target_Yaw = 180.0f;
+float Waiting_Target_Yaw = 0.0f;
+float Quit_Vx_Forward =0.1f;
+#endif
 /* Private function declarations ---------------------------------------------*/
 
 
@@ -86,6 +105,22 @@ void Chassis_Control()
       return;
     break;
     case Robot_Mode_Manual:
+    if(Failsafe_count > -32768){
+    Failsafe_count -= 1;}
+    else{
+      Failsafe_count = -32768;
+    }
+    if(Failsafe_count < 0)
+    {
+      Chassis_Omega_update(0.0f, 0.0f, 0.0f);
+      return;
+    }
+    if(rc_channels.ch[4]<-900)
+    {
+      Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A6, 1.0f, 80);
+      Chassis_Omega_update(0.0f, 0.0f, 0.0f);
+      return;
+    }
       vx_cmd = rc_channels.ch[1] * 0.05f / 10.0f / 4.0f;
       vy_cmd = -rc_channels.ch[0] * 0.05f / 10.0f / 4.0f;
       // 加大死区以滤除 CRSF 噪声（±3），对齐模式切换的 ±10 阈值
@@ -118,43 +153,80 @@ void Chassis_Control()
             vy_cmd = Move_Pid_Out[1];
             Target_Yaw = PC_frame.cmd_yaw;
             break;
+            #ifdef RedTeam
             case GetWeapon_Process2:
             case GetWeapon_Process3:
             case GetWeapon_TurnBack:
             case GetWeapon_Done:
             vx_cmd = 0.0f;
             vy_cmd = 0.0f;
-            Target_Yaw = 0.0f;
+            Target_Yaw = Normal_Target_Yaw;
             break;
+            #endif // RedTeam
+            #ifdef BlueTeam
+            case GetWeapon_Process2:
+            case GetWeapon_Process3:
+            vx_cmd = 0.0f;
+            vy_cmd = 0.0f;
+            Target_Yaw = Normal_Target_Yaw;
+            break;
+            case GetWeapon_TurnBack:
+            case GetWeapon_Done:
+            vx_cmd = 0.0f;
+            vy_cmd = 0.0f;
+            Target_Yaw = Waiting_Target_Yaw;
+            break;
+            #endif // BlueTeam
             case GetWeapon_RuntoPosition1:
             case GetWeapon_Process4:
             vx_cmd = Move_Pid_Out[0];
             vy_cmd = Move_Pid_Out[1];
-            Target_Yaw = 0.0f;
+            Target_Yaw = Normal_Target_Yaw;
             break;
             case GetWeapon_Process0:
-            vx_cmd = 0.3f;
+            vx_cmd = Front_MoveSpeed;
             vy_cmd = 0.0f;
-            Target_Yaw = 0.0f;
+            Target_Yaw = Normal_Target_Yaw;
             break;
             case GetWeapon_Process0_5:
-            vx_cmd = 0.1f;
+            vx_cmd = Front_MoveSpeedSlow;
             vy_cmd = 0.0f;
-            Target_Yaw = 0.0f;
+            Target_Yaw = Normal_Target_Yaw;
             break;
             case GetWeapon_Process1:
-            vx_cmd = 0.0f;
-            vy_cmd = 0.18f;
-            Target_Yaw = 0.0f;
+            if(IO_Status[1]==true)
+            {
+              vx_cmd = 0.0f;
+              vy_cmd = To_GetWeaponVySpeed;
+              Target_Yaw = Normal_Target_Yaw;
+            }
+            if(IO_Status[1]==false)
+            {
+              vx_cmd = 0.0f;
+              vy_cmd = Quit_Speed;
+              Target_Yaw = Normal_Target_Yaw;
+            }
             break;
             case GetWeapon_Process5:
             case GetWeapon_Process6:
             case GetWeapon_Process7:
             vx_cmd = 0.0f;
             vy_cmd = 0.0f; 
-            Target_Yaw = 180.0f;
+            Target_Yaw = Waiting_Target_Yaw;
             break;
-        }
+            case GetWeapon_Quit:
+            vx_cmd = Quit_Vx_Forward;
+            vy_cmd = Quit_Speed;
+            Target_Yaw = Normal_Target_Yaw;
+            break;
+            }
+            // KFS吸盘前伸时底盘同步前进
+            if (GetKFS_State_t.state == GetKFS_Process1)
+            {
+                vx_cmd = 0.15f;
+                vy_cmd = 0.0f;
+                Target_Yaw = 0.0f;
+            }
         break;
         case LiftLevel200_Step1:
         case LiftLevel200_Step2:

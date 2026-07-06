@@ -8,13 +8,31 @@ uint32_t ms_time=0;
 uint16_t s_time=0;
 uint16_t Servo_Angle1 = 0;
 uint16_t Servo_Angle2 = 0;
+
+
 bool IO_Status[4]= {false, false, false, false};  //0是夹爪上面的光电，1是对接完成信号，2是夹爪下面的光电
 // 全局初始化完成标志位
 bool init_finished = false;
 bool Calibration_finished = false; //底盘电机校准完成标志位
 
+BSP_KEY_S KeyBoard ={
+    .Pre_GPIO_State = GPIO_PIN_SET,
+	.Now_GPIO_State = GPIO_PIN_SET,
+	.Key_Status = BSP_Key_Status_FREE,
+};
+
+const GPIO_PinState KEYBOARD_FREE_STATE = GPIO_PIN_SET;
 // 机器人模式全局状态
 Enum_Robot_Mode Robot_Mode = Robot_Mode_Stop;
+
+// 比赛项目全局状态
+Enum_Competition_Mode Competition_Mode = Competition_Mode_None;
+
+// 按键模式选择状态机相关变量
+static Enum_Key_Select_State Key_Select_State = Key_Select_State_Idle;
+static uint16_t Key_LongPress_Cnt = 0;       // 长按计时计数器（ms）
+static uint8_t  Key_Select_Press_Cnt = 0;    // 选择期间的短按次数
+#define KEY_LONG_PRESS_THRESHOLD_MS  500     // 长按判定阈值 500ms
 
 // LED灯
 int32_t red = 0;
@@ -50,13 +68,162 @@ void Check_IO_INPUT()
     {
         IO_Status[2] = false;
     }
-    if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_SET)
+    if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8) == GPIO_PIN_SET)
     {
         IO_Status[3] = true;
     }
     else
     {
         IO_Status[3] = false;
+    }
+}
+
+void KeyBoard_Init()
+{
+    KeyBoard.Pre_GPIO_State = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8);
+}
+
+void KeyBoard_TIM_1ms_Process_PeriodElapsedCallback()
+{
+if (KeyBoard.Pre_GPIO_State == KEYBOARD_FREE_STATE)
+    {
+        if (KeyBoard.Now_GPIO_State == KEYBOARD_FREE_STATE)
+        {
+            KeyBoard.Key_Status = BSP_Key_Status_FREE;
+        }
+        else
+        {
+            KeyBoard.Key_Status = BSP_Key_Status_TRIG_FREE_PRESSED;
+        }
+    }
+    else
+    {
+        if (KeyBoard.Now_GPIO_State == KEYBOARD_FREE_STATE)
+        {
+            KeyBoard.Key_Status = BSP_Key_Status_TRIG_PRESSED_FREE;
+        }
+        else
+        {
+            KeyBoard.Key_Status = BSP_Key_Status_PRESSED;
+        }
+    }
+    KeyBoard.Pre_GPIO_State = KeyBoard.Now_GPIO_State;
+}
+
+void KeyBoard_TIM_50ms_Read_PeriodElapsedCallback()
+{
+    KeyBoard.Now_GPIO_State = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8);
+}
+
+/**
+ * @brief 按键模式选择处理函数（每1ms调用一次）
+ *        长按500ms进入选择状态 -> 短按计数 -> 长按500ms退出并确定比赛项目
+ * @retval None
+ */
+void KeyBoard_Mode_Select_Process()
+{
+    switch (Key_Select_State)
+    {
+        case Key_Select_State_Idle:
+            // 空闲状态：检测长按
+            if (KeyBoard.Key_Status == BSP_Key_Status_PRESSED)
+            {
+                Key_LongPress_Cnt++;
+                if (Key_LongPress_Cnt >= KEY_LONG_PRESS_THRESHOLD_MS)
+                {
+                    // 长按达到阈值，进入选择模式
+                    Key_Select_State = Key_Select_State_Entering;
+                    Key_LongPress_Cnt = 0;
+                    Key_Select_Press_Cnt = 0;
+                    // 蜂鸣器提示进入选择模式（一声长响）
+                    Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A6, 1.0f, 100);
+                }
+            }
+            else
+            {
+                Key_LongPress_Cnt = 0;
+            }
+            break;
+
+        case Key_Select_State_Entering:
+            // 等待松手确认进入
+            if (KeyBoard.Key_Status == BSP_Key_Status_TRIG_PRESSED_FREE)
+            {
+                Key_Select_State = Key_Select_State_Counting;
+                // 短提示音确认已进入
+                Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A6, 0.5f, 50);
+            }
+            break;
+
+        case Key_Select_State_Counting:
+            // 长按退出检测
+            if (KeyBoard.Key_Status == BSP_Key_Status_PRESSED)
+            {
+                Key_LongPress_Cnt++;
+                if (Key_LongPress_Cnt >= KEY_LONG_PRESS_THRESHOLD_MS)
+                {
+                    Key_Select_State = Key_Select_State_Exiting;
+                    Key_LongPress_Cnt = 0;
+                }
+            }
+            else
+            {
+                Key_LongPress_Cnt = 0;
+            }
+            // 短按计数（只检测按下触发沿）
+            if (KeyBoard.Key_Status == BSP_Key_Status_TRIG_FREE_PRESSED)
+            {
+                Key_Select_Press_Cnt++;
+                Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A6, 0.2f, 30);
+            }
+            break;
+
+        case Key_Select_State_Exiting:
+            // 等待松手确认退出
+            if (KeyBoard.Key_Status == BSP_Key_Status_TRIG_PRESSED_FREE)
+            {
+                // 根据短按次数确定比赛项目
+                switch (Key_Select_Press_Cnt)
+                {
+                    case 0:
+                        Competition_Mode = Competition_Mode_None;
+                        PC_Transmit_Frame.Retry_Flag = 0x00; // 正常执行程序
+                        break;
+                    case 1:
+                        PC_Transmit_Frame.Retry_Flag = 0x01; // 从武馆重试到梅林
+                        Competition_Mode = Competition_Mode_1;
+                        break;
+                    case 2:
+                        PC_Transmit_Frame.Retry_Flag = 0x02; // 单项赛上3区代码
+                        Competition_Mode = Competition_Mode_Single_3Zone;
+                        break;
+                    case 3:
+                        PC_Transmit_Frame.Retry_Flag = 0x03; // 对抗赛3区代码
+                        Competition_Mode = Competition_Mode_Battle_3Zone;
+                        break;
+                    default:
+                        Competition_Mode = Competition_Mode_Reserve;
+                        PC_Transmit_Frame.Retry_Flag = 0x04; // 预留模式
+                        break;
+                }
+
+                // 选择有效比赛项目后，确保处于Stop等待用户双击启动
+                if (Competition_Mode != Competition_Mode_None)
+                {
+                    Robot_Mode = Robot_Mode_Stop;
+                }
+
+                // 退出提示音
+                Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A6, 0.5f, 50);
+
+                // 回到空闲状态
+                Key_Select_State = Key_Select_State_Idle;
+            }
+            break;
+
+        default:
+            Key_Select_State = Key_Select_State_Idle;
+            break;
     }
 }
 
@@ -125,37 +292,56 @@ void serial_Callback(uint8_t *Buffer, uint16_t Length)
 }
 
 
+#define DOUBLE_CLICK_TIMEOUT_MS  400     // 双击判定时间窗口（ms）
+
 void Robot_Mode_Change_Check()
 {
-    static uint8_t mode_debounce = 0;
-    static Enum_Robot_Mode mode_candidate = Robot_Mode_Stop;
-    Enum_Robot_Mode want;
+    static uint8_t  click_count = 0;
+    static uint16_t click_timer = 0;
 
-    if(rc_channels.ch[4] < -10)
+    // 模式选择期间，屏蔽双击切换
+    if (Key_Select_State != Key_Select_State_Idle)
     {
-        want = Robot_Mode_Manual;
-    }
-    else if(rc_channels.ch[4] > 10)
-    {
-        want = Robot_Mode_Auto;
-    }
-    else
-    {
-        want = Robot_Mode_Stop;
+        click_count = 0;
+        click_timer = 0;
+        return;
     }
 
-    // 防抖：连续 5ms（5 次）采样一致才切换模式
-    if (want == mode_candidate)
+    // 检测按下触发沿
+    if (KeyBoard.Key_Status == BSP_Key_Status_TRIG_FREE_PRESSED)
     {
-        if (mode_debounce < 5)
-            mode_debounce++;
-        if (mode_debounce >= 5)
-            Robot_Mode = want;
+        click_count++;
+        if (click_count == 1)
+        {
+            click_timer = 0;  // 第一次按下，复位计时器
+        }
     }
-    else
+
+    // 有点击时开始计时
+    if (click_count > 0)
     {
-        mode_candidate = want;
-        mode_debounce = 0;
+        click_timer++;
+
+        if (click_count >= 2)
+        {
+            // 检测到双击 → 切换 Stop ↔ Auto
+            if (Robot_Mode == Robot_Mode_Stop)
+            {
+                Robot_Mode = Robot_Mode_Auto;
+            }
+            else if (Robot_Mode == Robot_Mode_Auto)
+            {
+                Robot_Mode = Robot_Mode_Stop;
+            }
+            click_count = 0;
+            click_timer = 0;
+        }
+        else if (click_timer >= DOUBLE_CLICK_TIMEOUT_MS)
+        {
+            // 超时，单次点击忽略
+            click_count = 0;
+            click_timer = 0;
+        }
     }
 }
 
@@ -164,18 +350,18 @@ void Servo_Motor_Control()
     switch(Robot_Mode)
     {
         case Robot_Mode_Stop:
-        Servo_Angle1 = 0.0f;
+        Servo_Angle1 = 200.0f;
         Servo_Angle2 = 0.0f;
         break;
         case Robot_Mode_Manual:
         if(rc_channels.ch[7] < 0 )
         {
-            Servo_Angle1 = 64.0f;
+            Servo_Angle1 = 68.0f;
             Servo_Angle2 = 0.0f;
         }
         else if(rc_channels.ch[7] == 0 )
         {
-            Servo_Angle1 = 64.0f;
+            Servo_Angle1 = 68.0f;
             Servo_Angle2 = 180.0f;
         }
         else if(rc_channels.ch[7]>0 && rc_channels.ch[5]>0)
@@ -196,15 +382,21 @@ void Servo_Motor_Control()
                 case GetWeapon_RuntoPosition1:
                 case GetWeapon_Process0:
                 case GetWeapon_Process1:
-                Servo_Angle1 = 64.0f;
+                Servo_Angle1 = 68.0f;
                 Servo_Angle2 = 0.0f;
                 break;
                 case GetWeapon_Process2:
-                Servo_Angle1 = 64.0f;
+                Servo_Angle1 = 68.0f;
                 Servo_Angle2 = 180.0f;
                 break;
                 case GetWeapon_Process3:
+                Servo_Angle1 = 200.0f;
+                Servo_Angle2 = 180.0f;
+                break;
                 case GetWeapon_Process4:
+                Servo_Angle1 = 200.0f;
+                Servo_Angle2 = 180.0f;
+                break;
                 case GetWeapon_Process5:
                 case GetWeapon_Process6:
                 Servo_Angle1 = 200.0f;
@@ -216,7 +408,7 @@ void Servo_Motor_Control()
                 break;
                 case GetWeapon_TurnBack:
                 case GetWeapon_Done:
-                Servo_Angle1 = 64.0f;
+                Servo_Angle1 = 68.0f;
                 Servo_Angle2 = 0.0f;
                 break;
             }
@@ -275,6 +467,9 @@ void Task1ms_Callback()
     GetKFS_FSM_Run();
     Check_IO_INPUT();
     GetWeapon_FSM_Run();
+    KeyBoard_TIM_1ms_Process_PeriodElapsedCallback();
+    // 按键模式选择处理（长按500ms选择比赛项目）
+    KeyBoard_Mode_Select_Process();
     static int mod10 = 0;
     mod10++;
     if (mod10 == 10)
@@ -335,8 +530,8 @@ void Task1ms_Callback()
 
         // 发送实例
         TIM_10ms_Write_PeriodElapsedCallback();
-        if(Robot_Mode == Robot_Mode_Manual){
-        Remote_Valt_OutputControl();}
+        // if(Robot_Mode == Robot_Mode_Manual){
+        // Remote_Valt_OutputControl();}
         Servo_Motor_Control();
         Robot_Calibration_Check();
         Remote_Status_Update(&ch9_status, 9);
@@ -351,6 +546,8 @@ void Task1ms_Callback()
 
         // 处理按键状态
         BSP_Key_TIM_50ms_Read_PeriodElapsedCallback();
+        //处理键盘状态
+        KeyBoard_TIM_50ms_Read_PeriodElapsedCallback();
     }
     static int mod100 = 0;
     mod100++;
@@ -479,9 +676,11 @@ void Task_Init()
     Motor_DJI_Init_All();
     Motor_DM_Init_All();
     Motor_LK_Init_All();
-   //
-
-   //标记初始化完成 
+   
+    //键盘初始化
+    KeyBoard_Init();
+   
+    //标记初始化完成 
     init_finished = true;   
 }
 

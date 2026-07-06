@@ -75,35 +75,24 @@ void Motor_DJI_CalPID()
 }
 
 
+void Motor_DJI_ResetSpeedPID(void)
+{
+    for (uint8_t i = 0U; i < DJI_Motor_C620_Num; i++)
+    {
+        Motor_3508_SPEED_PID[i].Iout = 0.0f;
+        Motor_3508_SPEED_PID[i].Output = 0.0f;
+        Motor_3508_SPEED_PID[i].Pout = 0.0f;
+        Motor_3508_SPEED_PID[i].Dout = 0.0f;
+        Motor_3508_SPEED_PID[i].Err = 0.0f;
+        Motor_3508_SPEED_PID[i].Last_Err = 0.0f;
+        Motor_3508_SPEED_PID[i].ITerm = 0.0f;
+        DJI_Motor_Instances[i].Out = 0;
+    }
+}
+
 void DJI_Motor_Output()
 {
     Motor_DJI_CalPID();
     Motor_DJI_SetOutput();
 }
 /* Function prototypes -------------------------------------------------------*/
-void DJISetOut(void *argument)
-{
-    TickType_t last_wake_time = xTaskGetTickCount();
-    TickType_t period_ticks = pdMS_TO_TICKS(1U);
-
-    if (period_ticks == 0U)
-    {
-        period_ticks = 1U;
-    }
-
-    for(;;)
-    {
-        // Sin_Target = ALG_Sin_Generate(&Sin_Target, 3.0f, 10.0f, 1000.0f);
-        // ALG_Value_Toggle_Periodic(&Sin_Target, 10.0f, -10.0f, 2.0f, 1000.0f);
-        // DJI_Motor_Instances[0].Target_Omega = 10.0f;
-        // DJI_Motor_Instances[1].Target_Omega = 10.0f;
-        // DJI_Motor_Instances[2].Target_Omega = 10.0f;
-        // DJI_Motor_Instances[3].Target_Omega = 12.0f;
-        // DJI_Motor_Instances[4].Target_Omega = Sin_Target;
-        // DJI_Motor_Instances[5].Target_Omega = -10.0f;
-        // Motor_DJI_CalPID();
-        // Motor_DJI_Output();
-        // TransData_Send_Two_Float_Frame(&huart1, DJI_Motor_Instances[3].Out, DJI_Motor_Instances[3].Filtered_Omega, 2);
-        xTaskDelayUntil(&last_wake_time, period_ticks);
-    }
-}

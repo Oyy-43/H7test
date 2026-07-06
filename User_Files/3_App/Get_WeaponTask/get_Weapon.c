@@ -116,6 +116,10 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
             me->state = GetWeapon_Idle;
             me->state_time = 0.0f;
             break;
+            case GetWeapon_Event_Interrupt:
+            me->state = GetWeapon_Quit;
+            me->state_time = 0.0f;
+            break;
         }
     break;
     case GetWeapon_Process2_5:
@@ -130,6 +134,10 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
             me->state = GetWeapon_Idle;
             me->state_time = 0.0f;
             break;
+            case GetWeapon_Event_Interrupt:
+            me->state = GetWeapon_Quit;
+            me->state_time = 0.0f;
+            break;
         }
     break;
     case GetWeapon_Process3:
@@ -142,6 +150,10 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
             break;
             case GetWeapon_Event_Timeout:
             me->state = GetWeapon_Idle;
+            me->state_time = 0.0f;
+            break;
+            case GetWeapon_Event_Interrupt:
+            me->state = GetWeapon_Quit;
             me->state_time = 0.0f;
             break;
         }
@@ -212,8 +224,19 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
             break;
         }
     break;
+    case GetWeapon_Quit:
+        me->state_time+=1.0f;
+        switch(e->sig)
+        {
+            case GetWeapon_Event_QuitTimeout:
+            me->state = GetWeapon_Process0;
+            me->state_time = 0.0f;
+            break;
+        }
+    break;
     case GetWeapon_Done:
         me->state_time+=1.0f;
+        PC_Transmit_Frame.GetWeapon_FinshFlag = 0x01;
         switch(e->sig)
         {
             case GetWeapon_Event_None:
@@ -253,11 +276,17 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_WeaponDetect;       
     }
-    if(me->state == GetWeapon_Process0_5 && me->state_time >62)
+    if(me->state == GetWeapon_Process0_5 && me->state_time > 125.0f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A1_FLAT, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_WeaponTimeout;
+    }
+    if(me->state == GetWeapon_Process2_5 && (me->state_time > 500.0f || fabs(DM_Motor_Instances[0].Target_Angle +DM_Motor_Instances[0].Rx_Data.Now_Angle) < 0.1f))
+    {
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = GetWeapon_Height_upDone;
     }
     if(me->state == GetWeapon_Process1 && IO_Status[1] == false )
     {
@@ -265,17 +294,11 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_HeadDetect;       
     }
-    if(me->state == GetWeapon_Process2 && me->state_time > 1250.0f)
+    if(me->state == GetWeapon_Process2 && me->state_time > 1000.0f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_ClampDone;       
-    }
-    if(me->state == GetWeapon_Process2_5 && fabs(DM_Motor_Instances[0].Target_Angle +DM_Motor_Instances[0].Rx_Data.Now_Angle) < 0.1f)
-    {
-        me->state_time = 0;
-        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
-        e->sig = GetWeapon_Height_upDone;       
     }
     if(me->state == GetWeapon_Process3 && me->state_time > 1000.0f)
     {
@@ -283,9 +306,10 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_LiftDone;       
     }
-    if(me->state == GetWeapon_Process4 && fabs(PC_frame.Position_MeasureY-PC_frame.Position_Target_Y)<0.1f
+    if(me->state == GetWeapon_Process4 && me->state_time >500.0f
+        && fabs(PC_frame.Position_MeasureY-PC_frame.Position_Target_Y)<0.1f
     && fabs(PC_frame.Position_MeasureX-PC_frame.Position_Target_X)<0.1f
-)
+)    
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
@@ -300,10 +324,10 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
     if(me->state == GetWeapon_Process6 && IO_Status[2] == true )
     {
         me->state_time = 0;
-        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6,1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_DockingDone;       
     }
-    if(me->state == GetWeapon_Process7 && me->state_time > 2000.0f)
+    if(me->state == GetWeapon_Process7 && me->state_time > 3000.0f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
@@ -314,6 +338,21 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_TurnBackDone;       
+    }
+    // 中断检测：仅在抓取过程中（Process2/2_5/3）检测物体丢失
+    // 避免到达目标点后（Process4+）上光电持续导通导致状态机卡死
+    if(IO_Status[0] == true &&
+       (me->state == GetWeapon_Process2 ||
+        me->state == GetWeapon_Process2_5 ||
+        me->state == GetWeapon_Process3))
+    {
+        e->sig = GetWeapon_Event_Interrupt;
+    }
+    if(me->state == GetWeapon_Quit && me->state_time > 1250.0f)
+    {
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = GetWeapon_Event_QuitTimeout;       
     }
     if(me->state_time > 15000.0f )
     {

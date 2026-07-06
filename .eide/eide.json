@@ -95,7 +95,8 @@
         "defineList": [
           "USE_PWR_LDO_SUPPLY",
           "USE_HAL_DRIVER",
-          "STM32H723xx"
+          "STM32H723xx",
+          "configCHECK_FOR_STACK_OVERFLOW"
         ]
       },
       "builderOptions": {

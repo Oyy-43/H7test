@@ -18,13 +18,9 @@ typedef struct __attribute__((packed))
     uint8_t Calibration_Flag;        // 1字节，校准标志位，0表示未请求校准，1表示请求校准
     float cmd_yaw;                   // 4字节，航向角指令，单位为度，范围 [0, 360)
     uint8_t cmd_lift;                // 1字节，升降指令
-    float motor0_height;             // 4字节，上层机构电机0的高度
-    float motor1_x_length;           // 4字节，上层机构电机1的伸出长度
-    float motor2_target_angle;       // 4字节，上层机构电机2的目标角度
-    float motor3_target_angle;       // 4字节，上层机构电机3的目标角度
     float GetWeapon_StartFlag;       // 4字节，拾取武器标志位,置1表示开始进行拾取武器
-    float GetWeapom_FinshFlag;       // 4字节，拾取武器完成标志位,置1表示拾取武器完成
-    uint8_t suction_cup_control;     // 吸盘控制指令
+    uint8_t AimtoGetKFSFlag;         // 进行瞄准拾取KFS标志位，为0X01时，开始瞄准拾取
+    uint8_t GetKFS_CMD;              // 吸盘控制指令,0X00为不拾取，0x01为向前拾取,0x02为向下拾取,0x03为向外侧放置KFS
     float Position_MeasureX;         // 里程计当前X位置
     float Position_MeasureY;         // 里程计当前Y位置
     float Position_Target_X;         // 里程计目标X位置
@@ -38,7 +34,11 @@ typedef struct __attribute__((packed))
     uint8_t Calibration_flag;             // 1字节，校准标志位，发0x00则为未校准，发0x01则为已校准
     uint8_t Lift_flag;                    // 1字节，升降状态标志位，0表示未升降，1表示正在上台阶，2表示正在下台阶
     uint8_t GetWeapon_FinshFlag;          // 1字节，拾取武器完成标志位,置1表示拾取武器完成
+    uint8_t GetKFS_Flag;                  // 1字节，0x00表示未拾取KFS，0x01表示正在拾取KFS，0x02表示正在向下拾取,
+                                          //0x03表示正在向外侧放置KFS，0x04表示KFS拾取完成                                              
     float Eul_YAW;                        // 4字节，当前的yaw角
+    uint8_t Retry_Flag;                   // 1字节，发0表示为正常执行程序,0x01表示为从武馆重试到梅林,0x02为单项赛上3区代码，
+                                          //0x03为对抗赛3区代码
     uint8_t tail;                         // 帧尾
 }ComputerTransmit_Frame_S;
 /* Exported constants --------------------------------------------------------*/
@@ -46,6 +46,7 @@ typedef struct __attribute__((packed))
 
 /* Exported variables --------------------------------------------------------*/
 extern Computer_Frame_S PC_frame;
+extern ComputerTransmit_Frame_S PC_Transmit_Frame;
 
 /* Exported function declarations --------------------------------------------*/
 void PC_rx_idle_callback(uint8_t *Buffer, uint16_t Length);

@@ -15,6 +15,33 @@ typedef enum Enum_Robot_Mode
 }Enum_Robot_Mode;
 
 extern Enum_Robot_Mode Robot_Mode;
+
+/**
+ * @brief 机器人比赛项目枚举定义
+ *        通过按键选择确定当前比赛项目
+ */
+typedef enum Enum_Competition_Mode
+{
+    Competition_Mode_None = 0,            // 未选择
+    Competition_Mode_1,                   // 2区梅林重试
+    Competition_Mode_Single_3Zone,        // 2次按键  -> 单项赛上3区
+    Competition_Mode_Battle_3Zone,        // 3次按键  -> 对抗赛3区代码
+    Competition_Mode_Reserve,             // 4次按键  -> 预留模式
+}Enum_Competition_Mode;
+
+extern Enum_Competition_Mode Competition_Mode;
+
+/**
+ * @brief 按键模式选择状态机枚举
+ */
+typedef enum
+{
+    Key_Select_State_Idle = 0,       // 空闲状态
+    Key_Select_State_Entering,       // 长按进入中（等待松手确认）
+    Key_Select_State_Counting,       // 计数短按中
+    Key_Select_State_Exiting,        // 长按退出中（等待松手确认）
+}Enum_Key_Select_State;
+
 /**
  * @brief 选择开启C++的宏定义
  * 
