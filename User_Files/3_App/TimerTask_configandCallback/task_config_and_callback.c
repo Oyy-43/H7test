@@ -2,7 +2,7 @@
 #include <string.h>
 
 /* Private variables ---------------------------------------------------------*/
-uint8_t  test_angle3;
+uint16_t Banding_Flag = 0;
 uint64_t us_time=0;
 uint32_t ms_time=0;
 uint16_t s_time=0;
@@ -71,6 +71,11 @@ void Check_IO_INPUT()
     if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8) == GPIO_PIN_SET)
     {
         IO_Status[3] = true;
+        Banding_Flag++;
+        if(Banding_Flag>65534)
+        {
+            Banding_Flag=65534;
+        }
     }
     else
     {
@@ -350,7 +355,7 @@ void Servo_Motor_Control()
     switch(Robot_Mode)
     {
         case Robot_Mode_Stop:
-        Servo_Angle1 = 200.0f;
+        Servo_Angle1 = 200.0f;//200
         Servo_Angle2 = 0.0f;
         break;
         case Robot_Mode_Manual:
@@ -464,7 +469,6 @@ void Task1ms_Callback()
     MeasureFSM_Run();
     GetKFS_FSM_Run();
     LiftFSM_Run();
-    GetKFS_FSM_Run();
     Check_IO_INPUT();
     GetWeapon_FSM_Run();
     KeyBoard_TIM_1ms_Process_PeriodElapsedCallback();

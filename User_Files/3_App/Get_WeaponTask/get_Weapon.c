@@ -212,6 +212,7 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
     break;
     case GetWeapon_TurnBack:
         me->state_time+=1.0f;
+        PC_Transmit_Frame.GetWeapon_FinshFlag = 0x01;
         switch(e->sig)
         {
             case GetWeapon_Event_TurnBackDone:
@@ -321,7 +322,7 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_RotateDone;       
     }
-    if(me->state == GetWeapon_Process6 && IO_Status[2] == true )
+    if(me->state == GetWeapon_Process6 && Banding_Flag>1000 )
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6,1.0f, 80); // 发出提示音
@@ -348,7 +349,7 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
     {
         e->sig = GetWeapon_Event_Interrupt;
     }
-    if(me->state == GetWeapon_Quit && me->state_time > 1250.0f)
+    if(me->state == GetWeapon_Quit && me->state_time > 940.0f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音

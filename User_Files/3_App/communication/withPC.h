@@ -21,6 +21,8 @@ typedef struct __attribute__((packed))
     float GetWeapon_StartFlag;       // 4字节，拾取武器标志位,置1表示开始进行拾取武器
     uint8_t AimtoGetKFSFlag;         // 进行瞄准拾取KFS标志位，为0X01时，开始瞄准拾取
     uint8_t GetKFS_CMD;              // 吸盘控制指令,0X00为不拾取，0x01为向前拾取,0x02为向下拾取,0x03为向外侧放置KFS
+                                     // 0x04为向前吸取，并且存放kfs，0x05为向下吸取，并且存放kfs,0x06为吸取高位KFS,0x07为向前拾取并丢弃，
+                                     // 0x08为拾取低位的KFS并且丢弃，0x09为拾取高位的KFS并且存放代码       
     float Position_MeasureX;         // 里程计当前X位置
     float Position_MeasureY;         // 里程计当前Y位置
     float Position_Target_X;         // 里程计目标X位置

@@ -40,5 +40,5 @@ void Task1ms_Callback();
 void Task3600s_Callback();
 
 extern bool IO_Status[4];
-
+extern uint16_t Banding_Flag;
 #endif // TASK_CONFIG_AND_CALLBACK_H

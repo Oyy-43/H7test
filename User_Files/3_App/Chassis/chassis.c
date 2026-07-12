@@ -35,7 +35,7 @@ float To_GetWeaponVySpeed = 0.18f;
 float Quit_Speed = -0.2f;
 float Normal_Target_Yaw = 0.0f;
 float Waiting_Target_Yaw =180.0f;
-float Quit_Vx_Forward =-0.1f;
+float Quit_Vx_Forward =-0.05f;
 #endif
 #ifdef BlueTeam
 float Front_MoveSpeed = -0.3f;
@@ -44,7 +44,7 @@ float To_GetWeaponVySpeed = 0.18f;
 float Quit_Speed = -0.2f;
 float Normal_Target_Yaw = 180.0f;
 float Waiting_Target_Yaw = 0.0f;
-float Quit_Vx_Forward =0.1f;
+float Quit_Vx_Forward =0.05f;
 #endif
 /* Private function declarations ---------------------------------------------*/
 
@@ -197,7 +197,7 @@ void Chassis_Control()
             if(IO_Status[1]==true)
             {
               vx_cmd = 0.0f;
-              vy_cmd = To_GetWeaponVySpeed;
+              vy_cmd = To_GetWeaponVySpeed+0.05f;
               Target_Yaw = Normal_Target_Yaw;
             }
             if(IO_Status[1]==false)
@@ -221,11 +221,18 @@ void Chassis_Control()
             break;
             }
             // KFS吸盘前伸时底盘同步前进
-            if (GetKFS_State_t.state == GetKFS_Process1)
+            if (GetKFS_State_t.state == GetKFS_Process1
+             || GetKFS_State_t.state == GetKFS_Save_Process1 
+             || GetKFS_State_t.state == GetKFS_High_Process1
+            )
             {
-                vx_cmd = 0.15f;
-                vy_cmd = 0.0f;
-                Target_Yaw = 0.0f;
+              vx_cmd = 0.15f;
+              vy_cmd = 0.0f;
+            }
+            if(GetKFS_State_t.state ==GetKFS_High_Process3)
+            {
+              vx_cmd = -0.1f;
+              vy_cmd = 0.0f;
             }
         break;
         case LiftLevel200_Step1:

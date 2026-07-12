@@ -1,32 +1,7 @@
 
 
-OpenDocument="startup_stm32h723xx.s", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/startup_stm32h723xx.s", Line=55
-OpenDocument="tasks.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3518
-OpenDocument="stm32h7xx_it.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/stm32h7xx_it.c", Line=176
-OpenDocument="ctrl_motor_dji.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DJI/ctrl_motor_dji.c", Line=53
-OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=76
-OpenDocument="arm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Arm_Control/arm.c", Line=188
-OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=183
-OpenDocument="stm32h7xx_hal.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c", Line=334
-OpenDocument="alg_pid.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Algorithm/PID/alg_pid.c", Line=58
-OpenDocument="freertos.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/freertos.c", Line=388
-OpenDocument="withPC.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/communication/withPC.c", Line=58
-OpenDocument="move_task.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Move_Task/move_task.c", Line=4
-OpenDocument="ctrl_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/ctrl_motor_dm.c", Line=489
-OpenDocument="drv_tfmini.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/TFmini-S/drv_tfmini.c", Line=44
-OpenDocument="Lift.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Lift_Control/Lift.c", Line=519
-OpenDocument="stm32h7xx_hal_uart_ex.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c", Line=906
-OpenDocument="drv_motor_dji.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DJI/drv_motor_dji.c", Line=57
-OpenDocument="stm32h7xx_hal_fdcan.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_fdcan.c", Line=5326
-OpenDocument="Hl12H1_Ml1_000.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/IMU/HIPNUC/Hl12H1-Ml1-000/Hl12H1_Ml1_000.c", Line=27
-OpenDocument="alg_pid.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Algorithm/PID/alg_pid.h", Line=41
-OpenDocument="drv_servo_motor.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Servo_Motor/drv_servo_motor.c", Line=14
-OpenDocument="get_Weapon.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Get_WeaponTask/get_Weapon.c", Line=8
-OpenDocument="drv_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/drv_motor_dm.c", Line=396
-OpenDocument="chassis.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Chassis/chassis.c", Line=79
-OpenDocument="drv_motor_dm.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/drv_motor_dm.h", Line=220
-OpenDocument="usart.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Inc/usart.h", Line=34
-OpenDocument="drv_uart.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/UART/drv_uart.c", Line=460
+OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=0
+OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=70
 OpenToolbar="Debug", Floating=0, x=0, y=0
 OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=671, h=173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=671, h=173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
@@ -50,3 +25,8 @@ TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", Vi
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;340]
 WatchedExpression="Competition_Mode", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="Robot_Mode", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="PC_frame", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="GetKFS_State_t", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="DM_Motor_Instances", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="TFmini_RxData", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="IO_Status", RefreshRate=5, Window=Watched Data 1
