@@ -1,32 +1,51 @@
 
 
-OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=0
-OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=70
+OpenDocument="drv_uart.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/UART/drv_uart.c", Line=15
+OpenDocument="crsf.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/1_Middleware/Driver/CRSF/crsf.c", Line=0
+OpenDocument="arm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Arm_Control/arm.c", Line=645
+OpenDocument="drv_motor_dji.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DJI/drv_motor_dji.c", Line=10
+OpenDocument="get_Weapon.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Get_WeaponTask/get_Weapon.c", Line=312
+OpenDocument="main.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/Core/Src/main.c", Line=76
+OpenDocument="withPC.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/communication/withPC.c", Line=90
+OpenDocument="Hl12H1_Ml1_000.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/IMU/HIPNUC/Hl12H1-Ml1-000/Hl12H1_Ml1_000.c", Line=47
+OpenDocument="startup_stm32h723xx.s", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/startup_stm32h723xx.s", Line=55
+OpenDocument="ctrl_motor_dm.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/2_Device/Motor/Motor_DM/ctrl_motor_dm.c", Line=41
+OpenDocument="task_config_and_callback.c", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/TimerTask_configandCallback/task_config_and_callback.c", Line=618
+OpenDocument="get_Weapon.h", FilePath="d:/A New RM/H7Test/DM_mc02H7_test/H7test/User_Files/3_App/Get_WeaponTask/get_Weapon.h", Line=0
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=671, h=173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=671, h=173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=671, h=146, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=4, w=671, h=146, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
 OpenWindow="Source Files", DockArea=BOTTOM, x=2, y=0, w=340, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=2, w=671, h=172, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=645, h=866, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=2, w=671, h=145, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=872, h=731, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=784, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=1434, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="10 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="0;32", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1164;-93", CodeGraphLegendShown=0, CodeGraphLegendPosition="1196;0"
-OpenWindow="Find Results", DockArea=RIGHT, x=0, y=3, w=671, h=169, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=0, w=671, h=175, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
+OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=1434, h=539, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="10 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="0;32", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1192;-77", CodeGraphLegendShown=0, CodeGraphLegendPosition="1222;0"
+OpenWindow="Find Results", DockArea=RIGHT, x=0, y=3, w=671, h=143, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="FreeRTOS", DockArea=RIGHT, x=0, y=0, w=671, h=147, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, Showing="Task List"
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
-TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[317;190;261;100;121;118]
-TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[223;100;100;100;1312]
+TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Frame";"Source";"PC";"Return Address";"Stack Used"], ColWidths=[317;190;261;100;121;101]
+TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[223;100;100;100;1076]
 TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time"], ColWidths=[100;100]
-TableHeader="Data Sampling Setup", SortCol="# Changes", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes"], ColWidths=[376;100;100;100;100;109;132]
+TableHeader="Data Sampling Setup", SortCol="# Changes", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes"], ColWidths=[376;100;100;100;100;100;113]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="Task List", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Name";"Run Count";"Priority";"Status";"Timeout";"Stack Info";"ID";"Mutex Count";"Notified Value";"Notify State"], ColWidths=[110;110;110;110;110;110;110;110;110;110]
-TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[207;144;399]
-TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh";"Access"], ColWidths=[245;360;111;100;100]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[207;144;329]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh";"Access"], ColWidths=[214;410;111;137;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
-TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;340]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;351]
 WatchedExpression="Competition_Mode", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="Robot_Mode", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="PC_frame", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="GetKFS_State_t", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="PC_frame", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="DM_Motor_Instances", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="TFmini_RxData", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="IO_Status", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Default_anglef", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Default_angleh", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="hipnuc_imu_data", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="PC_Transmit_Frame", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Banding_Flag", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="Default_angleb", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="GetKFS_State_t", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="rc_channels", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="UART7_Manage_Object", RefreshRate=5, Window=Watched Data 1

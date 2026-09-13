@@ -95,6 +95,8 @@ void hipnuc_data_unpacked(uint8_t *buf, uint16_t length)
         hipnuc_imu_data.quat[i] = R4(&buf[0]+offest+60 + i * 4);
     }
     HIPNUC_YAW_init();
+    /* 软件归零：减去初始偏航角，使上电瞬间 yaw = 0 */
+    hipnuc_imu_data.eul[2] -= hipnuc_imu_data.Begin_Yaw;
 }
 
 void Reset_euler_angle(void)
@@ -107,7 +109,7 @@ void HIPNUC_YAW_init(void)
     static bool yaw_init_flag = false;
     if (!yaw_init_flag)
     {
-        if(hipnuc_imu_data.timestamp >=6500)
+        if(hipnuc_imu_data.timestamp >=10000)
         {
             hipnuc_imu_data.Begin_Yaw = hipnuc_imu_data.eul[2];
             yaw_init_flag = true;

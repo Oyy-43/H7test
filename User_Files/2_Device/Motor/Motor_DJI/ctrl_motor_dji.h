@@ -28,6 +28,4 @@ void Motor_DJI_InitPID();
 void DJI_Motor_Output();
 
 
-
-
 #endif /* _CTRL_MOTOR_DJI_H */

@@ -11,10 +11,16 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "get_Weapon.h"
+#include "chassis.h"
 
 
 /* Private macros ------------------------------------------------------------*/
-
+#ifdef RedTeam
+#define delay_weapontime 50.0f
+#endif //RedTeam
+#ifdef BlueTeam
+#define delay_weapontime 100.0f
+#endif //BlueTeam
 /* Private types -------------------------------------------------------------*/
 FSMstate GetWeapon_State_t;
 Event GetWeapon_Event_t;
@@ -56,10 +62,10 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
             me->state = GetWeapon_Process0;
             me->state_time = 0.0f;
             break;
-            case GetWeapon_Event_Timeout:
-            me->state = GetWeapon_Idle;
-            me->state_time = 0.0f;
-            break;
+            // case GetWeapon_Event_Timeout:
+            // me->state = GetWeapon_Idle;
+            // me->state_time = 0.0f;
+            // break;
         }
     break;
     case GetWeapon_Process0:
@@ -166,10 +172,10 @@ void GetWeapon_Dispatch(FSMstate *me, Event *e)
             me->state = GetWeapon_Process5;
             me->state_time = 0.0f;
             break;
-            case GetWeapon_Event_Timeout:
-            me->state = GetWeapon_Idle;
-            me->state_time = 0.0f;
-            break;
+            // case GetWeapon_Event_Timeout:
+            // me->state = GetWeapon_Idle;
+            // me->state_time = 0.0f;
+            // break;
         }
     break;
     case GetWeapon_Process5:
@@ -277,7 +283,7 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_WeaponDetect;       
     }
-    if(me->state == GetWeapon_Process0_5 && me->state_time > 125.0f)
+    if(me->state == GetWeapon_Process0_5 && me->state_time > delay_weapontime)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_A1_FLAT, 1.0f, 80); // 发出提示音
@@ -316,13 +322,13 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_MoveDone;       
     }
-    if(me->state == GetWeapon_Process5 && fabs(hipnuc_imu_data.eul[2]-Target_Yaw)<0.1f)
+    if(me->state == GetWeapon_Process5 && me->state_time > 200.0f && fabs(hipnuc_imu_data.eul[2]-Waiting_Target_Yaw)<0.5f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_RotateDone;       
     }
-    if(me->state == GetWeapon_Process6 && Banding_Flag>1000 )
+    if(me->state == GetWeapon_Process6 && me->state_time > 500.0f && Banding_Flag>500 )
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6,1.0f, 80); // 发出提示音
@@ -334,12 +340,22 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_ReleaseDone;       
     }
-    if(me->state == GetWeapon_TurnBack && fabs(hipnuc_imu_data.eul[2]-Target_Yaw)<0.1f)
+    #ifdef RedTeam
+    if(me->state == GetWeapon_TurnBack && fabs(hipnuc_imu_data.eul[2]-0)<0.1f && me->state_time > 1000.0f)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_TurnBackDone;       
     }
+    #endif //RedTeam
+    #ifdef BlueTeam
+    if(me->state == GetWeapon_TurnBack && fabs(hipnuc_imu_data.eul[2]-Waiting_Target_Yaw)<0.1f && me->state_time > 1000.0f)
+    {
+        me->state_time = 0;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        e->sig = GetWeapon_Event_TurnBackDone;       
+    }
+    #endif //BlueTeam
     // 中断检测：仅在抓取过程中（Process2/2_5/3）检测物体丢失
     // 避免到达目标点后（Process4+）上光电持续导通导致状态机卡死
     if(IO_Status[0] == true &&
@@ -355,7 +371,7 @@ void GetWeapon_Event_Generate(FSMstate *me, Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = GetWeapon_Event_QuitTimeout;       
     }
-    if(me->state_time > 15000.0f )
+    if(me->state_time > 30000.0f )
     {
         me->state_time = 0;
         e->sig = GetWeapon_Event_Timeout;       

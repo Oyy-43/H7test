@@ -41,10 +41,10 @@ float Quit_Vx_Forward =-0.05f;
 float Front_MoveSpeed = -0.3f;
 float Front_MoveSpeedSlow = -0.1f;
 float To_GetWeaponVySpeed = 0.18f;
-float Quit_Speed = -0.2f;
+float Quit_Speed = -0.15f;
 float Normal_Target_Yaw = 180.0f;
 float Waiting_Target_Yaw = 0.0f;
-float Quit_Vx_Forward =0.05f;
+float Quit_Vx_Forward =0.1f;
 #endif
 /* Private function declarations ---------------------------------------------*/
 
@@ -178,6 +178,19 @@ void Chassis_Control()
             break;
             #endif // BlueTeam
             case GetWeapon_RuntoPosition1:
+            if(GetWeapon_State_t.state_time>1000.0f)
+            {
+              vx_cmd = Move_Pid_Out[0];
+              vy_cmd = Move_Pid_Out[1];
+              Target_Yaw = Normal_Target_Yaw;
+            }
+            else
+            {
+              vx_cmd = 0.0f;
+              vy_cmd = 0.0f;
+              Target_Yaw = Normal_Target_Yaw;
+            }
+            break;
             case GetWeapon_Process4:
             vx_cmd = Move_Pid_Out[0];
             vy_cmd = Move_Pid_Out[1];
@@ -207,6 +220,11 @@ void Chassis_Control()
               Target_Yaw = Normal_Target_Yaw;
             }
             break;
+            case GetWeapon_Process2_5:
+            vx_cmd = 0.0f;
+            vy_cmd = 0.0f;
+            Target_Yaw = Normal_Target_Yaw;
+            break;
             case GetWeapon_Process5:
             case GetWeapon_Process6:
             case GetWeapon_Process7:
@@ -220,19 +238,35 @@ void Chassis_Control()
             Target_Yaw = Normal_Target_Yaw;
             break;
             }
-            // KFS吸盘前伸时底盘同步前进
-            if (GetKFS_State_t.state == GetKFS_Process1
-             || GetKFS_State_t.state == GetKFS_Save_Process1 
-             || GetKFS_State_t.state == GetKFS_High_Process1
-            )
+            // KFS吸盘前伸时底盘同步前进（仅限抓取阶段，TurnBack/Done 时不允许位移）
+            if (GetWeapon_State_t.state != GetWeapon_TurnBack
+             && GetWeapon_State_t.state != GetWeapon_Done)
             {
-              vx_cmd = 0.15f;
-              vy_cmd = 0.0f;
-            }
-            if(GetKFS_State_t.state ==GetKFS_High_Process3)
-            {
-              vx_cmd = -0.1f;
-              vy_cmd = 0.0f;
+              if (GetKFS_State_t.state == GetKFS_Process1
+               || GetKFS_State_t.state == GetKFS_Save_Process1 
+               || GetKFS_State_t.state == GetKFS_High_Process1
+              )
+              {
+                vx_cmd = 0.15f;
+                vy_cmd = 0.0f;
+              }
+              if(GetKFS_State_t.state ==GetKFS_Out_Process5 && (GetKFS_State_t.state_time <= 3000))
+              {
+                vx_cmd = 0.2f;
+                vy_cmd = 0.0f;  
+              }
+              else if(GetKFS_State_t.state ==GetKFS_Out_Process5 && GetKFS_State_t.state_time >3000)
+              {
+                vx_cmd = 0.0f;
+                vy_cmd = 0.0f;
+              }
+              if(GetKFS_State_t.state == GetKFS_High_Process3
+              || GetKFS_State_t.state == GetKFS_Save_Process2
+              )
+              {
+                vx_cmd = -0.1f;
+                vy_cmd = 0.0f;
+              }
             }
         break;
         case LiftLevel200_Step1:

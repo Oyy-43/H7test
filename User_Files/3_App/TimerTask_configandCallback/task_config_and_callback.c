@@ -8,7 +8,7 @@ uint32_t ms_time=0;
 uint16_t s_time=0;
 uint16_t Servo_Angle1 = 0;
 uint16_t Servo_Angle2 = 0;
-
+bool imu_yaw_init_flag = false;
 
 bool IO_Status[4]= {false, false, false, false};  //0是夹爪上面的光电，1是对接完成信号，2是夹爪下面的光电
 // 全局初始化完成标志位
@@ -63,19 +63,22 @@ void Check_IO_INPUT()
     if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET)
     {
         IO_Status[2] = true;
+        Banding_Flag++;
+        Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
+        if(Banding_Flag>65534)
+        {
+            Banding_Flag=65534;
+        }
     }
     else
     {
+        Banding_Flag= 0;
         IO_Status[2] = false;
     }
     if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8) == GPIO_PIN_SET)
     {
         IO_Status[3] = true;
-        Banding_Flag++;
-        if(Banding_Flag>65534)
-        {
-            Banding_Flag=65534;
-        }
+
     }
     else
     {
@@ -195,20 +198,24 @@ void KeyBoard_Mode_Select_Process()
                         PC_Transmit_Frame.Retry_Flag = 0x00; // 正常执行程序
                         break;
                     case 1:
-                        PC_Transmit_Frame.Retry_Flag = 0x01; // 从武馆重试到梅林
+                        PC_Transmit_Frame.Retry_Flag = 0x01; // 从武馆重试到梅林 短按零次
                         Competition_Mode = Competition_Mode_1;
                         break;
                     case 2:
-                        PC_Transmit_Frame.Retry_Flag = 0x02; // 单项赛上3区代码
+                        PC_Transmit_Frame.Retry_Flag = 0x02; // 单项赛上3区代码 短按一次
                         Competition_Mode = Competition_Mode_Single_3Zone;
                         break;
                     case 3:
-                        PC_Transmit_Frame.Retry_Flag = 0x03; // 对抗赛3区代码
-                        Competition_Mode = Competition_Mode_Battle_3Zone;
+                        PC_Transmit_Frame.Retry_Flag = 0x03; // 对抗赛3区代码 短按两次
+                        Competition_Mode = Competition_Mode_Battle_3ZoneLeft;
                         break;
-                    default:
-                        Competition_Mode = Competition_Mode_Reserve;
-                        PC_Transmit_Frame.Retry_Flag = 0x04; // 预留模式
+                    case 4:
+                        PC_Transmit_Frame.Retry_Flag = 0x04; // 对抗赛3区代码 短按三次
+                        Competition_Mode = Competition_Mode_Battle_3ZoneMid;
+                        break;
+                    case 5:
+                        PC_Transmit_Frame.Retry_Flag = 0x05;
+                        Competition_Mode = Competition_Mode_Battle_3ZoneRight; //短按四次
                         break;
                 }
 
@@ -387,11 +394,11 @@ void Servo_Motor_Control()
                 case GetWeapon_RuntoPosition1:
                 case GetWeapon_Process0:
                 case GetWeapon_Process1:
-                Servo_Angle1 = 68.0f;
+                Servo_Angle1 = 73.0f;  //68.0
                 Servo_Angle2 = 0.0f;
                 break;
                 case GetWeapon_Process2:
-                Servo_Angle1 = 68.0f;
+                Servo_Angle1 = 73.0f;
                 Servo_Angle2 = 180.0f;
                 break;
                 case GetWeapon_Process3:
@@ -413,7 +420,7 @@ void Servo_Motor_Control()
                 break;
                 case GetWeapon_TurnBack:
                 case GetWeapon_Done:
-                Servo_Angle1 = 68.0f;
+                Servo_Angle1 = 73.0f;
                 Servo_Angle2 = 0.0f;
                 break;
             }
@@ -620,7 +627,6 @@ void Task1ms_Callback()
     // float float_red = static_cast<float>(red);
     // float float_green = static_cast<float>(green);
     // float float_blue = static_cast<float>(blue);
-
 }
 
 /**

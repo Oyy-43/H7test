@@ -1,0 +1,58 @@
+[33m3cd245c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to 3cd245c89ff2b71fa9535be33f51ea86422f53e5
+[33m02b4743[m HEAD@{1}: commit: 顺眼期间修改代码，准备测试PWM对接
+[33m3cd245c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{2}: commit: 2.1出发前代码，左右两边的一区都没问题，加了个重试键盘判断
+[33mcc9fc45[m HEAD@{3}: commit: 2.0.1 优化了一下逻辑，加了中断判断，去除了检测后向前延时，想试一下往前走的同时，左右移动，保持相对距离
+[33md908aca[m HEAD@{4}: commit: 2.0 一区任务完成，待提高稳定性
+[33m240abab[m HEAD@{5}: commit: 1.9.0疯车问题疑似未解决，准备加入拾取自动KFS,登上最高台阶
+[33mfaf9f96[m HEAD@{6}: commit: 1.8.3 将下台阶前升降阈值改为-25
+[33m51c4897[m HEAD@{7}: commit: 1.8.2上台阶（非最高阶），下台阶均已完成，待完善下台阶完成判断
+[33mff469df[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{8}: commit: 1.8.1第一次连续上两个台阶问题解决，下台阶代码已写完，待测试，还有一个最高台阶怎么上的问题没解决
+[33md90f589[m HEAD@{9}: commit: 1.8.0，基本功能完善，修改第一版通讯协议
+[33md1d27fc[m HEAD@{10}: commit: 1.7.3第一次上台阶成功，待加入陀螺仪闭环车体角度控制，4310控制参数优化
+[33mca82945[m HEAD@{11}: commit: 1.7.2陀螺仪初步移植完毕，加入API调用过程种发现错误
+[33m0624468[m HEAD@{12}: reset: moving to 0624468a8ed80b37a9729ea1dd470d136dfa6958
+[33m6407a66[m HEAD@{13}: checkout: moving from main to main
+[33m6407a66[m HEAD@{14}: checkout: moving from main to main
+[33m6407a66[m HEAD@{15}: checkout: moving from 0624468a8ed80b37a9729ea1dd470d136dfa6958 to main
+[33m0624468[m HEAD@{16}: checkout: moving from main to 0624468a8ed80b37a9729ea1dd470d136dfa6958
+[33m6407a66[m HEAD@{17}: checkout: moving from main to main
+[33m6407a66[m HEAD@{18}: commit: 1.7.2 加入EKF和四元数
+[33m0624468[m HEAD@{19}: commit: 1.7.1移植麻神矩阵库和板载陀螺仪，准备移植上电源控制
+[33m41b3fe6[m HEAD@{20}: commit: 1.6.3vscode更新,EIDE崩溃
+[33m75cbe1c[m HEAD@{21}: commit: 1.6.2将升降和底盘电机全部归于CAN1，加入CAN2的4个4310控制MIT控制代码，待进行测试
+[33m26b3abf[m HEAD@{22}: commit: 升降2.0，取消2006后修改版本，待加入4310控制代码
+[33m889b63c[m HEAD@{23}: checkout: moving from main to main
+[33m889b63c[m HEAD@{24}: checkout: moving from oldversion to main
+[33m732b5e2[m[33m ([m[1;32moldversion[m[33m)[m HEAD@{25}: commit: 走
+[33m5931da7[m HEAD@{26}: commit: 5.30 旧版再改了一下
+[33mbb1681b[m HEAD@{27}: checkout: moving from main to oldversion
+[33m889b63c[m HEAD@{28}: checkout: moving from oldversion to main
+[33mbb1681b[m HEAD@{29}: commit: 旧版本改正达妙驱动，添加通讯协议，给视觉先调着版本
+[33m5d4178d[m HEAD@{30}: checkout: moving from main to oldversion
+[33m889b63c[m HEAD@{31}: checkout: moving from oldversion to main
+[33m5d4178d[m HEAD@{32}: checkout: moving from main to oldversion
+[33m889b63c[m HEAD@{33}: checkout: moving from oldversion to main
+[33m5d4178d[m HEAD@{34}: checkout: moving from main to oldversion
+[33m889b63c[m HEAD@{35}: checkout: moving from old-version to main
+[33m889b63c[m HEAD@{36}: checkout: moving from main to old-version
+[33m889b63c[m HEAD@{37}: checkout: moving from old-version to main
+[33m889b63c[m HEAD@{38}: checkout: moving from old-version to old-version
+[33m889b63c[m HEAD@{39}: checkout: moving from old-version to old-version
+[33m889b63c[m HEAD@{40}: checkout: moving from main to old-version
+[33m889b63c[m HEAD@{41}: checkout: moving from old-version to main
+[33m889b63c[m HEAD@{42}: checkout: moving from old-version to old-version
+[33m889b63c[m HEAD@{43}: checkout: moving from main to old-version
+[33m889b63c[m HEAD@{44}: checkout: moving from old-version to main
+[33m889b63c[m HEAD@{45}: pull --tags origin main: Fast-forward
+[33m5d4178d[m HEAD@{46}: checkout: moving from main to old-version
+[33m889b63c[m HEAD@{47}: commit: 第一版升降代码完善，2006驱动加入
+[33m97fd9d6[m HEAD@{48}: commit: 1.5.1大疆3508调参完成，底盘代码暂未修改
+[33me72b112[m HEAD@{49}: commit: 1.4.2同步迁移部分东方红代码，信号输出、一阶滤波，串口DMA数据发送，大疆电机相关驱动代码
+[33m5d4178d[m HEAD@{50}: commit: 1.4.1中期视频代码，新增对8009，lk电机的控制和pid的优化
+[33mc17567a[m HEAD@{51}: commit: 1.3底盘手动任务解决，配置USB通讯，待完成机械臂控制
+[33m43d9a06[m HEAD@{52}: commit: 优化DMA无法寻址访问DTCM问题
+[33m5af9f9e[m HEAD@{53}: commit: 1.2.1 CAN收发测试完毕，EDGETX遥控器相关代码加入，待完善ADC，底盘任务，灯声报警
+[33md9f0af4[m HEAD@{54}: commit: 1.1.4 WS2812测试完毕，基本代码无误，板载按键移植并测试完成，CAN移植完成,待测试
+[33m8fa596e[m HEAD@{55}: commit: 1.1.3.1 WS2812未写完，待完善业务代码并测试
+[33m461240b[m HEAD@{56}: commit: 1.1.2 添加FreeRTOS，蜂鸣器+音乐扫描，简易数学库DSP
+[33m87ac58c[m HEAD@{57}: commit (initial): 1.1.1 串口DMA环形缓存收发BSP done

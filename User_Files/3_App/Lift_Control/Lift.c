@@ -335,7 +335,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = LiftLevel200_Step2;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = LiftLevel200_Step2;
                 break;
             }
         break;
@@ -347,7 +347,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = LiftLevel200_Step3;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = LiftLevel200_Step3;
                 break;
             }
         break;
@@ -359,7 +359,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = LiftLevel200_Step4;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = LiftLevel200_Step4;
                 break;
             }
         break;
@@ -371,7 +371,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = LiftLevel200_Step5;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = LiftLevel200_Step5;
                 break;
             }
         break;
@@ -383,7 +383,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = LiftLevel200_Step6;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = LiftLevel200_Step6;
                 break;
             }
         break;
@@ -395,7 +395,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = LiftLevel200_Step7;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = LiftLevel200_Step7;
                 break;
             }
         break;
@@ -421,7 +421,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = DownLevel200_Step2;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = DownLevel200_Step2;
                 break;
             }
         break;
@@ -433,7 +433,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = DownLevel200_Step3;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = DownLevel200_Step3;
                 break;
             }
         break;
@@ -445,7 +445,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = DownLevel200_Step4;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = DownLevel200_Step4;
                 break;
             }
         break;
@@ -457,7 +457,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = DownLevel200_Step5;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = DownLevel200_Step5;
                 break;
             }
         break;
@@ -472,7 +472,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = DownLevel200_Step6;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = DownLevel200_Step6;
                 break;
             }
         break;
@@ -484,7 +484,7 @@ void LiftFSM_Dispatch(FSMstate *me,Event *e)
                 me->state = DownLevel200_Step7;
                 break;
                 case LiftEvent_TimeOut:
-                me->state = No_Lifting;
+                me->state = DownLevel200_Step7;
                 break;
             }
         break;
@@ -641,7 +641,7 @@ void LiftEvent_Generate(FSMstate *me,Event *e)
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80); // 发出提示音
         e->sig = LiftEvent_DownLevel200_Step8Event;         //检测已完全下台阶，下台阶完毕
     }
-    if( (me->state != No_Lifting) && me->state_time > 10000)
+    if( (me->state != No_Lifting) && me->state_time > 6000)
     {
         me->state_time = 0;
         Buzzer_Play_Once_NonBlocking(BUZZER_FREQUENCY_D6, 1.0f, 80);

@@ -25,8 +25,9 @@ typedef enum Enum_Competition_Mode
     Competition_Mode_None = 0,            // 未选择
     Competition_Mode_1,                   // 2区梅林重试
     Competition_Mode_Single_3Zone,        // 2次按键  -> 单项赛上3区
-    Competition_Mode_Battle_3Zone,        // 3次按键  -> 对抗赛3区代码
-    Competition_Mode_Reserve,             // 4次按键  -> 预留模式
+    Competition_Mode_Battle_3ZoneLeft,        // 3次按键  -> 对抗赛3区放左边代码
+    Competition_Mode_Battle_3ZoneMid,         // 4次按键  -> 对抗赛3区放中间代码
+    Competition_Mode_Battle_3ZoneRight        // 5次按键  -> 对抗赛3区放右边代码
 }Enum_Competition_Mode;
 
 extern Enum_Competition_Mode Competition_Mode;

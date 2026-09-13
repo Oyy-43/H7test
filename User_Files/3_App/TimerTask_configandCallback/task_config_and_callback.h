@@ -32,8 +32,8 @@
 #include "arm.h"
 #include "buzzer_music.h"
 
-// #define RedTeam
-#define BlueTeam
+#define RedTeam
+// #define BlueTeam
 
 void Task_Init();
 void Task1ms_Callback();

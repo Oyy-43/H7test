@@ -33,6 +33,8 @@
 /* Exported constants --------------------------------------------------------*/
 
 /* Exported variables --------------------------------------------------------*/
+extern float Normal_Target_Yaw;
+extern float Waiting_Target_Yaw;
 
 /* Exported function declarations --------------------------------------------*/
 void Chassis_Omega_update(float vx, float vy, float vz);

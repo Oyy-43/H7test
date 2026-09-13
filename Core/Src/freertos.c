@@ -92,13 +92,6 @@ const osThreadAttr_t Chassis_Control_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for DJIControl_Task */
-osThreadId_t DJIControl_TaskHandle;
-const osThreadAttr_t DJIControl_Task_attributes = {
-  .name = "DJIControl_Task",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
-};
 /* Definitions for LiftControl_Tas */
 osThreadId_t LiftControl_TasHandle;
 const osThreadAttr_t LiftControl_Tas_attributes = {
@@ -132,7 +125,6 @@ void MusicTask_func(void *argument);
 void DMsetOutput(void *argument);
 void tele_task(void *argument);
 void Chassis_Task(void *argument);
-void DJISetOut(void *argument);
 void Lift_Task(void *argument);
 void Arm_Task(void *argument);
 void Position_Control(void *argument);
@@ -184,9 +176,6 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Chassis_Control */
   Chassis_ControlHandle = osThreadNew(Chassis_Task, NULL, &Chassis_Control_attributes);
-
-  /* creation of DJIControl_Task */
-  DJIControl_TaskHandle = osThreadNew(DJISetOut, NULL, &DJIControl_Task_attributes);
 
   /* creation of LiftControl_Tas */
   LiftControl_TasHandle = osThreadNew(Lift_Task, NULL, &LiftControl_Tas_attributes);
@@ -315,24 +304,6 @@ __weak void Chassis_Task(void *argument)
     osDelay(1);
   }
   /* USER CODE END Chassis_Task */
-}
-
-/* USER CODE BEGIN Header_DJISetOut */
-/**
-* @brief Function implementing the DJIControl_Task thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_DJISetOut */
-__weak void DJISetOut(void *argument)
-{
-  /* USER CODE BEGIN DJISetOut */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END DJISetOut */
 }
 
 /* USER CODE BEGIN Header_Lift_Task */
